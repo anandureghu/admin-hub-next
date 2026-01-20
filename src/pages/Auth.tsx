@@ -4,15 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Truck, Loader2 } from "lucide-react";
-import { Session } from "@supabase/supabase-js";
-import { LoadingScreen } from "@/components/LoadingScreen";
-import { Database } from "@/integrations/supabase/types";
-
-type UserRow = Database["public"]["Tables"]["users"]["Row"];
 
 export default function Auth() {
   const [loading, setLoading] = useState(false);
-  const [isChecking, setIsChecking] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,12 +78,13 @@ export default function Auth() {
   }, [navigate]);
 
   const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
+        provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth`,
+          redirectTo: `${window.location.origin}/dashboard`,
         },
       });
 
@@ -99,8 +94,7 @@ export default function Auth() {
     } catch (error) {
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
-      setLoading(false);
-      setLoading(false);
+       setLoading(false);
     }
   };
 
@@ -125,17 +119,20 @@ export default function Auth() {
 
           {/* Login Button */}
           <div className="space-y-4">
+          {/* Login Button */}
+          <div className="space-y-4">
             <Button
+              onClick={handleGoogleLogin}
               onClick={handleGoogleLogin}
               className="w-full"
               disabled={loading}
+              variant="outline"
               variant="outline"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : (
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
+                 <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
                   <path
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                     fill="#4285F4"
