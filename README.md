@@ -1,73 +1,94 @@
-# Welcome to your Lovable project
+# Admin Hub
 
-## Project info
+A comprehensive administrative management system built with React, Vite, and Supabase. This project provides a robust dashboard for managing employees, vehicles, trips, receipts, and settings.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Features
 
-## How can I edit this code?
+- **Dashboard**: Real-time overview of key metrics and activities.
+- **Employee Management**: Manage staff profiles, roles, and status.
+- **Vehicle Tracking**: Monitor vehicle fleet information and maintenance.
+- **Trip Logs**: Record and manage business-related travel.
+- **Receipt Management**: Digital storage and processing of financial receipts.
+- **Authentication**: Secure login and session management powered by Supabase.
+- **Responsive Design**: Fully functional across desktop, tablet, and mobile devices.
+- **Settings**: Customizable system and user preferences.
 
-There are several ways of editing your application.
+## 🛠️ Tech Stack
 
-**Use Lovable**
+- **Framework**: [React 18](https://reactjs.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com/) (Radix UI primitives)
+- **Database & Auth**: [Supabase](https://supabase.com/)
+- **State Management**: [TanStack Query (React Query)](https://tanstack.com/query/latest)
+- **Forms**: [React Hook Form](https://react-hook-form.com/) & [Zod](https://zod.dev/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Charts**: [Recharts](https://recharts.org/)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 📦 Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```text
+src/
+├── components/     # Reusable UI and layout components
+│   ├── dashboard/   # Dashboard-specific components
+│   ├── layout/      # Shared layout components (AdminLayout)
+│   └── ui/          # Low-level shadcn UI components
+├── hooks/          # Custom React hooks
+├── integrations/   # API and third-party service configurations (Supabase)
+├── lib/            # Utility functions and library wrappers
+├── pages/          # Full page components used as routes
+└── test/           # Test files and utilities
 ```
 
-**Edit a file directly in GitHub**
+## ⚙️ Getting Started
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Prerequisites
 
-**Use GitHub Codespaces**
+- Node.js (v18 or later)
+- npm or bun
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Local Setup
 
-## What technologies are used for this project?
+1. **Clone the repository**:
 
-This project is built with:
+   ```sh
+   git clone <YOUR_GIT_URL>
+   cd admin-hub-next
+   ```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+2. **Install dependencies**:
 
-## How can I deploy this project?
+   ```sh
+   npm install
+   ```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+3. **Environment Variables**:
+   Create a `.env` file in the root directory and add your Supabase credentials:
 
-## Can I connect a custom domain to my Lovable project?
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-Yes, you can!
+4. **Start the development server**:
+   ```sh
+   npm run dev
+   ```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🧪 Testing
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Run the test suite using Vitest:
+
+```sh
+npm run test
+```
+
+## 🌐 Deployment
+
+This project is optimized for deployment via Lovable or any modern static hosting provider (Vercel, Netlify, etc.).
+
+For Lovable:
+
+1. Open [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID)
+2. Click on **Share** -> **Publish**.
