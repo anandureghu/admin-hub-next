@@ -175,7 +175,7 @@ export default function Vehicles() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!formData.vehicle_number || !formData.vehicle_type) {
+    if (!newVehicle.vehicle_number || !newVehicle.vehicle_type) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -243,18 +243,19 @@ export default function Vehicles() {
           .update({ is_active: !currentStatus })
           .eq("id", id);
 
-        if (error) throw error;
+      if (error) throw error;
 
-        toast.success(
-          `Vehicle marked as ${currentStatus ? "unavailable" : "available"}`,
-        );
-        refreshVehicles();
-      } catch (error) {
-        console.error("Error updating vehicle:", error);
-        toast.error("Failed to update vehicle status");
-      }
-    },
-    [],
+      toast.success(`Vehicle ${currentStatus ? "deactivated" : "activated"}`);
+      fetchVehicles();
+    } catch (error) {
+      console.error("Error updating vehicle:", error);
+      toast.error("Failed to update vehicle status");
+    }
+  }
+
+  const filteredVehicles = vehicles.filter((v) =>
+    v.vehicle_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    v.vehicle_type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
