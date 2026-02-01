@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Plus, Search, Car, Pencil, Signal } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Plus, Search, Car, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,202 +36,78 @@ export default function Vehicles() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    vehicle_number: "",
-    vehicle_type: "",
-    image_url: "",
-  });
+  const [formData, setFormData] = useState({ vehicle_number: "", vehicle_type: "" });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [refreshCount, setRefreshCount] = useState(0);
-  const [vehicleImage, setVehicleImage] = useState<File | null>(null);
-  const itemSize = 9;
-  const intersectionObserver = useRef<IntersectionObserver | null>(null);
-
-  const lastVehicleRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (loading) return;
-      if (intersectionObserver.current)
-        intersectionObserver.current.disconnect();
-      intersectionObserver.current = new IntersectionObserver((vehicles) => {
-        if (vehicles[0].isIntersecting && nextPage) {
-          setPagenum((prev) => prev + 1);
-        }
-      });
-      if (node) {
-        intersectionObserver.current.observe(node);
-      }
-    },
-    [loading, nextPage],
-  );
-
-  const fetchVehicles = useCallback(
-    async (controller: AbortController) => {
-      setLoading(true);
-      const from = pagenum * itemSize;
-      const to = from + itemSize - 1;
-      try {
-        let query = supabase
-          .from("vehicles")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .range(from, to)
-          .abortSignal(controller.signal);
-
-        if (debouncedSearch.trim()) {
-          query = query.or(
-            `vehicle_number.ilike.%${debouncedSearch}%,vehicle_type.ilike.%${debouncedSearch}%`,
-          );
-        }
-
-        const { data, error } = await query;
-
-        if (error) throw error;
-        if (pagenum === 0) {
-          setVehicles(data);
-        } else {
-          setVehicles((prev) => [...prev, ...data]);
-        }
-        setNextPage(Boolean(data.length === itemSize));
-        setLoading(false);
-      } catch (error) {
-        if (controller.signal.aborted) return;
-        setLoading(false);
-        console.error("Error fetching vehicles:", error);
-        toast.error("Failed to load vehicles");
-      }
-      // finally {
-      //   setLoading(false);
-      // }
-    },
-    [pagenum, debouncedSearch, itemSize, refreshCount],
-  );
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    fetchVehicles();
+  }, []);
 
-  useEffect(() => {
-    setVehicles([]);
-    setPagenum(0);
-    setNextPage(true);
-  }, [debouncedSearch]);
+  async function fetchVehicles() {
+    try {
+      const { data, error } = await supabase
+        .from("vehicles")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-  useEffect(() => {
-    const controller = new AbortController();
-    fetchVehicles(controller);
-
-    return () => {
-      controller.abort();
-    };
-  }, [fetchVehicles]);
-
-  function refreshVehicles() {
-    setVehicles([]);
-    setPagenum(0);
-    setNextPage(true);
-    setRefreshCount((prev) => prev + 1);
+      if (error) throw error;
+      setVehicles(data || []);
+    } catch (error) {
+      console.error("Error fetching vehicles:", error);
+      toast.error("Failed to load vehicles");
+    } finally {
+      setLoading(false);
+    }
   }
 
   function handleOpenAddDialog() {
     setEditingId(null);
-    setFormData({ vehicle_number: "", vehicle_type: "", image_url: "" });
-    setVehicleImage(null);
+    setFormData({ vehicle_number: "", vehicle_type: "" });
     setDialogOpen(true);
   }
 
-  const handleOpenEditDialog = useCallback((vehicle: Vehicle) => {
+  function handleOpenEditDialog(vehicle: Vehicle) {
     setEditingId(vehicle.id);
-    setFormData({
-      vehicle_number: vehicle.vehicle_number,
-      vehicle_type: vehicle.vehicle_type,
-      image_url: vehicle.image_url,
-    });
-    setVehicleImage(null);
+    setFormData({ vehicle_number: vehicle.vehicle_number, vehicle_type: vehicle.vehicle_type });
     setDialogOpen(true);
-  }, []);
-
-  async function uploadVehicleImage(vehicleId: string) {
-    if (!vehicleImage) return formData.image_url;
-
-    const fileExt = vehicleImage.name.split(".").pop();
-    const filePath = `${vehicleId}.${fileExt}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("vehicles")
-      .upload(filePath, vehicleImage, {
-        upsert: true,
-        cacheControl: "no-cache",
-      });
-
-    if (uploadError) throw uploadError;
-
-    const { data } = supabase.storage.from("vehicles").getPublicUrl(filePath);
-    return `${data.publicUrl}?t=${Date.now()}`;
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!newVehicle.vehicle_number || !newVehicle.vehicle_type) {
+    if (!formData.vehicle_number || !formData.vehicle_type) {
       toast.error("Please fill in all required fields");
       return;
     }
 
     try {
       if (editingId) {
-        let imageUrl = formData.image_url;
-        if (vehicleImage) {
-          imageUrl = await uploadVehicleImage(editingId);
-        }
-
         const { error } = await supabase
           .from("vehicles")
           .update({
             vehicle_number: formData.vehicle_number,
             vehicle_type: formData.vehicle_type,
-            image_url: imageUrl,
-          } as vehicleUpdate)
+          })
           .eq("id", editingId);
 
         if (error) throw error;
         toast.success("Vehicle updated successfully");
       } else {
-        const { data: vehicleData, error } = await supabase
-          .from("vehicles")
-          .insert({
-            vehicle_number: formData.vehicle_number,
-            vehicle_type: formData.vehicle_type,
-          } as vehicleInsert)
-          .select()
-          .single();
+        const { error } = await supabase.from("vehicles").insert({
+          vehicle_number: formData.vehicle_number,
+          vehicle_type: formData.vehicle_type,
+        });
 
         if (error) throw error;
-
-        if (vehicleImage && vehicleData) {
-          const imageUrl = await uploadVehicleImage(vehicleData.id);
-          const { error: updateError } = await supabase
-            .from("vehicles")
-            .update({ image_url: imageUrl } as vehicleUpdate)
-            .eq("id", vehicleData.id);
-
-          if (updateError) throw updateError;
-        }
         toast.success("Vehicle added successfully");
       }
 
       setDialogOpen(false);
-      setFormData({ vehicle_number: "", vehicle_type: "", image_url: "" });
-      setVehicleImage(null);
-      refreshVehicles();
-    } catch (error) {
-      if (error && error.code == 23505) {
-        toast.error("Vehicle with this number already exists");
-      } else {
-        toast.error(error.message || "Failed to save vehicle");
-      }
+      setFormData({ vehicle_number: "", vehicle_type: "" });
+      fetchVehicles();
+    } catch (error: any) {
+      console.error("Error saving vehicle:", error);
+      toast.error(error.message || "Failed to save vehicle");
     }
   }
 
@@ -272,7 +148,7 @@ export default function Vehicles() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md pl-1">
+      <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input
           placeholder="Search vehicles..."
@@ -283,71 +159,71 @@ export default function Vehicles() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto max-h-165">
-        {loading &&
-          pagenum == 0 &&
-          vehicles.length === 0 &&
-          Array.from({ length: 6 }).map((_, index) => (
-            <VehicleCardSkeleton key={index} />
-          ))}
-        {vehicles &&
-          vehicles.map((vehicle, i) => {
-            const isLast = vehicles.length === i + 1;
-
-            return (
-              <VehicleCard
-                key={vehicle.id}
-                ref={isLast ? lastVehicleRef : null}
-                vehicle={vehicle}
-                toggleVehicleStatus={toggleVehicleStatus}
-                handleOpenEditDialog={handleOpenEditDialog}
-              />
-            );
-          })}
-        {!loading && pagenum == 0 && vehicles.length === 0 && searchQuery && (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {loading ? (
+          <div className="col-span-full text-center py-8 text-muted-foreground">Loading vehicles...</div>
+        ) : filteredVehicles.length === 0 ? (
           <div className="col-span-full text-center py-12">
             <Car className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
-              {searchQuery
-                ? "No vehicles match your search"
-                : "No vehicles yet. Add your first vehicle to get started."}
+              {searchQuery ? "No vehicles match your search" : "No vehicles yet. Add your first vehicle to get started."}
             </p>
           </div>
+        ) : (
+          filteredVehicles.map((vehicle) => (
+            <div key={vehicle.id} className="stat-card animate-fade-in">
+              <div className="flex items-start justify-between mb-4">
+                <div className="stat-icon">
+                  <Car className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    onClick={() => handleOpenEditDialog(vehicle)}
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <StatusBadge status={vehicle.is_active ? "active" : "inactive"} />
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-1">
+                {vehicle.vehicle_number}
+              </h3>
+              <p className="text-muted-foreground text-sm mb-4">{vehicle.vehicle_type}</p>
+              <div className="flex items-center justify-between pt-4 border-t border-border">
+                <span className="text-xs text-muted-foreground">
+                  Added {new Date(vehicle.created_at).toLocaleDateString()}
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleVehicleStatus(vehicle.id, vehicle.is_active)}
+                  >
+                    {vehicle.is_active ? "Deactivate" : "Activate"}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))
         )}
-        {loading &&
-          pagenum > 0 &&
-          Array.from({ length: 6 }).map((_, index) => (
-            <VehicleCardSkeleton key={index} />
-          ))}
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="bg-card border-border">
           <DialogHeader>
-            <DialogTitle>
-              {editingId ? "Edit Vehicle" : "Add New Vehicle"}
-            </DialogTitle>
+            <DialogTitle>{editingId ? "Edit Vehicle" : "Add New Vehicle"}</DialogTitle>
           </DialogHeader>
-          <DialogDescription>
-            {editingId
-              ? "Edit the vehicle details"
-              : "Add a new vehicle and upload a picture of it."}
-          </DialogDescription>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="vehicle-number">
-                Vehicle Number / License Plate *
-              </Label>
+              <Label htmlFor="vehicle-number">Vehicle Number / License Plate *</Label>
               <Input
                 id="vehicle-number"
                 placeholder="ABC-1234"
                 value={formData.vehicle_number}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    vehicle_number: e.target.value.toUpperCase(),
-                  })
-                }
+                onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value })}
                 className="bg-input border-border"
                 required
               />
@@ -356,9 +232,7 @@ export default function Vehicles() {
               <Label htmlFor="vehicle-type">Vehicle Type *</Label>
               <Select
                 value={formData.vehicle_type}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, vehicle_type: value })
-                }
+                onValueChange={(value) => setFormData({ ...formData, vehicle_type: value })}
               >
                 <SelectTrigger className="bg-input border-border">
                   <SelectValue placeholder="Select vehicle type" />
@@ -372,24 +246,8 @@ export default function Vehicles() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label>Vehicle Picture</Label>
-              <ImageUpload
-                value={formData.image_url}
-                onChange={(file) => setVehicleImage(file)}
-                onRemove={() => {
-                  setVehicleImage(null);
-                  setFormData({ ...formData, image_url: "" });
-                }}
-              />
-            </div>
             <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setDialogOpen(false)}
-                className="flex-1"
-              >
+              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
                 Cancel
               </Button>
               <Button type="submit" className="flex-1">
