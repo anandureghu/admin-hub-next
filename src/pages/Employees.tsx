@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Plus, Search, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,11 +23,13 @@ interface Employee {
   created_at: string;
 }
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
+type UserUpdate = Database["public"]["Tables"]["users"]["Update"];
 
 export default function Employees() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [newEmployee, setNewEmployee] = useState({ name: "", phone: "", email: "" });
+  const [formData, setFormData] = useState({ name: "", phone: "", email: "" });
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchEmployees();
@@ -46,12 +48,10 @@ export default function Employees() {
     } catch (error) {
       console.error("Error fetching employees:", error);
       toast.error("Failed to load employees");
+    } finally {
+      setLoading(false);
     }
-  }, [sorting, pagination, columnFilters]);
-
-  useEffect(() => {
-    fetchEmployees();
-  }, [fetchEmployees]);
+  }
 
   const handleAddEmployee = () => {
     setEditingId(null);
@@ -64,7 +64,7 @@ export default function Employees() {
     setFormData({
       name: employee.name,
       email: employee.email || "",
-      phone: employee.phone || "",
+      phone: employee.phone || ""
     });
     setDialogOpen(true);
   };
@@ -72,29 +72,43 @@ export default function Employees() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!newEmployee.email || !newEmployee.name) {
+    if (!formData.email || !formData.name) {
       toast.error("Please fill in all required fields");
       return;
     }
 
-    const payload: UserInsert = {
-      name: newEmployee.name,
-      email: newEmployee.email,
-      phone: newEmployee.phone || null,
-      role: "EMPLOYEE",
-      is_active: true
-    };
-
     try {
-      const { error } = await supabase
-        .from("users")
-        .insert(payload);
+      if (editingId) {
+        const updatePayload: UserUpdate = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+        };
+        const { error } = await supabase
+          .from("users")
+          .update(updatePayload)
+          .eq("id", editingId);
 
-      if (error) throw error;
+        if (error) throw error;
+        toast.success("Employee updated successfully");
+      } else {
+        const createPayload: UserInsert = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          role: "EMPLOYEE",
+          is_active: true
+        };
+        const { error } = await supabase
+          .from("users")
+          .insert(createPayload);
 
-      toast.success("Employee added successfully");
+        if (error) throw error;
+
+        toast.success("Employee added successfully");
+      }
       setDialogOpen(false);
-      setNewEmployee({ name: "", phone: "", email: "" });
+      setFormData({ name: "", phone: "", email: "" });
       fetchEmployees();
     } catch (error: any) {
       console.error("Error adding employee:", error);
@@ -128,22 +142,18 @@ export default function Employees() {
           <h1 className="page-header">Employees</h1>
           <p className="text-muted-foreground">Manage your team members</p>
         </div>
-        <Button onClick={() => handleAddEmployee()}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Employee
-        </Button>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => handleAddEmployee()}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Employee
+            </Button>
+          </DialogTrigger>
           <DialogContent className="bg-card border-border">
             <DialogHeader>
-              <DialogTitle>
-                {editingId ? "Edit Employee" : "Add New Employee"}
-              </DialogTitle>
-              <DialogDescription>
-                {editingId
-                  ? "Update employee details."
-                  : "Create a new employee."}
-              </DialogDescription>
+              <DialogTitle>{editingId ? "Edit Employee" : "Add New Employee"}</DialogTitle>
             </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="emp-name">Full Name *</Label>
@@ -151,9 +161,7 @@ export default function Employees() {
                   id="emp-name"
                   placeholder="John Doe"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="bg-input border-border"
                   required
                 />
@@ -165,9 +173,7 @@ export default function Employees() {
                   type="email"
                   placeholder="john@company.com"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="bg-input border-border"
                   required
                 />
@@ -180,9 +186,7 @@ export default function Employees() {
                   type="tel"
                   placeholder="+1 234 567 8900"
                   value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="bg-input border-border"
                 />
               </div>
@@ -197,6 +201,7 @@ export default function Employees() {
                 </Button>
                 <Button type="submit" className="flex-1">
                   {editingId ? "Update Employee" : "Create Employee"}
+                  {editingId ? "Update Employee" : "Create Employee"}
                 </Button>
               </div>
             </form>
@@ -204,65 +209,72 @@ export default function Employees() {
         </Dialog>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={employees}
-        meta={{
-          onToggleStatus: toggleEmployeeStatus,
-          onEditEmployee: handleEditEmployee,
-        }}
-        toolbar={(table) => {
-          return (
-            <div className="flex items-center justify-between py-4 mx-1">
-              <Input
-                placeholder="Search"
-                value={
-                  (table.getColumn("name")?.getFilterValue() as string) ?? ""
-                }
-                onChange={(event) =>
-                  table.getColumn("name")?.setFilterValue(event.target.value)
-                }
-                className="max-w-sm"
-              />
-              <div className="flex items-center gap-4 mr-2">
-                <div className="flex flex-row items-center gap-2">
-                  <Label htmlFor="admin-switch">Active</Label>
-                  <Switch
-                    id="admin-switch"
-                    checked={activeSwitch}
-                    onCheckedChange={(checked) => {
-                      setActiveSwitch(checked);
-                      table
-                        .getColumn("is_active")
-                        .setFilterValue(checked ? true : undefined);
-                    }}
-                  />
-                </div>
-                <div className="flex flex-row items-center gap-2">
-                  <Label htmlFor="admin-switch">Admin</Label>
-                  <Switch
-                    id="admin-switch"
-                    checked={adminSwitch}
-                    onCheckedChange={(checked) => {
-                      setAdminSwitch(checked);
-                      if (checked)
-                        table.getColumn("role").setFilterValue("ADMIN");
-                      else table.getColumn("role").setFilterValue(undefined);
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          );
-        }}
-        rowCount={totalCount}
-        pagination={pagination}
-        setPagination={setPagination}
-        sorting={sorting}
-        setSorting={setSorting}
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilters}
-      />
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          placeholder="Search employees..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 bg-input border-border"
+        />
+      </div>
+
+      {/* Table */}
+      <div className="stat-card overflow-hidden">
+        {loading ? (
+          <div className="text-center py-8 text-muted-foreground">Loading employees...</div>
+        ) : filteredEmployees.length === 0 ? (
+          <div className="text-center py-12">
+            <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">
+              {searchQuery ? "No employees match your search" : "No employees yet. Add your first employee to get started."}
+            </p>
+          </div>
+        ) : (
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Joined</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEmployees.map((employee) => (
+                <tr key={employee.id} className="animate-fade-in">
+                  <td className="font-medium">{employee.name}</td>
+                  <td>{employee.phone || "—"}</td>
+                  <td>
+                    <StatusBadge status={employee.is_active ? "active" : "inactive"} />
+                  </td>
+                  <td className="text-muted-foreground">
+                    {new Date(employee.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleEmployeeStatus(employee.id, employee.is_active)}
+                    >
+                      {employee.is_active ? "Deactivate" : "Activate"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditEmployee(employee)}
+                    >
+                      Edit
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }
