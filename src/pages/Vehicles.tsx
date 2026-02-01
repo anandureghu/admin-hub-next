@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Database } from "@/integrations/supabase/types";
 
 interface Vehicle {
   id: string;
@@ -40,6 +40,9 @@ const vehicleTypes = [
   "Motorcycle",
   "Other",
 ];
+
+type vehicleInsert = Database["public"]["Tables"]["vehicles"]["Insert"];
+type vehicleUpdate = Database["public"]["Tables"]["vehicles"]["Update"];
 
 export default function Vehicles() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -97,7 +100,7 @@ export default function Vehicles() {
           .update({
             vehicle_number: formData.vehicle_number,
             vehicle_type: formData.vehicle_type,
-          })
+          } as vehicleUpdate)
           .eq("id", editingId);
 
         if (error) throw error;
@@ -106,7 +109,7 @@ export default function Vehicles() {
         const { error } = await supabase.from("vehicles").insert({
           vehicle_number: formData.vehicle_number,
           vehicle_type: formData.vehicle_type,
-        });
+        } as vehicleInsert);
 
         if (error) throw error;
         toast.success("Vehicle added successfully");
