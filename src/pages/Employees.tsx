@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Search, MoreVertical, Users } from "lucide-react";
+import { Plus, Search, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -13,21 +13,26 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Database } from "@/integrations/supabase/types";
 
 interface Employee {
   id: string;
   name: string;
+  email: string | null;
   phone: string | null;
   is_active: boolean;
   created_at: string;
 }
+type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
+type UserUpdate = Database["public"]["Tables"]["users"]["Update"];
 
 export default function Employees() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [newEmployee, setNewEmployee] = useState({ name: "", phone: "", email: "", password: "" });
+  const [formData, setFormData] = useState({ name: "", phone: "", email: "" });
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchEmployees();
@@ -36,12 +41,13 @@ export default function Employees() {
   async function fetchEmployees() {
     try {
       const { data, error } = await supabase
-        .from("profiles")
+        .from("users")
         .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setEmployees(data || []);
+
+      setEmployees((data as any) || []);
     } catch (error) {
       console.error("Error fetching employees:", error);
       toast.error("Failed to load employees");
@@ -50,57 +56,78 @@ export default function Employees() {
     }
   }
 
-  async function handleCreateEmployee(e: React.FormEvent) {
+  const handleAddEmployee = () => {
+    setEditingId(null);
+    setFormData({ name: "", phone: "", email: "" });
+    setDialogOpen(true);
+  };
+
+  const handleEditEmployee = (employee: Employee) => {
+    setEditingId(employee.id);
+    setFormData({
+      name: employee.name,
+      email: employee.email || "",
+      phone: employee.phone || ""
+    });
+    setDialogOpen(true);
+  };
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    
-    if (!newEmployee.email || !newEmployee.password || !newEmployee.name) {
+
+    if (!formData.email || !formData.name) {
       toast.error("Please fill in all required fields");
       return;
     }
 
     try {
-      // Create auth user first (profile will be created by trigger)
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: newEmployee.email,
-        password: newEmployee.password,
-        options: {
-          data: {
-            name: newEmployee.name,
-          },
-        },
-      });
+      if (editingId) {
+        const updatePayload: UserUpdate = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+        };
+        const { error } = await supabase
+          .from("users")
+          .update(updatePayload)
+          .eq("id", editingId);
 
-      if (authError) throw authError;
+        if (error) throw error;
+        toast.success("Employee updated successfully");
+      } else {
+        const createPayload: UserInsert = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          role: "EMPLOYEE",
+          is_active: true
+        };
+        const { error } = await supabase
+          .from("users")
+          .insert(createPayload);
 
-      // Update profile with phone if provided
-      if (authData.user && newEmployee.phone) {
-        const { error: updateError } = await supabase
-          .from("profiles")
-          .update({ phone: newEmployee.phone })
-          .eq("id", authData.user.id);
+        if (error) throw error;
 
-        if (updateError) throw updateError;
+        toast.success("Employee added successfully");
       }
-
-      toast.success("Employee created successfully");
       setDialogOpen(false);
-      setNewEmployee({ name: "", phone: "", email: "", password: "" });
+      setFormData({ name: "", phone: "", email: "" });
       fetchEmployees();
     } catch (error: any) {
-      console.error("Error creating employee:", error);
-      toast.error(error.message || "Failed to create employee");
+      console.error("Error adding employee:", error);
+      toast.error(error.message || "Failed to add employee");
     }
   }
 
   async function toggleEmployeeStatus(id: string, currentStatus: boolean) {
     try {
       const { error } = await supabase
-        .from("profiles")
+        .from("users")
         .update({ is_active: !currentStatus })
         .eq("id", id);
 
       if (error) throw error;
-      
+
       toast.success(`Employee ${currentStatus ? "deactivated" : "activated"}`);
       fetchEmployees();
     } catch (error) {
@@ -122,23 +149,23 @@ export default function Employees() {
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={() => handleAddEmployee()}>
               <Plus className="w-4 h-4 mr-2" />
               Add Employee
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-card border-border">
             <DialogHeader>
-              <DialogTitle>Add New Employee</DialogTitle>
+              <DialogTitle>{editingId ? "Edit Employee" : "Add New Employee"}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleCreateEmployee} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="emp-name">Full Name *</Label>
                 <Input
                   id="emp-name"
                   placeholder="John Doe"
-                  value={newEmployee.name}
-                  onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="bg-input border-border"
                   required
                 />
@@ -149,32 +176,21 @@ export default function Employees() {
                   id="emp-email"
                   type="email"
                   placeholder="john@company.com"
-                  value={newEmployee.email}
-                  onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="bg-input border-border"
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="emp-password">Password *</Label>
-                <Input
-                  id="emp-password"
-                  type="password"
-                  placeholder="Min 6 characters"
-                  value={newEmployee.password}
-                  onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
-                  className="bg-input border-border"
-                  required
-                />
-              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="emp-phone">Phone</Label>
                 <Input
                   id="emp-phone"
                   type="tel"
                   placeholder="+1 234 567 8900"
-                  value={newEmployee.phone}
-                  onChange={(e) => setNewEmployee({ ...newEmployee, phone: e.target.value })}
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="bg-input border-border"
                 />
               </div>
@@ -183,7 +199,7 @@ export default function Employees() {
                   Cancel
                 </Button>
                 <Button type="submit" className="flex-1">
-                  Create Employee
+                  {editingId ? "Update Employee" : "Create Employee"}
                 </Button>
               </div>
             </form>
@@ -235,13 +251,20 @@ export default function Employees() {
                   <td className="text-muted-foreground">
                     {new Date(employee.created_at).toLocaleDateString()}
                   </td>
-                  <td>
+                  <td className="space-x-2">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => toggleEmployeeStatus(employee.id, employee.is_active)}
                     >
                       {employee.is_active ? "Deactivate" : "Activate"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditEmployee(employee)}
+                    >
+                      Edit
                     </Button>
                   </td>
                 </tr>
