@@ -27,6 +27,7 @@ interface Vehicle {
   vehicle_type: string;
   is_active: boolean;
   created_at: string;
+  image_url: string;
 }
 
 const vehicleTypes = [
@@ -52,8 +53,10 @@ export default function Vehicles() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({ vehicle_number: "", vehicle_type: "" });
+  const [formData, setFormData] = useState({ vehicle_number: "", vehicle_type: "", image_url: "" });
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [vehicleImage, setVehicleImage] = useState<File | null>(null);
+  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
   useEffect(() => {
     fetchVehicles();
@@ -78,14 +81,33 @@ export default function Vehicles() {
 
   function handleOpenAddDialog() {
     setEditingId(null);
-    setFormData({ vehicle_number: "", vehicle_type: "" });
+    setFormData({ vehicle_number: "", vehicle_type: "", image_url: "" });
     setDialogOpen(true);
   }
 
   function handleOpenEditDialog(vehicle: Vehicle) {
     setEditingId(vehicle.id);
-    setFormData({ vehicle_number: vehicle.vehicle_number, vehicle_type: vehicle.vehicle_type });
+    setFormData({ vehicle_number: vehicle.vehicle_number, vehicle_type: vehicle.vehicle_type, image_url: vehicle.image_url });
     setDialogOpen(true);
+  }
+
+  async function uploadVehicleImage(vehicleId: string) {
+    const fileExt = vehicleImage.name.split(".").pop();
+    const filePath = `${vehicleId}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("vehicles")
+      .upload(filePath, vehicleImage, {
+        upsert: true,
+        cacheControl: "no-cache",
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data } = supabase.storage
+      .from("vehicles")
+      .getPublicUrl(filePath);
+    return `${data.publicUrl}?t=${Date.now()}`;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -106,20 +128,41 @@ export default function Vehicles() {
           } as vehicleUpdate)
           .eq("id", editingId);
 
+        if (vehicleImage) {
+          const imageUrl = await uploadVehicleImage(editingId);
+
+          const { error } = await supabase
+            .from("vehicles")
+            .update({ image_url: imageUrl } as vehicleUpdate)
+            .eq("id", editingId);
+
+          if (error) throw error;
+        }
+
         if (error) throw error;
         toast.success("Vehicle updated successfully");
       } else {
-        const { error } = await supabase.from("vehicles").insert({
+        const { data: vehicleData, error } = await supabase.from("vehicles").insert({
           vehicle_number: formData.vehicle_number,
           vehicle_type: formData.vehicle_type,
-        } as vehicleInsert);
+        } as vehicleInsert).select().single();
+
+        if (vehicleImage) {
+          const imageUrl = await uploadVehicleImage(vehicleData.id);
+          const { error } = await supabase
+            .from("vehicles")
+            .update({ image_url: imageUrl } as vehicleUpdate)
+            .eq("id", vehicleData.id);
+
+          if (error) throw error;
+        }
 
         if (error) throw error;
         toast.success("Vehicle added successfully");
       }
 
       setDialogOpen(false);
-      setFormData({ vehicle_number: "", vehicle_type: "" });
+      setFormData({ vehicle_number: "", vehicle_type: "", image_url: "" });
       fetchVehicles();
     } catch (error: any) {
       console.error("Error saving vehicle:", error);
@@ -144,6 +187,21 @@ export default function Vehicles() {
       toast.error("Failed to update vehicle status");
     }
   }
+
+  const handleVehicleImageUpload = (file: File) => {
+    if (!file) return;
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("File size exceeds the limit of 2MB");
+      return;
+    }
+    setVehicleImage(file);
+    setFormData({ ...formData, image_url: URL.createObjectURL(file) });
+  };
+
+  const handleVehicleImageRemove = () => {
+    setVehicleImage(null);
+    setFormData({ ...formData, image_url: "" });
+  };
 
   const filteredVehicles = vehicles.filter((v) =>
     v.vehicle_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -232,6 +290,9 @@ export default function Vehicles() {
           <DialogHeader>
             <DialogTitle>{editingId ? "Edit Vehicle" : "Add New Vehicle"}</DialogTitle>
           </DialogHeader>
+          <DialogDescription>
+            {editingId ? "Edit the vehicle details" : "Add a new vehicle and upload a picture of it."}
+          </DialogDescription>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="vehicle-number">Vehicle Number / License Plate *</Label>
@@ -261,6 +322,22 @@ export default function Vehicles() {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="vehicle-image">Vehicle Picture</Label>
+              {formData.image_url && (<img src={formData.image_url} alt="Vehicle" className="w-24 h-24" />)}
+              <div className="flex items-center gap-2">
+                <Input id="vehicle-image" type="file" accept="image/*" className="hidden" onChange={(e) => handleVehicleImageUpload(e.target.files[0] ?? null)} />
+                <Button type="button" variant="outline" className="flex-1" onClick={() => document.getElementById("vehicle-image")?.click()}>
+                  {formData.image_url ? "Change Image" : "Upload Image"}
+                </Button>
+                {formData.image_url && <Button type="button" variant="outline" className="flex-1" onClick={() => handleVehicleImageRemove()}>
+                  Remove Image
+                </Button>}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                JPG, PNG • Max 2MB
+              </p>
             </div>
             <div className="flex gap-3 pt-4">
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
