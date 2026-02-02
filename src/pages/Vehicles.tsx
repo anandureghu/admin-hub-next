@@ -22,6 +22,8 @@ import {
 import { toast } from "sonner";
 import { Database } from "@/integrations/supabase/types";
 
+import { ImageUpload } from "@/components/ImageUploadV1";
+
 interface Vehicle {
   id: string;
   vehicle_number: string;
@@ -54,7 +56,6 @@ export default function Vehicles() {
   const [formData, setFormData] = useState({ vehicle_number: "", vehicle_type: "", image_url: "" });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [vehicleImage, setVehicleImage] = useState<File | null>(null);
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
   useEffect(() => {
     fetchVehicles();
@@ -80,16 +81,20 @@ export default function Vehicles() {
   function handleOpenAddDialog() {
     setEditingId(null);
     setFormData({ vehicle_number: "", vehicle_type: "", image_url: "" });
+    setVehicleImage(null);
     setDialogOpen(true);
   }
 
   function handleOpenEditDialog(vehicle: Vehicle) {
     setEditingId(vehicle.id);
     setFormData({ vehicle_number: vehicle.vehicle_number, vehicle_type: vehicle.vehicle_type, image_url: vehicle.image_url });
+    setVehicleImage(null);
     setDialogOpen(true);
   }
 
   async function uploadVehicleImage(vehicleId: string) {
+    if (!vehicleImage) return formData.image_url;
+
     const fileExt = vehicleImage.name.split(".").pop();
     const filePath = `${vehicleId}.${fileExt}`;
 
@@ -118,24 +123,19 @@ export default function Vehicles() {
 
     try {
       if (editingId) {
+        let imageUrl = formData.image_url;
+        if (vehicleImage) {
+          imageUrl = await uploadVehicleImage(editingId);
+        }
+
         const { error } = await supabase
           .from("vehicles")
           .update({
             vehicle_number: formData.vehicle_number,
             vehicle_type: formData.vehicle_type,
+            image_url: imageUrl,
           } as vehicleUpdate)
           .eq("id", editingId);
-
-        if (vehicleImage) {
-          const imageUrl = await uploadVehicleImage(editingId);
-
-          const { error } = await supabase
-            .from("vehicles")
-            .update({ image_url: imageUrl } as vehicleUpdate)
-            .eq("id", editingId);
-
-          if (error) throw error;
-        }
 
         if (error) throw error;
         toast.success("Vehicle updated successfully");
@@ -145,22 +145,24 @@ export default function Vehicles() {
           vehicle_type: formData.vehicle_type,
         } as vehicleInsert).select().single();
 
-        if (vehicleImage) {
+        if (error) throw error;
+
+        if (vehicleImage && vehicleData) {
           const imageUrl = await uploadVehicleImage(vehicleData.id);
-          const { error } = await supabase
+          const { error: updateError } = await supabase
             .from("vehicles")
             .update({ image_url: imageUrl } as vehicleUpdate)
             .eq("id", vehicleData.id);
 
-          if (error) throw error;
+          if (updateError) throw updateError;
         }
 
-        if (error) throw error;
         toast.success("Vehicle added successfully");
       }
 
       setDialogOpen(false);
       setFormData({ vehicle_number: "", vehicle_type: "", image_url: "" });
+      setVehicleImage(null);
       fetchVehicles();
     } catch (error: any) {
       console.error("Error saving vehicle:", error);
@@ -184,21 +186,6 @@ export default function Vehicles() {
       toast.error("Failed to update vehicle status");
     }
   }
-
-  const handleVehicleImageUpload = (file: File) => {
-    if (!file) return;
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error("File size exceeds the limit of 2MB");
-      return;
-    }
-    setVehicleImage(file);
-    setFormData({ ...formData, image_url: URL.createObjectURL(file) });
-  };
-
-  const handleVehicleImageRemove = () => {
-    setVehicleImage(null);
-    setFormData({ ...formData, image_url: "" });
-  };
 
   const filteredVehicles = vehicles.filter((v) =>
     v.vehicle_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -321,20 +308,15 @@ export default function Vehicles() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="vehicle-image">Vehicle Picture</Label>
-              {formData.image_url && (<img src={formData.image_url} alt="Vehicle" className="w-24 h-24" />)}
-              <div className="flex items-center gap-2">
-                <Input id="vehicle-image" type="file" accept="image/jpeg, image/png" className="hidden" onChange={(e) => handleVehicleImageUpload(e.target.files[0] ?? null)} />
-                <Button type="button" variant="outline" className="flex-1" onClick={() => document.getElementById("vehicle-image")?.click()}>
-                  {formData.image_url ? "Change Image" : "Upload Image"}
-                </Button>
-                {formData.image_url && <Button type="button" variant="outline" className="flex-1" onClick={() => handleVehicleImageRemove()}>
-                  Remove Image
-                </Button>}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                JPG, PNG • Max 5MB
-              </p>
+              <Label>Vehicle Picture</Label>
+              <ImageUpload
+                value={formData.image_url}
+                onChange={(file) => setVehicleImage(file)}
+                onRemove={() => {
+                  setVehicleImage(null);
+                  setFormData({ ...formData, image_url: "" });
+                }}
+              />
             </div>
             <div className="flex gap-3 pt-4">
               <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
