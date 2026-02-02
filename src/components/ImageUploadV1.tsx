@@ -63,9 +63,7 @@ export function ImageUpload({
 
   return (
     <div className={cn("space-y-4 w-full", className)}>
-      {preview && (
-        <img src={preview} alt="Vehicle" className="w-30 h-26 object-contain" />
-      )}
+      {preview && <img src={preview} alt="Vehicle" className="w-24 h-24" />}
       <div className="flex items-center gap-2">
         <Input
           id="vehicle-image"
