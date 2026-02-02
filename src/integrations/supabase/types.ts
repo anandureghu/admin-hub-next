@@ -404,6 +404,7 @@ export type Database = {
           company_id: string | null
           created_at: string | null
           id: string
+          image_url: string | null
           is_active: boolean | null
           updated_at: string | null
           vehicle_number: string
@@ -414,6 +415,7 @@ export type Database = {
           company_id?: string | null
           created_at?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           updated_at?: string | null
           vehicle_number: string
@@ -424,6 +426,7 @@ export type Database = {
           company_id?: string | null
           created_at?: string | null
           id?: string
+          image_url?: string | null
           is_active?: boolean | null
           updated_at?: string | null
           vehicle_number?: string
