@@ -50,12 +50,20 @@ export default function Auth() {
         return;
       }
 
+      const { data } = await supabase.auth.getUser();
+
       // Auth Linking
       if (!userRecord.auth_user_id) {
-        const { data } = await supabase.auth.getUser();
         await supabase
           .from("users")
           .update({ auth_user_id: data.user.id })
+          .eq("email", data.user.email);
+      }
+
+      if (!userRecord.avatar_url) {
+        await supabase
+          .from("users")
+          .update({ avatar_url: data.user.user_metadata.avatar_url })
           .eq("email", data.user.email);
       }
 

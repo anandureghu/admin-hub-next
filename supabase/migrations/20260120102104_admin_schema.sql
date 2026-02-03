@@ -24,6 +24,7 @@ create table users (
   name text not null,
   email text unique not null,
   phone text,
+  avatar_url text,
   role text check (role in ('ADMIN', 'EMPLOYEE')) not null default 'EMPLOYEE',
   is_active boolean default true,
   created_at timestamp with time zone default now()
