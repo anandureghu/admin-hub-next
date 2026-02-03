@@ -14,6 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Database } from "@/integrations/supabase/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Employee {
   id: string;
@@ -21,6 +22,7 @@ interface Employee {
   role: string;
   email: string | null;
   phone: string | null;
+  avatar_url: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -249,6 +251,7 @@ export default function Employees() {
           <table className="data-table">
             <thead>
               <tr>
+                <th>Avatar</th>
                 <th>Name</th>
                 <th>Phone</th>
                 <th>Role</th>
@@ -260,6 +263,14 @@ export default function Employees() {
             <tbody>
               {filteredEmployees.map((employee) => (
                 <tr key={employee.id} className="animate-fade-in">
+                  <td className="items-center">
+                    <Avatar>
+                      <AvatarImage src={employee.avatar_url} alt="avatar" />
+                      <AvatarFallback>
+                        <img src="/profile.png" alt="fallback" className="" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </td>
                   <td className="font-medium">{employee.name}</td>
                   <td>{employee.phone || "—"}</td>
                   <td>{employee.role.toLowerCase() || "—"}</td>
