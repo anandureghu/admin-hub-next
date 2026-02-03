@@ -10,14 +10,13 @@ import { Database } from "@/integrations/supabase/types";
 
 type UserRow = Database["public"]["Tables"]["users"]["Row"];
 
-
 export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkWhitelist = async (session: Session) => {
+    const checkWhitelistAndAuthLinking = async (session: Session) => {
       setIsChecking(true);
       const email = session.user.email;
 
@@ -37,7 +36,9 @@ export default function Auth() {
       // ❌ DB error or user not found → deny
       if (error || !userRecord) {
         await supabase.auth.signOut();
-        toast.error("Access denied. You are not authorized to use this application.");
+        toast.error(
+          "Access denied. You are not authorized to use this application.",
+        );
         setIsChecking(false);
         return;
       }
@@ -49,15 +50,25 @@ export default function Auth() {
         return;
       }
 
+      // Auth Linking
+      if (!userRecord.auth_user_id) {
+        const { data } = await supabase.auth.getUser();
+        await supabase
+          .from("users")
+          .update({ auth_user_id: data.user.id })
+          .eq("email", data.user.email);
+      }
+
       // ✅ Allowed (ADMIN or active EMPLOYEE)
       setIsChecking(false);
       navigate("/dashboard");
     };
 
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
-        checkWhitelist(session);
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+        checkWhitelistAndAuthLinking(session);
       }
     });
 

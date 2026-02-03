@@ -17,6 +17,7 @@ import { Database } from "@/integrations/supabase/types";
 interface Employee {
   id: string;
   name: string;
+  role: string;
   email: string | null;
   phone: string | null;
   is_active: boolean;
@@ -44,7 +45,7 @@ export default function Employees() {
 
       if (error) throw error;
 
-      setEmployees((data as any) || []);
+      setEmployees(data || []);
     } catch (error) {
       console.error("Error fetching employees:", error);
       toast.error("Failed to load employees");
@@ -64,7 +65,7 @@ export default function Employees() {
     setFormData({
       name: employee.name,
       email: employee.email || "",
-      phone: employee.phone || ""
+      phone: employee.phone || "",
     });
     setDialogOpen(true);
   };
@@ -97,11 +98,9 @@ export default function Employees() {
           email: formData.email,
           phone: formData.phone || null,
           role: "EMPLOYEE",
-          is_active: true
+          is_active: true,
         };
-        const { error } = await supabase
-          .from("users")
-          .insert(createPayload);
+        const { error } = await supabase.from("users").insert(createPayload);
 
         if (error) throw error;
 
@@ -110,7 +109,7 @@ export default function Employees() {
       setDialogOpen(false);
       setFormData({ name: "", phone: "", email: "" });
       fetchEmployees();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error adding employee:", error);
       toast.error(error.message || "Failed to add employee");
     }
@@ -135,6 +134,10 @@ export default function Employees() {
     }
   }
 
+  const filteredEmployees = employees.filter((emp) =>
+    emp.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -151,7 +154,9 @@ export default function Employees() {
           </DialogTrigger>
           <DialogContent className="bg-card border-border">
             <DialogHeader>
-              <DialogTitle>{editingId ? "Edit Employee" : "Add New Employee"}</DialogTitle>
+              <DialogTitle>
+                {editingId ? "Edit Employee" : "Add New Employee"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -161,7 +166,9 @@ export default function Employees() {
                   id="emp-name"
                   placeholder="John Doe"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="bg-input border-border"
                   required
                 />
@@ -173,7 +180,9 @@ export default function Employees() {
                   type="email"
                   placeholder="john@company.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="bg-input border-border"
                   required
                 />
@@ -186,11 +195,19 @@ export default function Employees() {
                   type="tel"
                   placeholder="+1 234 567 8900"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   className="bg-input border-border"
                 />
               </div>
               <div className="flex gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
+                  className="flex-1"
+                >
                 <Button
                   type="button"
                   variant="outline"
@@ -223,12 +240,16 @@ export default function Employees() {
       {/* Table */}
       <div className="stat-card overflow-hidden">
         {loading ? (
-          <div className="text-center py-8 text-muted-foreground">Loading employees...</div>
+          <div className="text-center py-8 text-muted-foreground">
+            Loading employees...
+          </div>
         ) : filteredEmployees.length === 0 ? (
           <div className="text-center py-12">
             <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
-              {searchQuery ? "No employees match your search" : "No employees yet. Add your first employee to get started."}
+              {searchQuery
+                ? "No employees match your search"
+                : "No employees yet. Add your first employee to get started."}
             </p>
           </div>
         ) : (
@@ -237,6 +258,7 @@ export default function Employees() {
               <tr>
                 <th>Name</th>
                 <th>Phone</th>
+                <th>Role</th>
                 <th>Status</th>
                 <th>Joined</th>
                 <th>Actions</th>
@@ -247,8 +269,11 @@ export default function Employees() {
                 <tr key={employee.id} className="animate-fade-in">
                   <td className="font-medium">{employee.name}</td>
                   <td>{employee.phone || "—"}</td>
+                  <td>{employee.role.toLowerCase() || "—"}</td>
                   <td>
-                    <StatusBadge status={employee.is_active ? "active" : "inactive"} />
+                    <StatusBadge
+                      status={employee.is_active ? "active" : "inactive"}
+                    />
                   </td>
                   <td className="text-muted-foreground">
                     {new Date(employee.created_at).toLocaleDateString()}
@@ -257,7 +282,9 @@ export default function Employees() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => toggleEmployeeStatus(employee.id, employee.is_active)}
+                      onClick={() =>
+                        toggleEmployeeStatus(employee.id, employee.is_active)
+                      }
                     >
                       {employee.is_active ? "Deactivate" : "Activate"}
                     </Button>
