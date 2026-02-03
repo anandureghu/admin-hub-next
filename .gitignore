@@ -30,4 +30,3 @@ supabase/.branches/
 
 # Environment variables
 .env
-.env.*
