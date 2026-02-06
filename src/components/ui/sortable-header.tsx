@@ -1,12 +1,13 @@
+import { Employee } from "@/types/employeeType";
 import { Column } from "@tanstack/react-table";
 import { Button } from "./button";
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 
-export function SortableHeader<TData, TValue>({
+export function SortableHeader({
   column,
   title,
 }: {
-  column: Column<TData, TValue>;
+  column: Column<Employee>;
   title: string;
 }) {
   return (
