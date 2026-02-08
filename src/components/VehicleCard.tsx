@@ -14,12 +14,13 @@ const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
   ({ vehicle, toggleVehicleStatus, handleOpenEditDialog }, ref) => {
     return (
       <div ref={ref} className="stat-card animate-fade-in">
+        <div className="flex items-end justify-center"></div>
         <div className="flex items-start justify-center mb-4">
           {vehicle.image_url ? (
             <img
               src={vehicle.image_url}
               alt="vehicle image"
-              className="h-52 w-80 object-cover"
+              className="h-52 w-80 object-contain"
             />
           ) : (
             <div className="stat-icon h-52 w-80">
