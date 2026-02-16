@@ -1,106 +1,170 @@
-import { useEffect, useState } from "react";
-import { Plus, Search, MoreVertical, Users } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { StatusBadge } from "@/components/ui/status-badge";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Database } from "@/integrations/supabase/types";
+import { Employee } from "@/types/employeeType";
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "@/components/employees/columns";
+import { Switch } from "@/components/ui/switch";
+import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 
-interface Employee {
-  id: string;
-  name: string;
-  phone: string | null;
-  is_active: boolean;
-  created_at: string;
-}
+type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
+type UserUpdate = Database["public"]["Tables"]["users"]["Update"];
 
 export default function Employees() {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [newEmployee, setNewEmployee] = useState({ name: "", phone: "", email: "", password: "" });
+  const [formData, setFormData] = useState({ name: "", phone: "", email: "" });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [adminSwitch, setAdminSwitch] = useState(false);
+  const [activeSwitch, setActiveSwitch] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 10, //default page size
+  });
 
-  useEffect(() => {
-    fetchEmployees();
-  }, []);
+  const fetchEmployees = useCallback(async () => {
+    const from = pagination.pageIndex * pagination.pageSize;
+    const to = from + pagination.pageSize - 1;
 
-  async function fetchEmployees() {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("created_at", { ascending: false });
+      let query = supabase
+        .from("users")
+        .select("*", { count: "exact" })
+        .range(from, to);
+
+      // Sorting
+      if (sorting.length > 0) {
+        const { id, desc } = sorting[0];
+
+        query = query.order(id, { ascending: !desc });
+      } else {
+        query = query.order("created_at", { ascending: false });
+      }
+
+      // Filtering
+      columnFilters.forEach((filter) => {
+        if (filter.id === "name") {
+          query = query.ilike("name", `%${filter.value}%`);
+        }
+
+        if (filter.id === "role" && typeof filter.value == "string") {
+          query = query.eq("role", filter.value);
+        }
+
+        if (filter.id == "created_at" && typeof filter.value == "string") {
+          query = query.eq("created_at", filter.value);
+        }
+
+        if (filter.id === "is_active" && typeof filter.value == "boolean") {
+          query = query.eq("is_active", filter.value);
+        }
+      });
+
+      const { data, count, error } = await query;
 
       if (error) throw error;
-      setEmployees(data || []);
+
+      setEmployees(data ?? []);
+      setTotalCount(count ?? 0);
     } catch (error) {
       console.error("Error fetching employees:", error);
       toast.error("Failed to load employees");
-    } finally {
-      setLoading(false);
     }
-  }
+  }, [sorting, pagination, columnFilters]);
 
-  async function handleCreateEmployee(e: React.FormEvent) {
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees]);
+
+  const handleAddEmployee = () => {
+    setEditingId(null);
+    setFormData({ name: "", phone: "", email: "" });
+    setDialogOpen(true);
+  };
+
+  const handleEditEmployee = (employee: Employee) => {
+    setEditingId(employee.id);
+    setFormData({
+      name: employee.name,
+      email: employee.email || "",
+      phone: employee.phone || "",
+    });
+    setDialogOpen(true);
+  };
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    
-    if (!newEmployee.email || !newEmployee.password || !newEmployee.name) {
+
+    if (!formData.email || !formData.name) {
       toast.error("Please fill in all required fields");
       return;
     }
 
     try {
-      // Create auth user first (profile will be created by trigger)
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: newEmployee.email,
-        password: newEmployee.password,
-        options: {
-          data: {
-            name: newEmployee.name,
-          },
-        },
-      });
+      if (editingId) {
+        const updatePayload: UserUpdate = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+        };
+        const { error } = await supabase
+          .from("users")
+          .update(updatePayload)
+          .eq("id", editingId);
 
-      if (authError) throw authError;
+        if (error) throw error;
+        toast.success("Employee updated successfully");
+      } else {
+        const createPayload: UserInsert = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone || null,
+          role: "EMPLOYEE",
+          is_active: true,
+        };
+        const { error } = await supabase.from("users").insert(createPayload);
 
-      // Update profile with phone if provided
-      if (authData.user && newEmployee.phone) {
-        const { error: updateError } = await supabase
-          .from("profiles")
-          .update({ phone: newEmployee.phone })
-          .eq("id", authData.user.id);
+        if (error) throw error;
 
-        if (updateError) throw updateError;
+        toast.success("Employee added successfully");
       }
-
-      toast.success("Employee created successfully");
       setDialogOpen(false);
-      setNewEmployee({ name: "", phone: "", email: "", password: "" });
+      setFormData({ name: "", phone: "", email: "" });
       fetchEmployees();
-    } catch (error: any) {
-      console.error("Error creating employee:", error);
-      toast.error(error.message || "Failed to create employee");
+    } catch (error) {
+      if (error.code === "23505") {
+        toast.error("Employee with this email already exists");
+      } else {
+        console.error("Error adding employee:", error);
+        toast.error(error.message || "Failed to add employee");
+      }
     }
   }
 
   async function toggleEmployeeStatus(id: string, currentStatus: boolean) {
     try {
       const { error } = await supabase
-        .from("profiles")
+        .from("users")
         .update({ is_active: !currentStatus })
         .eq("id", id);
 
       if (error) throw error;
-      
+
       toast.success(`Employee ${currentStatus ? "deactivated" : "activated"}`);
       fetchEmployees();
     } catch (error) {
@@ -109,10 +173,6 @@ export default function Employees() {
     }
   }
 
-  const filteredEmployees = employees.filter((emp) =>
-    emp.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -120,25 +180,32 @@ export default function Employees() {
           <h1 className="page-header">Employees</h1>
           <p className="text-muted-foreground">Manage your team members</p>
         </div>
+        <Button onClick={() => handleAddEmployee()}>
+          <Plus className="w-4 h-4 mr-2" />
+          Add Employee
+        </Button>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Employee
-            </Button>
-          </DialogTrigger>
           <DialogContent className="bg-card border-border">
             <DialogHeader>
-              <DialogTitle>Add New Employee</DialogTitle>
+              <DialogTitle>
+                {editingId ? "Edit Employee" : "Add New Employee"}
+              </DialogTitle>
+              <DialogDescription>
+                {editingId
+                  ? "Update employee details."
+                  : "Create a new employee."}
+              </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleCreateEmployee} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="emp-name">Full Name *</Label>
                 <Input
                   id="emp-name"
                   placeholder="John Doe"
-                  value={newEmployee.name}
-                  onChange={(e) => setNewEmployee({ ...newEmployee, name: e.target.value })}
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className="bg-input border-border"
                   required
                 />
@@ -149,41 +216,39 @@ export default function Employees() {
                   id="emp-email"
                   type="email"
                   placeholder="john@company.com"
-                  value={newEmployee.email}
-                  onChange={(e) => setNewEmployee({ ...newEmployee, email: e.target.value })}
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="bg-input border-border"
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="emp-password">Password *</Label>
-                <Input
-                  id="emp-password"
-                  type="password"
-                  placeholder="Min 6 characters"
-                  value={newEmployee.password}
-                  onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
-                  className="bg-input border-border"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
+
+              <div className="space-y-1">
                 <Label htmlFor="emp-phone">Phone</Label>
                 <Input
                   id="emp-phone"
                   type="tel"
                   placeholder="+1 234 567 8900"
-                  value={newEmployee.phone}
-                  onChange={(e) => setNewEmployee({ ...newEmployee, phone: e.target.value })}
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
                   className="bg-input border-border"
                 />
               </div>
               <div className="flex gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="flex-1">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
+                  className="flex-1"
+                >
                   Cancel
                 </Button>
                 <Button type="submit" className="flex-1">
-                  Create Employee
+                  {editingId ? "Update Employee" : "Create Employee"}
                 </Button>
               </div>
             </form>
@@ -191,65 +256,65 @@ export default function Employees() {
         </Dialog>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input
-          placeholder="Search employees..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 bg-input border-border"
-        />
-      </div>
-
-      {/* Table */}
-      <div className="stat-card overflow-hidden">
-        {loading ? (
-          <div className="text-center py-8 text-muted-foreground">Loading employees...</div>
-        ) : filteredEmployees.length === 0 ? (
-          <div className="text-center py-12">
-            <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">
-              {searchQuery ? "No employees match your search" : "No employees yet. Add your first employee to get started."}
-            </p>
-          </div>
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Joined</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEmployees.map((employee) => (
-                <tr key={employee.id} className="animate-fade-in">
-                  <td className="font-medium">{employee.name}</td>
-                  <td>{employee.phone || "—"}</td>
-                  <td>
-                    <StatusBadge status={employee.is_active ? "active" : "inactive"} />
-                  </td>
-                  <td className="text-muted-foreground">
-                    {new Date(employee.created_at).toLocaleDateString()}
-                  </td>
-                  <td>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleEmployeeStatus(employee.id, employee.is_active)}
-                    >
-                      {employee.is_active ? "Deactivate" : "Activate"}
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+      <DataTable
+        columns={columns}
+        data={employees}
+        meta={{
+          onToggleStatus: toggleEmployeeStatus,
+          onEditEmployee: handleEditEmployee,
+        }}
+        toolbar={(table) => {
+          return (
+            <div className="flex items-center justify-between py-4 mx-1">
+              <Input
+                placeholder="Search"
+                value={
+                  (table.getColumn("name")?.getFilterValue() as string) ?? ""
+                }
+                onChange={(event) =>
+                  table.getColumn("name")?.setFilterValue(event.target.value)
+                }
+                className="max-w-sm"
+              />
+              <div className="flex items-center gap-4 mr-2">
+                <div className="flex flex-row items-center gap-2">
+                  <Label htmlFor="admin-switch">Active</Label>
+                  <Switch
+                    id="admin-switch"
+                    checked={activeSwitch}
+                    onCheckedChange={(checked) => {
+                      setActiveSwitch(checked);
+                      table
+                        .getColumn("is_active")
+                        .setFilterValue(checked ? true : undefined);
+                    }}
+                  />
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <Label htmlFor="admin-switch">Admin</Label>
+                  <Switch
+                    id="admin-switch"
+                    checked={adminSwitch}
+                    onCheckedChange={(checked) => {
+                      setAdminSwitch(checked);
+                      if (checked)
+                        table.getColumn("role").setFilterValue("ADMIN");
+                      else table.getColumn("role").setFilterValue(undefined);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        }}
+        rowCount={totalCount}
+        pagination={pagination}
+        setPagination={setPagination}
+        sorting={sorting}
+        setSorting={setSorting}
+        columnFilters={columnFilters}
+        setColumnFilters={setColumnFilters}
+      />
     </div>
   );
 }
