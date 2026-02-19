@@ -145,7 +145,7 @@ export default function Employees() {
         const { data: user, error: userError } =
           await supabaseAdmin.auth.signUp({
             email: formData.email,
-            password: "password123", // You should ideally generate a random password and email it to the user
+            password: "password", // You should ideally generate a random password and email it to the user
           });
 
         if (userError) throw error;
