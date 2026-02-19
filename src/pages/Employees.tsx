@@ -18,6 +18,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/components/employees/columns";
 import { Switch } from "@/components/ui/switch";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { supabaseAdmin } from "@/integrations/supabase/admin";
 
 type UserInsert = Database["public"]["Tables"]["users"]["Insert"];
 type UserUpdate = Database["public"]["Tables"]["users"]["Update"];
@@ -140,6 +141,14 @@ export default function Employees() {
         const { error } = await supabase.from("users").insert(createPayload);
 
         if (error) throw error;
+
+        const { data: user, error: userError } =
+          await supabaseAdmin.auth.signUp({
+            email: formData.email,
+            password: "password123", // You should ideally generate a random password and email it to the user
+          });
+
+        if (userError) throw error;
 
         toast.success("Employee added successfully");
       }
