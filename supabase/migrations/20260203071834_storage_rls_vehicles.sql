@@ -8,7 +8,7 @@ on storage.objects
 FOR SELECT 
 TO authenticated 
 USING (
-    bucket_id = 'vehicles' 
+    bucket_id = 'vehicles'
     AND auth.role() = 'authenticated'
 );
 
