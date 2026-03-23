@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { MapPin, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Search, MapPin, Calendar, Clock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { toast } from "sonner";
 import {
   Select,
@@ -8,70 +10,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
-import { useTripsQuery } from "../hooks/useTripsQuery";
-import { useUsersQuery } from "../hooks/useUserQuery";
-import type { TripListResponse as Trip } from "../schemas/trip.schema";
-import { UserMultiSelect } from "@/components/UserMultiSelect";
-import { DateRange } from "react-day-picker";
-import { TripCard } from "./TripCard";
+import { useTripsQuery } from "../hooks";
+
+interface Trip {
+  id: string;
+  trip_date: string;
+  start_time: string | null;
+  end_time: string | null;
+  start_km: number | null;
+  end_km: number | null;
+  status: "STARTED" | "ENDED";
+  created_at: string;
+  vehicles: { vehicle_number: string; vehicle_type: string } | null;
+}
 
 export default function Trips() {
+  const { data: trips = [], isLoading: loading, error } = useTripsQuery();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  const { data: usersData = [], isLoading: usersLoading } = useUsersQuery();
-
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useTripsQuery(statusFilter, selectedUserIds, dateRange);
-
-  const trips: Trip[] = data?.pages.flatMap((page) => page.data) ?? [];
-
+  // Handle error
   if (error) {
     toast.error("Failed to load trips");
   }
 
-  // Client-side search filter only (status + user filtering is server-side)
-  const filteredTrips = trips.filter((trip) => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      trip.vehicles?.vehicle_number.toLowerCase().includes(q) ||
-      trip.users?.name.toLowerCase().includes(q) ||
-      trip.users?.email.toLowerCase().includes(q)
-    );
+  const filteredTrips = (trips as Trip[]).filter((trip) => {
+    const matchesSearch = trip.vehicles?.vehicle_number
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || trip.status === statusFilter;
+    return matchesSearch && matchesStatus;
   });
-
-  const handleObserver = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
-        fetchNextPage();
-      }
-    },
-    [fetchNextPage, hasNextPage, isFetchingNextPage]
-  );
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(handleObserver, {
-      root: null,
-      rootMargin: "200px",
-      threshold: 0,
-    });
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [handleObserver]);
 
   function formatTime(timestamp: string | null) {
     if (!timestamp) return "—";
@@ -95,14 +65,15 @@ export default function Trips() {
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
-
-        <UserMultiSelect
-          users={usersData}
-          selectedIds={selectedUserIds}
-          onChange={setSelectedUserIds}
-          isLoading={usersLoading}
-        />
-
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by employee or vehicle..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 bg-input border-border"
+          />
+        </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-40 bg-input border-border">
             <SelectValue placeholder="All Status" />
@@ -113,17 +84,11 @@ export default function Trips() {
             <SelectItem value="ENDED">Completed</SelectItem>
           </SelectContent>
         </Select>
-
-        <DatePickerWithRange
-          date={dateRange}
-          onDateChange={setDateRange}
-          className="w-64"
-        />
       </div>
 
       {/* Trips List */}
       <div className="space-y-4">
-        {isLoading ? (
+        {loading ? (
           <div className="text-center py-8 text-muted-foreground">
             Loading trips...
           </div>
@@ -131,26 +96,69 @@ export default function Trips() {
           <div className="stat-card text-center py-12">
             <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
-              {searchQuery || statusFilter !== "all" || selectedUserIds.length > 0 || dateRange
+              {searchQuery || statusFilter !== "all"
                 ? "No trips match your filters"
                 : "No trips recorded yet. Trips will appear here when employees start tracking."}
             </p>
           </div>
         ) : (
           filteredTrips.map((trip) => (
-            <TripCard key={trip.id} trip={trip} />
+            <div key={trip.id} className="stat-card animate-fade-in">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="flex items-start gap-4">
+                  <div className="stat-icon">
+                    <MapPin className="w-6 h-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-3 mb-1">
+                      <h3 className="font-semibold text-foreground">Trip</h3>
+                      <StatusBadge
+                        status={trip.status === "STARTED" ? "started" : "ended"}
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {trip.vehicles?.vehicle_number || "No vehicle"} •{" "}
+                      {trip.vehicles?.vehicle_type || ""}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span>{new Date(trip.trip_date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span>
+                      {formatTime(trip.start_time)} -{" "}
+                      {formatTime(trip.end_time)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Distance:</span>
+                    <span className="font-medium">
+                      {calculateDistance(trip.start_km, trip.end_km)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {(trip.start_km || trip.end_km) && (
+                <div className="mt-4 pt-4 border-t border-border flex gap-6 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Start KM:</span>{" "}
+                    <span className="font-medium">{trip.start_km ?? "—"}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">End KM:</span>{" "}
+                    <span className="font-medium">{trip.end_km ?? "—"}</span>
+                  </div>
+                </div>
+              )}
+            </div>
           ))
         )}
-
-        {/* Sentinel + loading spinner */}
-        <div ref={sentinelRef} className="py-4 flex justify-center">
-          {isFetchingNextPage && (
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-          )}
-          {!hasNextPage && trips.length > 0 && !isLoading && (
-            <p className="text-sm text-muted-foreground">All trips loaded</p>
-          )}
-        </div>
       </div>
     </div>
   );
