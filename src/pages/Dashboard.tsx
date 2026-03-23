@@ -15,7 +15,7 @@ interface RecentTrip {
   id: string;
   trip_date: string;
   status: "STARTED" | "ENDED";
-  profiles: { name: string } | null;
+  users: { name: string } | null;
   vehicles: { vehicle_number: string } | null;
 }
 
@@ -45,7 +45,7 @@ export default function Dashboard() {
           supabase.from("receipts").select("*", { count: "exact", head: true }),
           supabase
             .from("trips")
-            .select("id, trip_date, status, user_id, vehicle_id, vehicles(vehicle_number)")
+            .select("id, trip_date, status, user_id, vehicle_id, vehicles(vehicle_number), users(name)")
             .order("created_at", { ascending: false })
             .limit(5)
         ]);
@@ -57,9 +57,9 @@ export default function Dashboard() {
           totalReceipts: receiptCount || 0,
         });
 
-        setRecentTrips((tripsData as any[])?.map(t => ({
+        setRecentTrips((tripsData as RecentTrip[])?.map(t => ({
           ...t,
-          profiles: null // Will be fetched separately if needed
+          users: t.users // Keep the users data as is
         })) || []);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -131,7 +131,7 @@ export default function Dashboard() {
             <tbody>
               {recentTrips.map((trip) => (
                 <tr key={trip.id} className="animate-fade-in">
-                  <td className="font-medium">{trip.profiles?.name || "Unknown"}</td>
+                  <td className="font-medium">{trip.users?.name || "Unknown"}</td>
                   <td>{trip.vehicles?.vehicle_number || "N/A"}</td>
                   <td>{new Date(trip.trip_date).toLocaleDateString()}</td>
                   <td>
