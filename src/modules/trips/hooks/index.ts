@@ -4,18 +4,25 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { tripApi } from "../api/trip.api";
 import { tripKeys } from "../constants/trip.key";
-import { Trip, tripSchema } from "../schemas/trip.schema";
+import {
+  Trip,
+  TripCreate,
+  TripUpdate,
+  tripSchema,
+  tripCreateSchema,
+  tripUpdateSchema,
+} from "../schemas/trip.schema";
 import { useCurrentUserQuery } from "../../../hooks/useCurrentUser";
 import { User } from "@supabase/supabase-js";
 
 // use trip queries
 export const useTripsQuery = () => {
-  const { data: user } = useCurrentUserQuery();
+  //   const { data: user } = useCurrentUserQuery();
 
   return useQuery<Trip[]>({
     queryKey: tripKeys.get(),
-    queryFn: () => tripApi.get(user as User),
-    enabled: !!user,
+    queryFn: () => tripApi.get(),
+    // enabled: !!user,
   });
 };
 
@@ -57,9 +64,15 @@ export const useUpdateTripMutation = () => {
   });
 };
 
-// form hook
-export const useTripForm = (defaultValues?: Partial<Trip>) =>
+// form hooks
+export const useTripCreateForm = (defaultValues?: Partial<TripCreate>) =>
   useForm({
-    resolver: zodResolver(tripSchema),
-    defaultValues: defaultValues as Trip,
+    resolver: zodResolver(tripCreateSchema),
+    defaultValues: defaultValues as TripCreate,
+  });
+
+export const useTripUpdateForm = (defaultValues?: Partial<TripUpdate>) =>
+  useForm({
+    resolver: zodResolver(tripUpdateSchema),
+    defaultValues: defaultValues as TripUpdate,
   });
