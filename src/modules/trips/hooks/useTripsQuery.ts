@@ -2,19 +2,19 @@ import { useInfiniteQuery, useQueryClient, InfiniteData } from "@tanstack/react-
 import { useEffect } from "react";
 import { tripApi } from "../api/trip.api";
 import { tripKeys } from "../constants/trip.key";
-import { Trip } from "../schemas/trip.schema";
+import { TripListResponse } from "../schemas/trip.schema";
 
 interface TripPage {
-  data: Trip[];
+  data: TripListResponse[];
   nextPage: number | null;
 }
 
-export const useTripsQuery = (status?: string) => {
+export const useTripsQuery = (status?: string, userIds?: string[]) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
     queryClient.setQueryData<InfiniteData<TripPage>>(
-      tripKeys.get(status),
+      tripKeys.get(status, userIds),
       (oldData) => {
         if (!oldData) return oldData;
         return {
@@ -23,11 +23,12 @@ export const useTripsQuery = (status?: string) => {
         };
       }
     );
-  }, [queryClient, status]);
+  }, [queryClient, status, userIds]);
 
   return useInfiniteQuery<TripPage>({
-    queryKey: tripKeys.get(status),
-    queryFn: ({ pageParam = 0 }) => tripApi.get(pageParam as number, status),
+    queryKey: tripKeys.get(status, userIds),
+    queryFn: ({ pageParam = 0 }) =>
+      tripApi.get(pageParam as number, status, userIds),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
   });

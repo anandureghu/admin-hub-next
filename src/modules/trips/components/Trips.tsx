@@ -10,13 +10,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTripsQuery } from "../hooks";
+import { useTripsQuery } from "../hooks/useTripsQuery";
+import { useUsersQuery } from "../hooks/useUsersQuery";
 import type { TripListResponse as Trip } from "../schemas/trip.schema";
+import { UserMultiSelect } from "@/components/userMultiSelect";
 
 export default function Trips() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const { data: usersData = [], isLoading: usersLoading } = useUsersQuery();
 
   const {
     data,
@@ -25,26 +30,25 @@ export default function Trips() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useTripsQuery(statusFilter);
+  } = useTripsQuery(statusFilter, selectedUserIds);
 
-  // Flatten all pages into one array
   const trips: Trip[] = data?.pages.flatMap((page) => page.data) ?? [];
 
   if (error) {
     toast.error("Failed to load trips");
   }
 
+  // Client-side search filter only (status + user filtering is server-side)
   const filteredTrips = trips.filter((trip) => {
-    const matchesSearch =
-      trip.vehicles?.vehicle_number
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      trip.users?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      trip.users?.email.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      trip.vehicles?.vehicle_number.toLowerCase().includes(q) ||
+      trip.users?.name.toLowerCase().includes(q) ||
+      trip.users?.email.toLowerCase().includes(q)
+    );
   });
 
-  // IntersectionObserver — fires fetchNextPage when sentinel enters viewport
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const [entry] = entries;
@@ -60,7 +64,7 @@ export default function Trips() {
     if (!sentinel) return;
     const observer = new IntersectionObserver(handleObserver, {
       root: null,
-      rootMargin: "200px", // start loading 200px before the bottom
+      rootMargin: "200px",
       threshold: 0,
     });
     observer.observe(sentinel);
@@ -98,6 +102,14 @@ export default function Trips() {
             className="pl-10 bg-input border-border"
           />
         </div>
+
+        <UserMultiSelect
+          users={usersData}
+          selectedIds={selectedUserIds}
+          onChange={setSelectedUserIds}
+          isLoading={usersLoading}
+        />
+
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-40 bg-input border-border">
             <SelectValue placeholder="All Status" />
@@ -120,7 +132,7 @@ export default function Trips() {
           <div className="stat-card text-center py-12">
             <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
-              {searchQuery || statusFilter !== "all"
+              {searchQuery || statusFilter !== "all" || selectedUserIds.length > 0
                 ? "No trips match your filters"
                 : "No trips recorded yet. Trips will appear here when employees start tracking."}
             </p>
@@ -151,9 +163,7 @@ export default function Trips() {
                 <div className="flex flex-wrap gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span>
-                      {new Date(trip.trip_date).toLocaleDateString()}
-                    </span>
+                    <span>{new Date(trip.trip_date).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-muted-foreground" />
@@ -193,9 +203,7 @@ export default function Trips() {
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           )}
           {!hasNextPage && trips.length > 0 && !isLoading && (
-            <p className="text-sm text-muted-foreground">
-              All trips loaded
-            </p>
+            <p className="text-sm text-muted-foreground">All trips loaded</p>
           )}
         </div>
       </div>
