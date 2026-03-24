@@ -14,6 +14,10 @@ import { useTripsQuery } from "../hooks";
 import type { TripListResponse as Trip } from "../schemas/trip.schema";
 
 export default function Trips() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
   const {
     data,
     isLoading,
@@ -21,11 +25,7 @@ export default function Trips() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useTripsQuery();
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  } = useTripsQuery(statusFilter);
 
   // Flatten all pages into one array
   const trips: Trip[] = data?.pages.flatMap((page) => page.data) ?? [];
@@ -35,12 +35,13 @@ export default function Trips() {
   }
 
   const filteredTrips = trips.filter((trip) => {
-    const matchesSearch = trip.vehicles?.vehicle_number
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === "all" || trip.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesSearch =
+      trip.vehicles?.vehicle_number
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      trip.users?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      trip.users?.email.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
 
   // IntersectionObserver — fires fetchNextPage when sentinel enters viewport
@@ -91,7 +92,7 @@ export default function Trips() {
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Search by employee or vehicle..."
+            placeholder="Search by employee, vehicle, or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 bg-input border-border"
@@ -141,7 +142,8 @@ export default function Trips() {
                     </div>
                     <p className="text-sm text-muted-foreground">
                       {trip.vehicles?.vehicle_number || "No vehicle"} •{" "}
-                      {trip.vehicles?.vehicle_type || ""}
+                      {trip.vehicles?.vehicle_type || ""} •{" "}
+                      {trip.users?.name || "Unknown user"}
                     </p>
                   </div>
                 </div>

@@ -22,6 +22,15 @@ export const vehicleSchema = z.object({
   vehicle_type: z.string(),
 });
 
+export const userSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  email: z.string(),
+  phone: z.string().nullable(),
+  avatar_url: z.string().nullable(),
+  role: z.enum(['ADMIN', 'EMPLOYEE']),
+});
+
 export const tripListResponseSchema = z.object({
   id: z.string().uuid(),
   user_id: z.string().uuid().nullable(),
@@ -37,6 +46,7 @@ export const tripListResponseSchema = z.object({
   created_at: z.string(),
   updated_at: z.string().nullable(),
   vehicles: vehicleSchema.nullable(),
+  users: userSchema.nullable(),
 });
 
 export const tripDetailResponseSchema = tripSchema.extend({
@@ -48,3 +58,4 @@ export type Trip = z.infer<typeof tripSchema>;
 export type TripListResponse = z.infer<typeof tripListResponseSchema>;
 export type TripDetailResponse = z.infer<typeof tripDetailResponseSchema>;
 export type Vehicle = z.infer<typeof vehicleSchema>;
+export type User = z.infer<typeof userSchema>;

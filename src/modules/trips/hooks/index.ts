@@ -9,12 +9,12 @@ interface TripPage {
   nextPage: number | null;
 }
 
-export const useTripsQuery = () => {
+export const useTripsQuery = (status?: string) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
     queryClient.setQueryData<InfiniteData<TripPage>>(
-      tripKeys.get(),
+      tripKeys.get(status),
       (oldData) => {
         if (!oldData) return oldData;
         return {
@@ -23,11 +23,11 @@ export const useTripsQuery = () => {
         };
       }
     );
-  }, [queryClient]);
+  }, [queryClient, status]);
 
   return useInfiniteQuery<TripPage>({
-    queryKey: tripKeys.get(),
-    queryFn: ({ pageParam = 0 }) => tripApi.get(pageParam as number),
+    queryKey: tripKeys.get(status),
+    queryFn: ({ pageParam = 0 }) => tripApi.get(pageParam as number, status),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
   });
