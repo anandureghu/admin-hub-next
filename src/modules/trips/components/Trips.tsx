@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Search, MapPin, Calendar, Clock } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Search, MapPin, Calendar, Clock, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { toast } from "sonner";
@@ -11,39 +11,67 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useTripsQuery } from "../hooks";
-
-interface Trip {
-  id: string;
-  trip_date: string;
-  start_time: string | null;
-  end_time: string | null;
-  start_km: number | null;
-  end_km: number | null;
-  status: "STARTED" | "ENDED";
-  created_at: string;
-  vehicles: { vehicle_number: string; vehicle_type: string } | null;
-}
+import type { TripListResponse as Trip } from "../schemas/trip.schema";
 
 export default function Trips() {
-  const { data: trips = [], isLoading: loading, error } = useTripsQuery();
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useTripsQuery();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  // Handle error
+  // Flatten all pages into one array
+  const trips: Trip[] = data?.pages.flatMap((page) => page.data) ?? [];
+
   if (error) {
     toast.error("Failed to load trips");
   }
 
-  const filteredTrips = (trips as Trip[]).filter((trip) => {
-    const matchesSearch =
-      trip.vehicles?.vehicle_number.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || trip.status === statusFilter;
+  const filteredTrips = trips.filter((trip) => {
+    const matchesSearch = trip.vehicles?.vehicle_number
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || trip.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
+  // IntersectionObserver — fires fetchNextPage when sentinel enters viewport
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage]
+  );
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(handleObserver, {
+      root: null,
+      rootMargin: "200px", // start loading 200px before the bottom
+      threshold: 0,
+    });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [handleObserver]);
+
   function formatTime(timestamp: string | null) {
     if (!timestamp) return "—";
-    return new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   function calculateDistance(startKm: number | null, endKm: number | null) {
@@ -83,8 +111,10 @@ export default function Trips() {
 
       {/* Trips List */}
       <div className="space-y-4">
-        {loading ? (
-          <div className="text-center py-8 text-muted-foreground">Loading trips...</div>
+        {isLoading ? (
+          <div className="text-center py-8 text-muted-foreground">
+            Loading trips...
+          </div>
         ) : filteredTrips.length === 0 ? (
           <div className="stat-card text-center py-12">
             <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -104,13 +134,14 @@ export default function Trips() {
                   </div>
                   <div>
                     <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-semibold text-foreground">
-                        Trip
-                      </h3>
-                      <StatusBadge status={trip.status === "STARTED" ? "started" : "ended"} />
+                      <h3 className="font-semibold text-foreground">Trip</h3>
+                      <StatusBadge
+                        status={trip.status === "STARTED" ? "started" : "ended"}
+                      />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {trip.vehicles?.vehicle_number || "No vehicle"} • {trip.vehicles?.vehicle_type || ""}
+                      {trip.vehicles?.vehicle_number || "No vehicle"} •{" "}
+                      {trip.vehicles?.vehicle_type || ""}
                     </p>
                   </div>
                 </div>
@@ -118,12 +149,15 @@ export default function Trips() {
                 <div className="flex flex-wrap gap-6 text-sm">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span>{new Date(trip.trip_date).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(trip.trip_date).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>
-                      {formatTime(trip.start_time)} - {formatTime(trip.end_time)}
+                      {formatTime(trip.start_time)} -{" "}
+                      {formatTime(trip.end_time)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -150,6 +184,18 @@ export default function Trips() {
             </div>
           ))
         )}
+
+        {/* Sentinel + loading spinner */}
+        <div ref={sentinelRef} className="py-4 flex justify-center">
+          {isFetchingNextPage && (
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          )}
+          {!hasNextPage && trips.length > 0 && !isLoading && (
+            <p className="text-sm text-muted-foreground">
+              All trips loaded
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
