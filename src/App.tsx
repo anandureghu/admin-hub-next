@@ -8,10 +8,12 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Employees from "./pages/Employees";
 import Vehicles from "./pages/Vehicles";
-import Trips from "./pages/Trips";
+import Trips from "./modules/trips/components/Trips";
 import Receipts from "./pages/Receipts";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import TripDetails from "./modules/trips/components/TripDetails";
+import WorkDetails from "./modules/trips/components/WorkDetails";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,9 @@ const App = () => (
             <Route path="/employees" element={<Employees />} />
             <Route path="/vehicles" element={<Vehicles />} />
             <Route path="/trips" element={<Trips />} />
+            {/* New Dynamic Route for Trip Details */}
+            <Route path="/trip/:id" element={<TripDetails />} />
+            <Route path="/trips/:tripId/work/:workId" element={<WorkDetails />} />
             <Route path="/receipts" element={<Receipts />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
