@@ -40,3 +40,11 @@ export const useToggleEmployeeStatusMutation = () => {
     onError: () => {},
   });
 };
+
+export const useEmployeeQuery = (id: string | undefined) => {
+  return useQuery<Employee, Error>({
+    queryKey: employeeKeys.detail(id!),
+    queryFn: () => employeeApi.getById(id!),
+    enabled: !!id, // Only run if ID is provided
+  });
+};

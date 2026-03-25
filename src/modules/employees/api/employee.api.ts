@@ -82,4 +82,15 @@ export const employeeApi = {
       .eq("id", id);
     if (error) throw error;
   },
+
+  async getById(id: string): Promise<Employee> {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+    return employeeSchema.parse(data);
+  },
 };

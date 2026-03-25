@@ -13,8 +13,10 @@ import {
 import { EmployeeDialog } from "./EmployeeDialog";
 import { Employee } from "../schemas/employee.schema";
 import { columns } from "../columns/employeeColumns";
+import { useNavigate } from "react-router-dom";
 
 export default function Employees() {
+    const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
@@ -61,6 +63,7 @@ export default function Employees() {
       <DataTable
         columns={columns}
         data={(data?.data ?? []) as Employee[]}
+        onRowClick={(employee) => navigate(`/employees/${employee.id}`)}
         isLoading={isLoading}
         rowCount={data?.count ?? 0}
         pagination={pagination}
