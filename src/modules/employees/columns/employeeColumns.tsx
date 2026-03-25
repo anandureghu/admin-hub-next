@@ -1,6 +1,6 @@
-import { Employee } from "@/types/employeeType";
+import { Employee } from "@/modules/employees/schemas/employee.schema";
 import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "../ui/button";
+import { Button } from "../../../../src/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,11 +8,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../../../src/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { StatusBadge } from "../ui/status-badge";
-import { SortableHeader } from "../ui/sortable-header";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../src/components/ui/avatar";
+import { StatusBadge } from "../../../../src/components/ui/status-badge";
+import { SortableHeader } from "../../../../src/components/ui/sortable-header";
 
 interface MetaTypes {
   onToggleStatus: (id: string, currentStatus: boolean) => Promise<void>;
@@ -70,7 +70,7 @@ export const columns: ColumnDef<Employee>[] = [
   },
   {
     accessorKey: "created_at",
-    accessorFn: (row) => new Date(row.created_at).toLocaleDateString(),
+    accessorFn: (row) => row.created_at ? new Date(row.created_at).toLocaleDateString() : "-",
     header: ({ column }) => {
       return <SortableHeader column={column} title={"Joined"} />;
     },

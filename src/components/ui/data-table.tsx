@@ -32,6 +32,7 @@ interface DataTableProps<TData, TValue> {
   setSorting: (updater: SortingState) => void;
   columnFilters: ColumnFiltersState;
   setColumnFilters: (updater: ColumnFiltersState) => void;
+  isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -46,6 +47,7 @@ export function DataTable<TData, TValue>({
   setSorting,
   setColumnFilters,
   rowCount,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -80,9 +82,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>
                   );
                 })}
@@ -90,7 +92,16 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
