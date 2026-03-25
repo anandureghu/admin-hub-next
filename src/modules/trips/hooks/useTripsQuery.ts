@@ -3,18 +3,19 @@ import { useEffect } from "react";
 import { tripApi } from "../api/trip.api";
 import { tripKeys } from "../constants/trip.key";
 import { TripListResponse } from "../schemas/trip.schema";
+import { DateRange } from "react-day-picker";
 
 interface TripPage {
   data: TripListResponse[];
   nextPage: number | null;
 }
 
-export const useTripsQuery = (status?: string, userIds?: string[]) => {
+export const useTripsQuery = (status?: string, userIds?: string[], dateRange?: DateRange) => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
     queryClient.setQueryData<InfiniteData<TripPage>>(
-      tripKeys.get(status, userIds),
+      tripKeys.get(status, userIds, dateRange ? { from: dateRange.from!, to: dateRange.to! } : undefined),
       (oldData) => {
         if (!oldData) return oldData;
         return {
@@ -23,12 +24,12 @@ export const useTripsQuery = (status?: string, userIds?: string[]) => {
         };
       }
     );
-  }, [queryClient, status, userIds]);
+  }, [queryClient, status, userIds, dateRange]);
 
   return useInfiniteQuery<TripPage>({
-    queryKey: tripKeys.get(status, userIds),
+    queryKey: tripKeys.get(status, userIds, dateRange ? { from: dateRange.from!, to: dateRange.to! } : undefined),
     queryFn: ({ pageParam = 0 }) =>
-      tripApi.get(pageParam as number, status, userIds),
+      tripApi.get(pageParam as number, status, userIds, dateRange ? { from: dateRange.from!, to: dateRange.to! } : undefined),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
   });

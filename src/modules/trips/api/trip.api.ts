@@ -11,7 +11,8 @@ export const tripApi = {
   async get(
     page = 0,
     status?: string,
-    userIds?: string[]
+    userIds?: string[],
+    dateRange?: { from: Date; to: Date }
   ): Promise<{ data: Trip[]; nextPage: number | null }> {
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
@@ -34,23 +35,24 @@ export const tripApi = {
       query = query.in("user_id", userIds);
     }
 
+    if (dateRange?.from && dateRange?.to) {
+      // Set from date to start of day (00:00:00)
+      const fromDate = new Date(dateRange.from);
+      fromDate.setHours(0, 0, 0, 0);
+
+      // Set to date to end of day (23:59:59.999)
+      const toDate = new Date(dateRange.to);
+      toDate.setHours(23, 59, 59, 999);
+
+      query = query
+        .gte("created_at", fromDate.toISOString())
+        .lte("created_at", toDate.toISOString());
+    }
+
     const { data, error } = await query;
     if (error) throw error;
 
-    // Debug: Log the raw data to see what we're getting
-    console.log("Raw trip data:", data);
-
-    const parsed = data.map((trip) => {
-      try {
-        const parsedTrip = tripListResponseSchema.parse(trip);
-        console.log("Parsed trip users:", parsedTrip.users);
-        return parsedTrip;
-      } catch (parseError) {
-        console.error("Zod parsing error for trip:", trip.id, parseError);
-        throw parseError;
-      }
-    });
-
+    const parsed = data.map((trip) => tripListResponseSchema.parse(trip));
     return {
       data: parsed,
       nextPage: parsed.length === PAGE_SIZE ? page + 1 : null,

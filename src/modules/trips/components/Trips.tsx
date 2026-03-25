@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Search, MapPin, Calendar, Clock, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { MapPin, Calendar, Clock, Loader2 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { toast } from "sonner";
 import {
@@ -10,15 +9,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { useTripsQuery } from "../hooks/useTripsQuery";
 import { useUsersQuery } from "../hooks/useUsersQuery";
 import type { TripListResponse as Trip } from "../schemas/trip.schema";
 import { UserMultiSelect } from "@/components/userMultiSelect";
+import { DateRange } from "react-day-picker";
 
 export default function Trips() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const { data: usersData = [], isLoading: usersLoading } = useUsersQuery();
@@ -30,7 +32,7 @@ export default function Trips() {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useTripsQuery(statusFilter, selectedUserIds);
+  } = useTripsQuery(statusFilter, selectedUserIds, dateRange);
 
   const trips: Trip[] = data?.pages.flatMap((page) => page.data) ?? [];
 
@@ -93,15 +95,6 @@ export default function Trips() {
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by employee, vehicle, or email..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-input border-border"
-          />
-        </div>
 
         <UserMultiSelect
           users={usersData}
@@ -120,6 +113,12 @@ export default function Trips() {
             <SelectItem value="ENDED">Completed</SelectItem>
           </SelectContent>
         </Select>
+
+        <DatePickerWithRange
+          date={dateRange}
+          onDateChange={setDateRange}
+          className="w-64"
+        />
       </div>
 
       {/* Trips List */}
@@ -132,7 +131,7 @@ export default function Trips() {
           <div className="stat-card text-center py-12">
             <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
-              {searchQuery || statusFilter !== "all" || selectedUserIds.length > 0
+              {searchQuery || statusFilter !== "all" || selectedUserIds.length > 0 || dateRange
                 ? "No trips match your filters"
                 : "No trips recorded yet. Trips will appear here when employees start tracking."}
             </p>
