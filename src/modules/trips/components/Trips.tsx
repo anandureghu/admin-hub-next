@@ -35,15 +35,20 @@ export default function Trips() {
   }
 
   const filteredTrips = (trips as Trip[]).filter((trip) => {
-    const matchesSearch =
-      trip.vehicles?.vehicle_number.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter === "all" || trip.status === statusFilter;
+    const matchesSearch = trip.vehicles?.vehicle_number
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || trip.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   function formatTime(timestamp: string | null) {
     if (!timestamp) return "—";
-    return new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return new Date(timestamp).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   function calculateDistance(startKm: number | null, endKm: number | null) {
@@ -84,7 +89,9 @@ export default function Trips() {
       {/* Trips List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="text-center py-8 text-muted-foreground">Loading trips...</div>
+          <div className="text-center py-8 text-muted-foreground">
+            Loading trips...
+          </div>
         ) : filteredTrips.length === 0 ? (
           <div className="stat-card text-center py-12">
             <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
@@ -104,13 +111,14 @@ export default function Trips() {
                   </div>
                   <div>
                     <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-semibold text-foreground">
-                        Trip
-                      </h3>
-                      <StatusBadge status={trip.status === "STARTED" ? "started" : "ended"} />
+                      <h3 className="font-semibold text-foreground">Trip</h3>
+                      <StatusBadge
+                        status={trip.status === "STARTED" ? "started" : "ended"}
+                      />
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {trip.vehicles?.vehicle_number || "No vehicle"} • {trip.vehicles?.vehicle_type || ""}
+                      {trip.vehicles?.vehicle_number || "No vehicle"} •{" "}
+                      {trip.vehicles?.vehicle_type || ""}
                     </p>
                   </div>
                 </div>
@@ -123,7 +131,8 @@ export default function Trips() {
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-muted-foreground" />
                     <span>
-                      {formatTime(trip.start_time)} - {formatTime(trip.end_time)}
+                      {formatTime(trip.start_time)} -{" "}
+                      {formatTime(trip.end_time)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
