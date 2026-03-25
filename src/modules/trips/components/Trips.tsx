@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Search, MapPin, Calendar, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/ui/status-badge";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Select,
@@ -11,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useTripsQuery } from "../hooks";
 
 interface Trip {
   id: string;
@@ -21,40 +21,21 @@ interface Trip {
   end_km: number | null;
   status: "STARTED" | "ENDED";
   created_at: string;
-  profiles: { name: string } | null;
   vehicles: { vehicle_number: string; vehicle_type: string } | null;
 }
 
 export default function Trips() {
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: trips = [], isLoading: loading, error } = useTripsQuery();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  useEffect(() => {
-    fetchTrips();
-  }, []);
-
-  async function fetchTrips() {
-    try {
-      const { data, error } = await supabase
-        .from("trips")
-        .select(`*, vehicles(vehicle_number, vehicle_type)`)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setTrips((data as any[])?.map(t => ({ ...t, profiles: null })) || []);
-    } catch (error) {
-      console.error("Error fetching trips:", error);
-      toast.error("Failed to load trips");
-    } finally {
-      setLoading(false);
-    }
+  // Handle error
+  if (error) {
+    toast.error("Failed to load trips");
   }
 
-  const filteredTrips = trips.filter((trip) => {
+  const filteredTrips = (trips as Trip[]).filter((trip) => {
     const matchesSearch =
-      trip.profiles?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       trip.vehicles?.vehicle_number.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || trip.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -124,7 +105,7 @@ export default function Trips() {
                   <div>
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="font-semibold text-foreground">
-                        {trip.profiles?.name || "Unknown Employee"}
+                        Trip
                       </h3>
                       <StatusBadge status={trip.status === "STARTED" ? "started" : "ended"} />
                     </div>
