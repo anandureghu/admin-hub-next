@@ -1,5 +1,5 @@
 -- =====================================================
--- Add new constraint one work per trip
+-- Add new constraint one active work per trip
 -- =====================================================
 
 CREATE UNIQUE INDEX one_active_work_per_trip
