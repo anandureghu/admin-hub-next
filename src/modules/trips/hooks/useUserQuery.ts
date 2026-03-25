@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { userApi, userKeys } from "../api/user.api";
-import { User } from "../schemas/trip.schema";
+import { userApi } from "../api/user.api";
+import { userKeys } from "../constants/user.key";
+import { User } from "../schemas/user.schema";
 
 export const useUsersQuery = () => {
   return useQuery<User[]>({

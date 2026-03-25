@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/select";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { useTripsQuery } from "../hooks/useTripsQuery";
-import { useUsersQuery } from "../hooks/useUsersQuery";
+import { useUsersQuery } from "../hooks/useUserQuery";
 import type { TripListResponse as Trip } from "../schemas/trip.schema";
-import { UserMultiSelect } from "@/components/userMultiSelect";
+import { UserMultiSelect } from "@/components/UserMultiSelect";
 import { DateRange } from "react-day-picker";
+import { TripCard } from "./TripCard";
 
 export default function Trips() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -138,61 +139,7 @@ export default function Trips() {
           </div>
         ) : (
           filteredTrips.map((trip) => (
-            <div key={trip.id} className="stat-card animate-fade-in">
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className="stat-icon">
-                    <MapPin className="w-6 h-6 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="font-semibold text-foreground">Trip</h3>
-                      <StatusBadge
-                        status={trip.status === "STARTED" ? "started" : "ended"}
-                      />
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {trip.vehicles?.vehicle_number || "No vehicle"} •{" "}
-                      {trip.vehicles?.vehicle_type || ""} •{" "}
-                      {trip.users?.name || "Unknown user"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap gap-6 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span>{new Date(trip.trip_date).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span>
-                      {formatTime(trip.start_time)} -{" "}
-                      {formatTime(trip.end_time)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">Distance:</span>
-                    <span className="font-medium">
-                      {calculateDistance(trip.start_km, trip.end_km)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {(trip.start_km || trip.end_km) && (
-                <div className="mt-4 pt-4 border-t border-border flex gap-6 text-sm">
-                  <div>
-                    <span className="text-muted-foreground">Start KM:</span>{" "}
-                    <span className="font-medium">{trip.start_km ?? "—"}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">End KM:</span>{" "}
-                    <span className="font-medium">{trip.end_km ?? "—"}</span>
-                  </div>
-                </div>
-              )}
-            </div>
+            <TripCard key={trip.id} trip={trip} />
           ))
         )}
 

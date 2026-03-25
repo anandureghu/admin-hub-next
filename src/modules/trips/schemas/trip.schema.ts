@@ -1,4 +1,7 @@
 import * as z from "zod";
+import { userSchema } from "./user.schema";
+import { vehicleSchema } from "./vehicle.schema";
+import { workSessionSchema } from "./work.schema";
 
 export const tripSchema = z.object({
   id: z.string().uuid(),
@@ -14,22 +17,6 @@ export const tripSchema = z.object({
   status: z.enum(["STARTED", "ENDED"]).default("STARTED"),
   created_at: z.string(),
   updated_at: z.string().optional(),
-});
-
-export const vehicleSchema = z.object({
-  vehicle_number: z.string(),
-  vehicle_type: z.string(),
-});
-
-export const userSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string(),
-  email: z.string(),
-  phone: z.string().nullable(),
-  avatar_url: z.string().nullable(),
-  role: z.enum(["ADMIN", "EMPLOYEE"]),
-  is_active: z.boolean().nullable().optional(),
-  company_id: z.string().uuid().nullable().optional(),
 });
 
 export const tripListResponseSchema = z.object({
@@ -51,12 +38,17 @@ export const tripListResponseSchema = z.object({
 });
 
 export const tripDetailResponseSchema = tripSchema.extend({
-  vehicles: vehicleSchema.optional(),
-  users: userSchema.optional(),
+  vehicles: vehicleSchema.nullable(),
+  users: z.object({
+    name: z.string(),
+    email: z.string()
+  }).nullable(),
+  // Add the array of work sessions here
+  work_sessions: z.array(workSessionSchema).default([]),
+  start_image: z.string().nullable(),
+  end_image: z.string().nullable(),
 });
 
 export type Trip = z.infer<typeof tripSchema>;
 export type TripListResponse = z.infer<typeof tripListResponseSchema>;
 export type TripDetailResponse = z.infer<typeof tripDetailResponseSchema>;
-export type Vehicle = z.infer<typeof vehicleSchema>;
-export type User = z.infer<typeof userSchema>;

@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQueryClient, InfiniteData } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient, InfiniteData, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { tripApi } from "../api/trip.api";
 import { tripKeys } from "../constants/trip.key";
@@ -32,5 +32,14 @@ export const useTripsQuery = (status?: string, userIds?: string[], dateRange?: D
       tripApi.get(pageParam as number, status, userIds, dateRange ? { from: dateRange.from!, to: dateRange.to! } : undefined),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
+  });
+};
+
+export const useTripDetailQuery = (id: string) => {
+  return useQuery({
+    queryKey: tripKeys.detail(id),
+    queryFn: () => tripApi.getById(id),
+    enabled: !!id, // Only run the query if an ID exists
+    staleTime: 1000 * 60 * 5, // Optional: keep data fresh for 5 mins
   });
 };

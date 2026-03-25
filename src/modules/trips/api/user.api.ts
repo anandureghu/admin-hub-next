@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { User, userSchema } from "../schemas/trip.schema";
+import { User, userSchema } from "../schemas/user.schema";
 
 export const userApi = {
   async getAll(): Promise<User[]> {
@@ -12,9 +12,4 @@ export const userApi = {
     if (error) throw error;
     return data.map((user) => userSchema.parse(user));
   },
-};
-
-export const userKeys = {
-  all: ["users"] as const,
-  list: () => [...userKeys.all, "list"] as const,
 };

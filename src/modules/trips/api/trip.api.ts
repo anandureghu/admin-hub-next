@@ -3,6 +3,7 @@ import {
   Trip,
   tripListResponseSchema,
   tripDetailResponseSchema,
+  TripDetailResponse,
 } from "../schemas/trip.schema";
 
 const PAGE_SIZE = 10;
@@ -59,14 +60,33 @@ export const tripApi = {
     };
   },
 
-  async getById(id: string): Promise<Trip> {
-    const { data, error } = await supabase
-      .from("trips")
-      .select("*")
-      .eq("id", id)
-      .single();
+  async getById(id: string): Promise<TripDetailResponse> {
+  const { data, error } = await supabase
+    .from("trips")
+    .select(`
+      *,
+      vehicles (
+        vehicle_number, 
+        vehicle_type
+      ),
+      users (
+        name, 
+        email
+      ),
+      work_sessions (
+        id,
+        start_time,
+        end_time,
+        notes,
+        location,
+        created_at
+      )
+    `)
+    .eq("id", id)
+    .single();
 
-    if (error) throw error;
-    return tripDetailResponseSchema.parse(data);
-  },
+  if (error) throw error;
+  
+  return tripDetailResponseSchema.parse(data);
+}
 };
