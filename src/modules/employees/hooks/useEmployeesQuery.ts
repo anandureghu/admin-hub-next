@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { employeeApi } from "../api/employee.api";
 import { employeeKeys } from "../constants/employee.key";
 import { SortingState, ColumnFiltersState } from "@tanstack/react-table";
-import { Employee, EmployeeResponse } from "../schemas/employee.schema";
+import { Employee, EmployeeDetail, EmployeeResponse } from "../schemas/employee.schema";
 
 export const useEmployeesQuery = (
   pageIndex: number,
@@ -42,9 +42,17 @@ export const useToggleEmployeeStatusMutation = () => {
 };
 
 export const useEmployeeQuery = (id: string | undefined) => {
-  return useQuery<Employee, Error>({
+  return useQuery<EmployeeDetail, Error>({
     queryKey: employeeKeys.detail(id!),
     queryFn: () => employeeApi.getById(id!),
-    enabled: !!id, // Only run if ID is provided
+    enabled: !!id,
+  });
+};
+
+export const useEmployeeActivityQuery = (userId: string | undefined) => {
+  return useQuery({
+    queryKey: [...employeeKeys.detail(userId!), "activity"],
+    queryFn: () => employeeApi.getEmployeeActivity(userId!),
+    enabled: !!userId,
   });
 };
