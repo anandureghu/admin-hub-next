@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { supabaseAdmin } from "@/integrations/supabase/admin";
 import { Employee, EmployeeDetail, employeeDetailSchema, EmployeeResponse, employeeSchema } from "../schemas/employee.schema";
 import { SortingState, ColumnFiltersState } from "@tanstack/react-table";
 
@@ -67,11 +66,6 @@ export const employeeApi = {
         is_active: true,
       });
       if (error) throw error;
-
-      await supabaseAdmin.auth.signUp({
-        email: payload.email!,
-        password: "password",
-      });
     }
   },
 
