@@ -1,6 +1,6 @@
-import { Employee } from "@/types/employeeType";
+import { Employee } from "@/modules/employees/schemas/employee.schema";
 import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "../ui/button";
+import { Button } from "../../../../src/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,11 +8,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../../../src/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { StatusBadge } from "../ui/status-badge";
-import { SortableHeader } from "../ui/sortable-header";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../src/components/ui/avatar";
+import { StatusBadge } from "../../../../src/components/ui/status-badge";
+import { SortableHeader } from "../../../../src/components/ui/sortable-header";
 
 interface MetaTypes {
   onToggleStatus: (id: string, currentStatus: boolean) => Promise<void>;
@@ -70,7 +70,7 @@ export const columns: ColumnDef<Employee>[] = [
   },
   {
     accessorKey: "created_at",
-    accessorFn: (row) => new Date(row.created_at).toLocaleDateString(),
+    accessorFn: (row) => row.created_at ? new Date(row.created_at).toLocaleDateString() : "-",
     header: ({ column }) => {
       return <SortableHeader column={column} title={"Joined"} />;
     },
@@ -85,22 +85,34 @@ export const columns: ColumnDef<Employee>[] = [
       return (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0"
+              onClick={(e) => e.stopPropagation()}
+            >
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" onClick={(e) => {e.stopPropagation()}}>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onSelect={() =>
-                actions.onToggleStatus(employee.id, employee.is_active)
-              }
+              onClick={(e) => {
+                e?.preventDefault?.();
+                e?.stopPropagation?.();
+                actions.onToggleStatus(employee.id, employee.is_active);
+              }}
             >
               {employee.is_active ? "Deactivate" : "Activate"}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => actions.onEditEmployee(employee)}>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e?.preventDefault?.();
+                e?.stopPropagation?.();
+                actions.onEditEmployee(employee);
+              }}
+            >
               Edit Employee
             </DropdownMenuItem>
           </DropdownMenuContent>

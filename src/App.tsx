@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import Employees from "./pages/Employees";
 import Vehicles from "./pages/Vehicles";
 import Trips from "./modules/trips/components/Trips";
 import Receipts from "./pages/Receipts";
@@ -14,6 +13,8 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import TripDetails from "./modules/trips/components/TripDetails";
 import WorkDetails from "./modules/trips/components/WorkDetails";
+import Employees from "./modules/employees/components/Employees";
+import EmployeeDetail from "./modules/employees/components/EmployeeeDetail";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/trips" element={<Trips />} />
             {/* New Dynamic Route for Trip Details */}
             <Route path="/trip/:id" element={<TripDetails />} />
+            <Route path="/employees/:id" element={<EmployeeDetail />} />
             <Route path="/trips/:tripId/work/:workId" element={<WorkDetails />} />
             <Route path="/receipts" element={<Receipts />} />
             <Route path="/settings" element={<Settings />} />
