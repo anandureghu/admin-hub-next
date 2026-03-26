@@ -39,10 +39,12 @@ export const tripListResponseSchema = z.object({
 
 export const tripDetailResponseSchema = tripSchema.extend({
   vehicles: vehicleSchema.nullable(),
-  users: z.object({
-    name: z.string(),
-    email: z.string()
-  }).nullable(),
+  users: z
+    .object({
+      name: z.string(),
+      email: z.string(),
+    })
+    .nullable(),
   // Add the array of work sessions here
   work_sessions: z.array(workSessionSchema).default([]),
   start_image: z.string().nullable(),

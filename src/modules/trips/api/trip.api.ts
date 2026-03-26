@@ -13,7 +13,7 @@ export const tripApi = {
     page = 0,
     status?: string,
     userIds?: string[],
-    dateRange?: { from: Date; to: Date }
+    dateRange?: { from: Date; to: Date },
   ): Promise<{ data: Trip[]; nextPage: number | null }> {
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
@@ -23,7 +23,7 @@ export const tripApi = {
       .select(
         `*,
         vehicles(vehicle_number, vehicle_type),
-        users(id, name, email, phone, avatar_url, role, is_active, company_id)`
+        users(id, name, email, phone, avatar_url, role, is_active, company_id)`,
       )
       .order("trip_date", { ascending: false })
       .range(from, to);
@@ -61,9 +61,10 @@ export const tripApi = {
   },
 
   async getById(id: string): Promise<TripDetailResponse> {
-  const { data, error } = await supabase
-    .from("trips")
-    .select(`
+    const { data, error } = await supabase
+      .from("trips")
+      .select(
+        `
       *,
       vehicles (
         vehicle_number, 
@@ -81,12 +82,13 @@ export const tripApi = {
         location,
         created_at
       )
-    `)
-    .eq("id", id)
-    .single();
+    `,
+      )
+      .eq("id", id)
+      .single();
 
-  if (error) throw error;
-  
-  return tripDetailResponseSchema.parse(data);
-}
+    if (error) throw error;
+
+    return tripDetailResponseSchema.parse(data);
+  },
 };
