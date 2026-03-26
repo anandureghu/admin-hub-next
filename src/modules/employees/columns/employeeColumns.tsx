@@ -85,22 +85,34 @@ export const columns: ColumnDef<Employee>[] = [
       return (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0"
+              onClick={(e) => e.stopPropagation()}
+            >
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" onClick={(e) => {e.stopPropagation()}}>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onSelect={() =>
-                actions.onToggleStatus(employee.id, employee.is_active)
-              }
+              onClick={(e) => {
+                e?.preventDefault?.();
+                e?.stopPropagation?.();
+                actions.onToggleStatus(employee.id, employee.is_active);
+              }}
             >
               {employee.is_active ? "Deactivate" : "Activate"}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => actions.onEditEmployee(employee)}>
+            <DropdownMenuItem
+              onClick={(e) => {
+                e?.preventDefault?.();
+                e?.stopPropagation?.();
+                actions.onEditEmployee(employee);
+              }}
+            >
               Edit Employee
             </DropdownMenuItem>
           </DropdownMenuContent>
