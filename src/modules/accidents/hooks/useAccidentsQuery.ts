@@ -36,7 +36,7 @@ export const useAccidentsQuery = (filters: AccidentFilters = DEFAULT_FILTERS) =>
   return useInfiniteQuery<AccidentPage>({
     queryKey: accidentKeys.list(filters),
     queryFn: ({ pageParam = 0 }) => 
-      accidentApi.get(pageParam as number), // Pass filters to API
+      accidentApi.get(pageParam as number, filters), // Pass filters to API
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
   });

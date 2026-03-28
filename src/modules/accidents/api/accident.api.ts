@@ -1,14 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
-import { AccidentListResponse, accidentListResponseSchema } from "../schemas/accident.schema";
+import { AccidentFilters, AccidentListResponse, accidentListResponseSchema } from "../schemas/accident.schema";
 
 const PAGE_SIZE = 10;
 
 export const accidentApi = {
-  async get(page = 0): Promise<{ data: AccidentListResponse[]; nextPage: number | null }> {
+  async get(page = 0, filters: AccidentFilters = {}): Promise<{ data: AccidentListResponse[]; nextPage: number | null }> {
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
 
-    const { data, error } = await supabase
+    let query = supabase
       .from("accident_reports")
       .select(`
         *,
@@ -16,6 +16,23 @@ export const accidentApi = {
         trips (trip_date, status)
       `)
       .order("reported_at", { ascending: false })
+      .range(from, to);
+
+    if (filters.userIds && filters.userIds.length > 0) {
+      query = query.in("user_id", filters.userIds);
+    }
+    if (filters.search)
+      query = query.ilike("description", `%${filters.search}%`);
+
+    if (filters.dateRange?.from && filters.dateRange?.to) {
+      // Changed 'created_at' to 'reported_at' to match your DB schema
+      query = query
+        .gte("reported_at", filters.dateRange.from.toISOString())
+        .lte("reported_at", filters.dateRange.to.toISOString());
+    }
+
+    const { data, error } = await query
+      .order("updated_at", { ascending: false })
       .range(from, to);
 
     if (error) throw error;
