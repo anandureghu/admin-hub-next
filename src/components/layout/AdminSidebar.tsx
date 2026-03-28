@@ -7,7 +7,8 @@ import {
   Receipt, 
   Settings, 
   LogOut,
-  Truck
+  Truck,
+  AlertOctagon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +20,7 @@ const navItems = [
   { to: "/employees", label: "Employees", icon: Users },
   { to: "/vehicles", label: "Vehicles", icon: Car },
   { to: "/trips", label: "Trips", icon: MapPin },
+  { to: "/accidents", label: "Accidents", icon: AlertOctagon },
   { to: "/receipts", label: "Receipts", icon: Receipt },
   { to: "/settings", label: "Settings", icon: Settings },
 ];

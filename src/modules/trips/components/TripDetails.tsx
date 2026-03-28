@@ -43,7 +43,7 @@ export default function TripDetails() {
             {/* Header Navigation */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="outline" size="icon" onClick={() => navigate("/trips")}>
+                    <Button variant="outline" size="icon" onClick={() => navigate(-1)}>
                         <ArrowLeft className="w-4 h-4" />
                     </Button>
                     <div>
