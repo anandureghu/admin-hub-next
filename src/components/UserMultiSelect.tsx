@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Check, ChevronDown, X, Users, Search } from "lucide-react";
-import { User } from "@/modules/trips/schemas/trip.schema";
+import { User } from "@/modules/trips/schemas/user.schema";
 
 interface UserMultiSelectProps {
   users: User[];
