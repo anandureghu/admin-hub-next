@@ -1,10 +1,8 @@
+// schemas/receipt.schema.ts
 import * as z from "zod";
-import { employeeSchema } from "../../employees/schemas/employee.schema";
 
 export const receiptSchema = z.object({
   id: z.string().uuid(),
-  trip_id: z.string().uuid().nullable(),
-  user_id: z.string().uuid().nullable(),
   amount: z.number().nullable(),
   description: z.string().nullable(),
   receipt_url: z.string(),
@@ -12,21 +10,41 @@ export const receiptSchema = z.object({
   updated_at: z.string().nullable(),
 });
 
-export const receiptListResponseSchema = receiptSchema.extend({
-  users: employeeSchema.nullable(),
-  trips: z.object({
-    trip_date: z.string(),
-    status: z.string(),
-  }).nullable(),
+export const receiptListResponseSchema = z.object({
+  id: z.string().uuid(),
+  amount: z.number().nullable(),
+  description: z.string().nullable(),
+  receipt_url: z.string(),
+  created_at: z.string(),
+  updated_at: z.string().nullable(),
+
+  // Joined relations
+  users: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+    })
+    .nullable()
+    .default(null),
+
+  trips: z
+    .object({
+      id: z.string(),
+      trip_date: z.string(),
+    })
+    .nullable()
+    .default(null),
 });
 
 export const receiptFiltersSchema = z.object({
   search: z.string().optional(),
   userId: z.string().uuid().optional(),
-  dateRange: z.object({
-    from: z.date().optional(),
-    to: z.date().optional(),
-  }).optional(),
+  dateRange: z
+    .object({
+      from: z.date().optional(),
+      to: z.date().optional(),
+    })
+    .optional(),
 });
 
 export type Receipt = z.infer<typeof receiptSchema>;

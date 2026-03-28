@@ -12,18 +12,21 @@ interface ReceiptPage {
 export const useReceiptsQuery = (filters: ReceiptFilters = {}) => {
   const queryClient = useQueryClient();
 
+  const filterKey = JSON.stringify(filters);
+
   useEffect(() => {
     queryClient.setQueryData<InfiniteData<ReceiptPage>>(
       receiptKeys.list(filters),
       (oldData) => {
-        if (!oldData) return oldData;
+        if (!oldData || oldData.pages.length <= 1) return oldData;
         return {
           pages: oldData.pages.slice(0, 1),
           pageParams: oldData.pageParams.slice(0, 1),
         };
       }
     );
-  }, [queryClient, filters]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryClient, filterKey]);
 
   return useInfiniteQuery<ReceiptPage>({
     queryKey: receiptKeys.list(filters),
