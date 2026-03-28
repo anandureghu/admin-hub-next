@@ -18,7 +18,9 @@ export const receiptApi = {
 
     let query = supabase.from("receipts").select("id, amount, description, receipt_url, created_at, updated_at, users(id, name), trips(id, trip_date)");
 
-    if (filters.userId) query = query.eq("user_id", filters.userId);
+    if (filters.userIds && filters.userIds.length > 0) {
+      query = query.in("user_id", filters.userIds);
+    }
     if (filters.search)
       query = query.ilike("description", `%${filters.search}%`);
 

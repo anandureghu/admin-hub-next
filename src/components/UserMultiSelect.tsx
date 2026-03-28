@@ -70,59 +70,65 @@ export function UserMultiSelect({
   });
 
   return (
-    <div ref={ref} className="relative w-56">
+    // 1. Increased width from w-56 to w-64 (or w-72 if you want even more space)
+    <div ref={ref} className="relative w-76">
       <button
         type="button"
         onClick={handleOpen}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-border bg-input text-sm text-foreground hover:bg-accent transition-colors min-h-[38px]"
+        // FIX: Ensure bg is dark (bg-input/bg-background) and hover is subtle, not solid blue
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-border bg-input text-sm text-foreground hover:bg-secondary/50 focus:ring-1 focus:ring-ring transition-colors min-h-[38px]"
       >
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <Users className="w-4 h-4 text-muted-foreground shrink-0" />
           {hasSelection ? (
-            <div className="flex items-center gap-1 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-wrap">
               {selectedUsers.slice(0, 2).map((u) => (
                 <span
                   key={u.id}
-                  className="flex items-center gap-1 bg-primary/20 text-primary rounded px-1.5 py-0.5 text-xs font-medium"
+                  // Chips get the primary background to stand out
+                  className="flex items-center gap-1 bg-primary text-primary-foreground rounded px-2 py-0.5 text-xs font-medium"
                 >
                   {u.name.split(" ")[0]}
                   <X
-                    className="w-3 h-3 cursor-pointer hover:text-destructive"
+                    className="w-3 h-3 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
                     onClick={(e) => removeTag(u.id, e)}
                   />
                 </span>
               ))}
               {selectedUsers.length > 2 && (
-                <span className="text-xs text-muted-foreground">
+                // FIX: Improved text contrast for "+X more"
+                <span className="text-xs font-medium text-foreground whitespace-nowrap bg-secondary px-2 py-0.5 rounded">
                   +{selectedUsers.length - 2} more
                 </span>
               )}
             </div>
           ) : (
-            <span className="text-muted-foreground">All Users</span>
+            <span className="text-muted-foreground whitespace-nowrap">All Users</span>
           )}
         </div>
-        <div className="flex items-center gap-1 shrink-0">
+
+        <div className="flex items-center gap-1 shrink-0 text-muted-foreground">
           {hasSelection && (
             <X
-              className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground"
+              className="w-3.5 h-3.5 cursor-pointer hover:text-foreground transition-colors"
               onClick={clearAll}
             />
           )}
           <ChevronDown
-            className={`w-4 h-4 text-muted-foreground transition-transform ${
-              open ? "rotate-180" : ""
-            }`}
+            className={`w-4 h-4 transition-transform ${open ? "rotate-180 text-foreground" : ""}`}
           />
         </div>
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 w-full rounded-md border border-border bg-card shadow-lg overflow-hidden">
+        // 1. Changed to 'bg-secondary' to make the entire dropdown distinctly lighter than the dark page background.
+        // (If it's STILL too dark, you can change 'bg-secondary' to 'bg-slate-800' or 'bg-[#1e293b]')
+        <div className="absolute z-50 mt-2 w-full rounded-md border border-border bg-secondary shadow-xl overflow-hidden">
+
           {/* Search Input */}
-          <div className="p-2 border-b border-border">
+          <div className="p-2 border-b border-border/50">
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search users..."
@@ -151,36 +157,40 @@ export function UserMultiSelect({
               )}
               <ul className="max-h-56 overflow-y-auto py-1">
                 {filteredUsers.map((user) => {
-                const selected = selectedIds.includes(user.id);
-                return (
-                  <li
-                    key={user.id}
-                    onClick={() => toggle(user.id)}
-                    className="flex items-center gap-3 px-3 py-2 text-sm cursor-pointer hover:bg-accent transition-colors"
-                  >
-                    <div
-                      className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                        selected
+                  const selected = selectedIds.includes(user.id);
+                  return (
+                    <li
+                      key={user.id}
+                      onClick={() => toggle(user.id)}
+                      // 2. Updated hover states using 'hover:bg-white/5'. 
+                      // This is a great trick that adds a subtle highlight regardless of how light/dark the background is!
+                      className={`flex items-center gap-3 px-3 py-2 text-sm cursor-pointer transition-colors ${selected
+                        ? "bg-primary/10 hover:bg-primary/20"
+                        : "hover:bg-white/5"
+                        }`}
+                    >
+                      <div
+                        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${selected
                           ? "bg-primary border-primary"
                           : "border-border bg-transparent"
-                      }`}
-                    >
-                      {selected && (
-                        <Check className="w-3 h-3 text-primary-foreground" />
-                      )}
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="font-medium text-foreground truncate">
-                        {user.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground truncate">
-                        {user.email}
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+                          }`}
+                      >
+                        {selected && (
+                          <Check className="w-3 h-3 text-primary-foreground" />
+                        )}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className={`font-medium truncate ${selected ? "text-primary" : "text-foreground"}`}>
+                          {user.name}
+                        </span>
+                        <span className="text-xs text-muted-foreground truncate">
+                          {user.email}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           )}
         </div>

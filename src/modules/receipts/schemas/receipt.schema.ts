@@ -38,7 +38,7 @@ export const receiptListResponseSchema = z.object({
 
 export const receiptFiltersSchema = z.object({
   search: z.string().optional(),
-  userId: z.string().uuid().optional(),
+  userIds: z.array(z.string().uuid()).optional(),
   dateRange: z
     .object({
       from: z.date().optional(),
