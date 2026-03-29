@@ -8,7 +8,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Vehicles from "./pages/Vehicles";
 import Trips from "./modules/trips/components/Trips";
-import Receipts from "./pages/Receipts";
+import Receipts from "./modules/receipts/components/Receipts";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import TripDetails from "./modules/trips/components/TripDetails";

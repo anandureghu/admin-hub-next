@@ -13,18 +13,21 @@ interface TripPage {
 export const useTripsQuery = (status?: string, userIds?: string[], dateRange?: DateRange) => {
   const queryClient = useQueryClient();
 
+  const filterKey = JSON.stringify({ status, userIds, dateRange });
+
   useEffect(() => {
     queryClient.setQueryData<InfiniteData<TripPage>>(
       tripKeys.get(status, userIds, dateRange ? { from: dateRange.from!, to: dateRange.to! } : undefined),
       (oldData) => {
-        if (!oldData) return oldData;
+        if (!oldData || oldData.pages.length <= 1) return oldData;
         return {
           pages: oldData.pages.slice(0, 1),
           pageParams: oldData.pageParams.slice(0, 1),
         };
       }
     );
-  }, [queryClient, status, userIds, dateRange]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryClient, filterKey]);
 
   return useInfiniteQuery<TripPage>({
     queryKey: tripKeys.get(status, userIds, dateRange ? { from: dateRange.from!, to: dateRange.to! } : undefined),
