@@ -6,14 +6,19 @@ import { useReceiptsQuery } from "../hooks/useReceiptsQuery";
 import { ReceiptCard } from "./ReceiptCard";
 import { UserMultiSelect } from "../../../components/UserMultiSelect" // Adjust path if needed
 import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
+import { DateRange } from "react-day-picker";
 
 export default function Receipts() {
   const [search, setSearch] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  
+  // 2. Add state for the date range
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  // 1. Fetch lightweight user list for the multi-select dropdown
+  // Fetch lightweight user list for the multi-select dropdown
   const { data: users = [], isLoading: usersLoading } = useQuery({
     queryKey: ["users-dropdown"],
     queryFn: async () => {
@@ -26,9 +31,9 @@ export default function Receipts() {
     },
   });
 
-  // 2. Pass the selectedUserIds to your receipts hook
+  // 3. Pass the dateRange to your receipts hook
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    useReceiptsQuery({ search, userIds: selectedUserIds });
+    useReceiptsQuery({ search, userIds: selectedUserIds, dateRange });
 
   const receipts = data?.pages.flatMap((page) => page.data) ?? [];
 
@@ -61,17 +66,7 @@ export default function Receipts() {
 
         {/* Filters Row */}
         <div className="flex flex-col sm:flex-row items-center gap-4">
-          {/* Search Bar */}
-          {/* <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search description..."
-              className="pl-10 bg-input border-border"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div> */}
-
+          
           {/* User Multi-Select */}
           <div className="w-full sm:w-auto">
             <UserMultiSelect
@@ -81,6 +76,14 @@ export default function Receipts() {
               isLoading={usersLoading}
             />
           </div>
+
+          {/* 4. Add the Date Picker Component */}
+          <DatePickerWithRange
+            date={dateRange}
+            onDateChange={setDateRange}
+            className="w-full sm:w-64"
+          />
+
         </div>
       </div>
 

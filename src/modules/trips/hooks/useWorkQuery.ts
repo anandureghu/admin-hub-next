@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { workApi } from "../api/work.api";
 import { workKeys } from "../constants/work.key";
 
-// useWorkQuery.ts
 export const useWorkSessionsQuery = (tripId: string) => {
   return useQuery({
     queryKey: workKeys.byTrip(tripId),

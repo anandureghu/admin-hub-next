@@ -82,7 +82,7 @@ async getById(id: string): Promise<EmployeeDetail> {
     .from("users")
     .select(`
       *,
-      trips (*),
+      trips (*, users(name), vehicles(vehicle_number, vehicle_type)),
       work_sessions (*)
     `)
     .eq("id", id)

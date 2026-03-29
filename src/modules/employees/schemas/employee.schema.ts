@@ -1,17 +1,5 @@
 import * as z from "zod";
 
-// export const employeeSchema = z.object({
-//   id: z.string().uuid(),
-//   name: z.string(),
-//   email: z.string().email(),
-//   phone: z.string().nullable(),
-//   avatar_url: z.string().nullable(),
-//   role: z.enum(["ADMIN", "EMPLOYEE"]),
-//   is_active: z.boolean(),
-//   company_id: z.string().uuid().nullable(),
-//   created_at: z.string(),
-// });
-
 // Base Employee Schema
 export const employeeSchema = z.object({
   id: z.string().uuid(),
@@ -26,8 +14,6 @@ export const employeeSchema = z.object({
   updated_at: z.string().nullable(),
   auth_user_id: z.string().nullable(),
 });
-
-// employee.schema.ts
 
 const nestedTripSchema = z.object({
   id: z.string().uuid(),
@@ -48,7 +34,7 @@ const nestedTripSchema = z.object({
   end_location: z.any().nullable(),
   current_location: z.any().nullable(),
   // Add these as optional because the backend JSON you shared doesn't include them
-  vehicles: z.object({ vehicle_number: z.string(), vehicle_type: z.string() }).nullable().optional(),
+  vehicles: z.object({ vehicle_number: z.string(), vehicle_type: z.string().nullable() }).nullable().optional(),
   users: z.object({ name: z.string() }).nullable().optional(),
 });
 

@@ -1,6 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
 
-// work.api.ts
 export const workApi = {
   async getByTripId(tripId: string) {
     const { data, error } = await supabase

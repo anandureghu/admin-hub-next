@@ -10,10 +10,9 @@ import { Button } from "@/components/ui/button";
 
 export default function EmployeeDetail() {
     const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate(); // 4. Initialize navigate
+    const navigate = useNavigate();
 
     const { data: employee, isLoading: empLoading } = useEmployeeQuery(id);
-    // const { data: activity, isLoading: actLoading } = useEmployeeActivityQuery(id);
 
     if (empLoading) return <div className="p-8 space-y-4">
         <Skeleton className="h-20 w-full" />
@@ -96,7 +95,7 @@ export default function EmployeeDetail() {
                 </TabsContent>
 
                 <TabsContent value="work" className="space-y-4">
-                    {employee?.work_sessions?.length === 0 ? ( // Changed from .works to .work_sessions
+                    {employee?.work_sessions?.length === 0 ? (
                         <div className="text-center py-12 border-2 border-dashed rounded-xl">
                             <Calendar className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
                             <p className="text-muted-foreground">No work sessions found.</p>

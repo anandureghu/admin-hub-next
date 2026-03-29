@@ -39,8 +39,10 @@ export function AdminLayout() {
 
   return (
     <div className="flex min-h-screen w-full bg-background">
-      <AdminSidebar />
-      <main className="flex-1 p-8 overflow-auto">
+      <div className="sticky top-0 h-screen shrink-0">
+        <AdminSidebar />
+      </div>
+      <main className="flex-1 p-8 min-w-0">
         <Outlet />
       </main>
     </div>

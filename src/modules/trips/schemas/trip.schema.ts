@@ -43,7 +43,6 @@ export const tripDetailResponseSchema = tripSchema.extend({
     name: z.string(),
     email: z.string()
   }).nullable(),
-  // Add the array of work sessions here
   work_sessions: z.array(workSessionSchema).default([]),
   start_image: z.string().nullable(),
   end_image: z.string().nullable(),
