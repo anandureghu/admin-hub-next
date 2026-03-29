@@ -25,7 +25,7 @@ export const columns: ColumnDef<Employee>[] = [
     header: ({ column }) => {
       return (
         <div className="flex ml-6">
-          <SortableHeader column={column} title={"name"} />
+          <SortableHeader column={column} title={"Name"} />
         </div>
       );
     },
@@ -47,7 +47,7 @@ export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: "phone",
     header: ({ column }) => {
-      return <SortableHeader column={column} title={"phone"} />;
+      return <SortableHeader column={column} title={"Phone"} />;
     },
   },
   {

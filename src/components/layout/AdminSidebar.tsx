@@ -39,7 +39,7 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="w-64 min-h-screen bg-sidebar border-r border-sidebar-border flex flex-col">
+    <aside className="w-64 h-full bg-sidebar border-r border-sidebar-border flex flex-col shrink-0">
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
@@ -54,7 +54,7 @@ export function AdminSidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.to;
           return (
@@ -74,7 +74,7 @@ export function AdminSidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-sidebar-border mt-auto">
         <button
           onClick={handleLogout}
           className="nav-link w-full text-destructive hover:bg-destructive/10 hover:text-destructive"

@@ -26,8 +26,6 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                                     parent.appendChild(placeholder);
                                 }
                             }}
-                        // In a real browser, this image might get a 404, causing
-                        // the default browser "broken image" icon to show.
                         />
                     ) : (
                         // Placeholder icon for when photo_url is missing
@@ -74,13 +72,6 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                             <MapPin className="w-3 h-3" />
                             Trip on {accident.trips?.trip_date ? format(new Date(accident.trips.trip_date), "PP") : "Unknown Date"}
                             <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
-                        </Link>
-
-                        <Link
-                            to={`/accidents/${accident.id}`}
-                            className="text-xs text-primary font-bold hover:underline"
-                        >
-                            View Full Report
                         </Link>
                     </div>
                 </div>

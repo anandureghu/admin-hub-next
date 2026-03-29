@@ -22,7 +22,7 @@ export function DatePickerWithRange({ date, onDateChange, className }: DatePicke
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className="justify-start px-2.5 font-normal w-full"
+            className="justify-start px-2.5 font-normal w-full bg-secondary"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
@@ -39,7 +39,7 @@ export function DatePickerWithRange({ date, onDateChange, className }: DatePicke
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 bg-secondary" align="start">
           <Calendar
             mode="range"
             defaultMonth={date?.from}

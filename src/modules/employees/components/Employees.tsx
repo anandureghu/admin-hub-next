@@ -16,7 +16,7 @@ import { columns } from "../columns/employeeColumns";
 import { useNavigate } from "react-router-dom";
 
 export default function Employees() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 

@@ -15,17 +15,17 @@ export const accidentReportSchema = z.object({
 export const accidentListResponseSchema = accidentReportSchema.extend({
   users: employeeSchema.nullable(),
   trips: z.object({
-    trip_date: z.string(),
-    status: z.string(),
+    trip_date: z.string().optional(),
+    status: z.string().optional(),
   }).nullable(),
 });
 
 export const accidentFiltersSchema = z.object({
   status: z.string().optional().default("all"),
-  userId: z.string().uuid().optional(),
+  userIds: z.array(z.string().uuid()).optional(),
   dateRange: z.object({
-    from: z.date(),
-    to: z.date(),
+    from: z.date().optional(),
+    to: z.date().optional(),
   }).optional(),
   search: z.string().optional(),
 });

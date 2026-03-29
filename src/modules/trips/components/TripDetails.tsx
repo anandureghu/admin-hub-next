@@ -3,13 +3,11 @@ import { useTripDetailQuery } from "../hooks/useTripsQuery";
 import { Button } from "@/components/ui/button";
 import {
     ArrowLeft,
-    MapPin,
     Calendar,
     Clock,
     Loader2,
     User,
     Car,
-    ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import { StatusBadge } from "@/components/ui/status-badge";

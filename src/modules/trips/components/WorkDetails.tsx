@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useWorkDetailQuery } from "../hooks/useWorkQuery";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Clock, MapPin, StickyNote, Loader2 } from "lucide-react";
+import { ArrowLeft, Clock, StickyNote, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 
 export default function WorkDetail() {
