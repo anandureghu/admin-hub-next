@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { ChevronRight, Clock, StickyNote } from "lucide-react";
+import { ChevronRight, StickyNote } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 

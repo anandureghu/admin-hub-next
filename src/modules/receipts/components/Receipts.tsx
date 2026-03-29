@@ -6,9 +6,6 @@ import { useReceiptsQuery } from "../hooks/useReceiptsQuery";
 import { ReceiptCard } from "./ReceiptCard";
 import { UserMultiSelect } from "../../../components/UserMultiSelect" // Adjust path if needed
 import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
-
-// 1. Import the DatePicker and DateRange type
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { DateRange } from "react-day-picker";
 

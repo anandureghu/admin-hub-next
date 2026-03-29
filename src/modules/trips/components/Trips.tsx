@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MapPin, Calendar, Clock, Loader2 } from "lucide-react";
-import { StatusBadge } from "@/components/ui/status-badge";
+import { MapPin, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Select,

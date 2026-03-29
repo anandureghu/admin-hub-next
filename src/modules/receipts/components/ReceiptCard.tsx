@@ -1,4 +1,3 @@
-// receipts/components/ReceiptCard.tsx
 import { Link } from "react-router-dom";
 import { User, MapPin, IndianRupee, ExternalLink } from "lucide-react";
 import { format } from "date-fns";

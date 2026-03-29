@@ -25,7 +25,6 @@ export const accidentApi = {
       query = query.ilike("description", `%${filters.search}%`);
 
     if (filters.dateRange?.from && filters.dateRange?.to) {
-      // Changed 'created_at' to 'reported_at' to match your DB schema
       query = query
         .gte("reported_at", filters.dateRange.from.toISOString())
         .lte("reported_at", filters.dateRange.to.toISOString());

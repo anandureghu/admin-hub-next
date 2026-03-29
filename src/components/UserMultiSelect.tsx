@@ -162,8 +162,6 @@ export function UserMultiSelect({
                                         <li
                                             key={user.id}
                                             onClick={() => toggle(user.id)}
-                                            // 2. Updated hover states using 'hover:bg-white/5'. 
-                                            // This is a great trick that adds a subtle highlight regardless of how light/dark the background is!
                                             className={`flex items-center gap-3 px-3 py-2 text-sm cursor-pointer transition-colors ${selected
                                                 ? "bg-primary/10 hover:bg-primary/20"
                                                 : "hover:bg-white/5"
@@ -172,7 +170,6 @@ export function UserMultiSelect({
                                             <div
                                                 className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${selected
                                                         ? "bg-primary border-primary"
-                                                        // Changed 'border-border' to 'border-muted-foreground/70' (or use 'border-slate-400')
                                                         : "border-muted-foreground/70 bg-transparent"
                                                     }`}
                                             >
