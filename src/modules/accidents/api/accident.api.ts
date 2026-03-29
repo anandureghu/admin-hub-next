@@ -24,10 +24,18 @@ export const accidentApi = {
     if (filters.search)
       query = query.ilike("description", `%${filters.search}%`);
 
-    if (filters.dateRange?.from && filters.dateRange?.to) {
+    if (filters.dateRange?.from) {
+      // Set from date to start of day (00:00:00)
+      const fromDate = new Date(filters.dateRange.from);
+      fromDate.setHours(0, 0, 0, 0);
+
+      // Use the 'to' date if it exists, otherwise fall back to the 'from' date for a single-day query
+      const toDate = new Date(filters.dateRange.to || filters.dateRange.from);
+      toDate.setHours(23, 59, 59, 999);
+
       query = query
-        .gte("reported_at", filters.dateRange.from.toISOString())
-        .lte("reported_at", filters.dateRange.to.toISOString());
+        .gte("reported_at", fromDate.toISOString())
+        .lte("reported_at", toDate.toISOString());
     }
 
     const { data, error } = await query

@@ -36,20 +36,6 @@ export const tripApi = {
       query = query.in("user_id", userIds);
     }
 
-    // if (dateRange?.from && dateRange?.to) {
-    //   // Set from date to start of day (00:00:00)
-    //   const fromDate = new Date(dateRange.from);
-    //   fromDate.setHours(0, 0, 0, 0);
-
-    //   // Set to date to end of day (23:59:59.999)
-    //   const toDate = new Date(dateRange.to);
-    //   toDate.setHours(23, 59, 59, 999);
-
-    //   query = query
-    //     .gte("created_at", fromDate.toISOString())
-    //     .lte("created_at", toDate.toISOString());
-    // }
-
     // REFACTORED DATE LOGIC
     if (dateRange?.from) {
       // Set from date to start of day (00:00:00)
@@ -61,8 +47,8 @@ export const tripApi = {
       toDate.setHours(23, 59, 59, 999);
 
       query = query
-        .gte("created_at", fromDate.toISOString())
-        .lte("created_at", toDate.toISOString());
+        .gte("trip_date", fromDate.toISOString())
+        .lte("trip_date", toDate.toISOString());
     }
 
     const { data, error } = await query;
