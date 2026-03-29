@@ -84,6 +84,7 @@ export default function Auth() {
   }, [navigate]);
 
   const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -107,6 +108,10 @@ export default function Auth() {
     return <LoadingScreen message="Verifying authorization..." />;
   }
 
+  if (isChecking) {
+    return <LoadingScreen message="Verifying authorization..." />;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
@@ -124,10 +129,14 @@ export default function Auth() {
 
           {/* Login Button */}
           <div className="space-y-4">
+          {/* Login Button */}
+          <div className="space-y-4">
             <Button
+              onClick={handleGoogleLogin}
               onClick={handleGoogleLogin}
               className="w-full"
               disabled={loading}
+              variant="outline"
               variant="outline"
             >
               {loading ? (

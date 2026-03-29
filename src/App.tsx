@@ -8,7 +8,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Vehicles from "./pages/Vehicles";
 import Trips from "./modules/trips/components/Trips";
-import Receipts from "./modules/receipts/components/Receipts";
+import Receipts from "./pages/Receipts";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import TripDetails from "./modules/trips/components/TripDetails";
@@ -37,7 +37,10 @@ const App = () => (
             {/* New Dynamic Route for Trip Details */}
             <Route path="/trip/:id" element={<TripDetails />} />
             <Route path="/employees/:id" element={<EmployeeDetail />} />
-            <Route path="/trips/:tripId/work/:workId" element={<WorkDetails />} />
+            <Route
+              path="/trips/:tripId/work/:workId"
+              element={<WorkDetails />}
+            />
             <Route path="/receipts" element={<Receipts />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

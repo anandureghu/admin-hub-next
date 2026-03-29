@@ -12,9 +12,19 @@ interface ImageUploadProps {
   onRemove: () => void;
   className?: string;
   maxSize?: number; // in MB
+  value?: string;
+  onChange: (file: File | null) => void;
+  onRemove: () => void;
+  className?: string;
+  maxSize?: number; // in MB
 }
 
 export function ImageUpload({
+  value,
+  onChange,
+  onRemove,
+  className,
+  maxSize = 5,
   value,
   onChange,
   onRemove,
@@ -24,7 +34,13 @@ export function ImageUpload({
   const [preview, setPreview] = useState<string | null>(value || null);
   const [isHovered, setIsHovered] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [preview, setPreview] = useState<string | null>(value || null);
+  const [isHovered, setIsHovered] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    setPreview(value || null);
+  }, [value]);
   useEffect(() => {
     setPreview(value || null);
   }, [value]);
@@ -32,17 +48,32 @@ export function ImageUpload({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
 
-    if (file.size > maxSize * 1024 * 1024) {
-      toast.error(`File size exceeds the limit of ${maxSize}MB`);
-      return;
-    }
+      if (file.size > maxSize * 1024 * 1024) {
+        toast.error(`File size exceeds the limit of ${maxSize}MB`);
+        return;
+      }
+      if (file.size > maxSize * 1024 * 1024) {
+        toast.error(`File size exceeds the limit of ${maxSize}MB`);
+        return;
+      }
 
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file (JPG or PNG)");
-      return;
-    }
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload an image file (JPG or PNG)");
+        return;
+      }
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload an image file (JPG or PNG)");
+        return;
+      }
 
+      const objectUrl = URL.createObjectURL(file);
+      setPreview(objectUrl);
+      onChange(file);
+    };
     const objectUrl = URL.createObjectURL(file);
     setPreview(objectUrl);
     onChange(file);
@@ -56,7 +87,18 @@ export function ImageUpload({
       fileInputRef.current.value = "";
     }
   };
+  const handleRemove = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPreview(null);
+    onRemove();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
   const handleClick = () => {
     fileInputRef.current?.click();
   };
