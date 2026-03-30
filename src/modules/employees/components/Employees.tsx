@@ -44,7 +44,7 @@ export default function Employees() {
 
   return (
     <div className="space-y-6 overflow-hidden">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-3">
         <div>
           <h1 className="page-header">Employees</h1>
           <p className="text-muted-foreground">Manage your team members</p>
@@ -78,7 +78,7 @@ export default function Employees() {
           onEditEmployee: handleEdit,
         }}
         toolbar={(table) => (
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 gap-4 px-1">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 gap-4 px-1">
             <Input
               placeholder="Search names..."
               value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}

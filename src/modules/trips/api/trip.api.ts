@@ -81,6 +81,16 @@ export const tripApi = {
         notes,
         location,
         created_at
+      ),
+      receipts (
+        id,
+        amount,
+        description,
+        image_url,
+        created_at,
+        updated_at,
+        users(id, name),
+        trips(id, trip_date)
       )
     `)
     .eq("id", id)

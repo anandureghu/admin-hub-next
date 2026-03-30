@@ -5,6 +5,7 @@ export const receiptSchema = z.object({
   amount: z.number().nullable(),
   description: z.string().nullable(),
   image_url: z.string(),
+  status: z.enum(["PENDING", "VERIFIED", "REJECTED"]).default("PENDING"),
   created_at: z.string(),
   updated_at: z.string().nullable(),
 });
@@ -14,6 +15,7 @@ export const receiptListResponseSchema = z.object({
   amount: z.number().nullable(),
   description: z.string().nullable(),
   image_url: z.string(),
+  status: z.enum(["PENDING", "VERIFIED", "REJECTED"]).default("PENDING"),
   created_at: z.string(),
   updated_at: z.string().nullable(),
 
@@ -38,6 +40,7 @@ export const receiptListResponseSchema = z.object({
 export const receiptFiltersSchema = z.object({
   search: z.string().optional(),
   userIds: z.array(z.string().uuid()).optional(),
+  status: z.enum(["PENDING", "VERIFIED", "REJECTED", "all"]).optional().default("all"),
   dateRange: z
     .object({
       from: z.date().optional(),

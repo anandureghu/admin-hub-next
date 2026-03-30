@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQueryClient, InfiniteData } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient, InfiniteData, useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { receiptApi } from "../api/receipt.api";
 import { receiptKeys } from "../constants/receipt.key";
@@ -33,5 +33,18 @@ export const useReceiptsQuery = (filters: ReceiptFilters = {}) => {
     queryFn: ({ pageParam = 0 }) => receiptApi.get(pageParam as number, filters),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
+  });
+};
+
+export const useUpdateReceiptStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "PENDING" | "VERIFIED" | "REJECTED" }) =>
+      receiptApi.updateStatus(id, status),
+    onSuccess: () => {
+      // Refresh the receipts list to reflect the new status
+      queryClient.invalidateQueries({ queryKey: receiptKeys.all });
+    },
   });
 };
