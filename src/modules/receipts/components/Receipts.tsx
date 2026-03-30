@@ -57,7 +57,7 @@ export default function Receipts() {
   }, [handleObserver]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden">
       <div className="flex flex-col gap-4">
         <div>
           <h1 className="page-header">Receipts</h1>
@@ -87,31 +87,34 @@ export default function Receipts() {
         </div>
       </div>
 
-      {/* Receipts Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {Array(8).fill(0).map((_, i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-xl" />
-          ))}
-        </div>
-      ) : receipts.length === 0 ? (
-        <div className="text-center py-20 bg-card border border-dashed rounded-2xl">
-          <FileText className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-          <p className="text-muted-foreground">No receipts found for these filters.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {receipts.map((receipt) => (
-            <ReceiptCard key={receipt.id} receipt={receipt} />
-          ))}
-        </div>
-      )}
-
-      {/* Infinite Scroll Sentinel */}
-      <div ref={sentinelRef} className="py-10 flex justify-center">
-        {isFetchingNextPage && (
-          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      {/* Receipts Grid Container */}
+      <div className="overflow-y-auto max-h-165 pr-1 space-y-4">
+        {/* Receipts Grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {Array(8).fill(0).map((_, i) => (
+              <Skeleton key={i} className="h-64 w-full rounded-xl" />
+            ))}
+          </div>
+        ) : receipts.length === 0 ? (
+          <div className="text-center py-20 bg-card border border-dashed rounded-2xl">
+            <FileText className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+            <p className="text-muted-foreground">No receipts found for these filters.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {receipts.map((receipt) => (
+              <ReceiptCard key={receipt.id} receipt={receipt} />
+            ))}
+          </div>
         )}
+
+        {/* Infinite Scroll Sentinel */}
+        <div ref={sentinelRef} className="py-10 flex justify-center">
+          {isFetchingNextPage && (
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          )}
+        </div>
       </div>
     </div>
   );

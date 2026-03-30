@@ -87,7 +87,7 @@ export default function Trips() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden">
       <div>
         <h1 className="page-header">Trips</h1>
         <p className="text-muted-foreground">Track all trip activities</p>
@@ -122,7 +122,7 @@ export default function Trips() {
       </div>
 
       {/* Trips List */}
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-y-auto max-h-165 pr-1">
         {isLoading ? (
           <div className="text-center py-8 text-muted-foreground">
             Loading trips...

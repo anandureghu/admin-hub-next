@@ -11,7 +11,7 @@ export const useEmployeesQuery = (
   filters: ColumnFiltersState
 ) => {
   return useQuery<EmployeeResponse>({
-    queryKey: employeeKeys.list(pageIndex, sorting, filters),
+    queryKey: employeeKeys.list(pageIndex, pageSize, sorting, filters),
     queryFn: () => employeeApi.get(pageIndex, pageSize, sorting, filters),
   });
 };

@@ -42,7 +42,6 @@ export default function Vehicles() {
     image_url: "",
   });
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [refreshCount, setRefreshCount] = useState(0);
   const [vehicleImage, setVehicleImage] = useState<File | null>(null);
   const itemSize = 9;
   const intersectionObserver = useRef<IntersectionObserver | null>(null);
@@ -103,7 +102,7 @@ export default function Vehicles() {
       //   setLoading(false);
       // }
     },
-    [pagenum, debouncedSearch, itemSize, refreshCount],
+    [pagenum, debouncedSearch, itemSize],
   );
 
   useEffect(() => {
@@ -132,7 +131,6 @@ export default function Vehicles() {
     setVehicles([]);
     setPagenum(0);
     setNextPage(true);
-    setRefreshCount((prev) => prev + 1);
   }
 
   function handleOpenAddDialog() {
