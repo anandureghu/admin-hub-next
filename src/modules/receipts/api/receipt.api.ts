@@ -16,7 +16,7 @@ export const receiptApi = {
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
 
-    let query = supabase.from("receipts").select("id, amount, description, receipt_url, created_at, updated_at, users(id, name), trips(id, trip_date)");
+    let query = supabase.from("receipts").select("id, amount, description, image_url, created_at, updated_at, users(id, name), trips(id, trip_date)");
 
     if (filters.userIds && filters.userIds.length > 0) {
       query = query.in("user_id", filters.userIds);

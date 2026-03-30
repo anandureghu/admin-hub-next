@@ -8,7 +8,7 @@ export const accidentReportSchema = z.object({
   description: z.string().min(1, "Description is required"),
   photo_url: z.string().nullable(),
   location: z.any().nullable(),
-  reported_at: z.string(),
+  created_at: z.string(),
   updated_at: z.string().nullable(),
 });
 
