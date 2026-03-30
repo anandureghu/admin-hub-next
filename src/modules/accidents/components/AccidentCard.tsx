@@ -54,7 +54,7 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                                 {/* Date Reference */}
                                 <span className="flex items-center gap-1.5 text-muted-foreground">
                                     <Calendar className="w-4 h-4" />
-                                    {format(new Date(accident.reported_at), "MMM d, yyyy • p")}
+                                    {format(new Date(accident.created_at), "MMM d, yyyy • p")}
                                 </span>
                             </div>
                         </div>

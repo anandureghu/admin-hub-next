@@ -15,7 +15,7 @@ export type Database = {
           id: string
           location: unknown
           photo_url: string | null
-          reported_at: string | null
+          created_at: string | null
           trip_id: string | null
           updated_at: string | null
           user_id: string | null
@@ -25,7 +25,7 @@ export type Database = {
           id?: string
           location?: unknown
           photo_url?: string | null
-          reported_at?: string | null
+          created_at?: string | null
           trip_id?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -35,7 +35,7 @@ export type Database = {
           id?: string
           location?: unknown
           photo_url?: string | null
-          reported_at?: string | null
+          created_at?: string | null
           trip_id?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -125,7 +125,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
-          receipt_url: string
+          image_url: string
           trip_id: string | null
           updated_at: string | null
           user_id: string | null
@@ -135,7 +135,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
-          receipt_url: string
+          image_url: string
           trip_id?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -145,7 +145,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
-          receipt_url?: string
+          image_url?: string
           trip_id?: string | null
           updated_at?: string | null
           user_id?: string | null

@@ -4,7 +4,7 @@ export const receiptSchema = z.object({
   id: z.string().uuid(),
   amount: z.number().nullable(),
   description: z.string().nullable(),
-  receipt_url: z.string(),
+  image_url: z.string(),
   created_at: z.string(),
   updated_at: z.string().nullable(),
 });
@@ -13,7 +13,7 @@ export const receiptListResponseSchema = z.object({
   id: z.string().uuid(),
   amount: z.number().nullable(),
   description: z.string().nullable(),
-  receipt_url: z.string(),
+  image_url: z.string(),
   created_at: z.string(),
   updated_at: z.string().nullable(),
 

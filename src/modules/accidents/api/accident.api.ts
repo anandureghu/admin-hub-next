@@ -15,7 +15,7 @@ export const accidentApi = {
         users (*),
         trips (trip_date, status)
       `)
-      .order("reported_at", { ascending: false })
+      .order("created_at", { ascending: false })
       .range(from, to);
 
     if (filters.userIds && filters.userIds.length > 0) {
@@ -34,8 +34,8 @@ export const accidentApi = {
       toDate.setHours(23, 59, 59, 999);
 
       query = query
-        .gte("reported_at", fromDate.toISOString())
-        .lte("reported_at", toDate.toISOString());
+        .gte("created_at", fromDate.toISOString())
+        .lte("created_at", toDate.toISOString());
     }
 
     const { data, error } = await query

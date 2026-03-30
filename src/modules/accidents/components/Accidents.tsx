@@ -15,7 +15,7 @@ export default function Accidents() {
   const [search, setSearch] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  
+
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch lightweight user list for the multi-select dropdown
@@ -69,7 +69,7 @@ export default function Accidents() {
   }, [handleObserver]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-hidden">
       <div className="flex flex-col gap-4">
         <div>
           <h1 className="page-header">Accident Reports</h1>
@@ -109,7 +109,7 @@ export default function Accidents() {
       </div>
 
       {/* Accidents List */}
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-y-auto max-h-165 pr-1">
         {isLoading ? (
           Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-xl" />)
         ) : accidents.length === 0 ? (

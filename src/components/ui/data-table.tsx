@@ -34,6 +34,7 @@ interface DataTableProps<TData, TValue> {
   columnFilters: ColumnFiltersState;
   setColumnFilters: (updater: ColumnFiltersState) => void;
   isLoading?: boolean;
+  tableContainerClassName?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -50,6 +51,7 @@ export function DataTable<TData, TValue>({
   setColumnFilters,
   rowCount,
   isLoading,
+  tableContainerClassName,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -71,11 +73,10 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden space-y-4">
       {toolbar?.(table)}
-      <div className="overflow-hidden rounded-md border">
-        <Table>
-          <TableHeader>
+      <Table wrapperClassName={`rounded-md border pr-1 ${tableContainerClassName || "max-h-130"}`}>
+        <TableHeader className="sticky top-0 z-10 bg-background outline outline-1 outline-border">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -117,7 +118,6 @@ export function DataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-      </div>
       <div className="my-4">
         <DataTablePagination table={table} />
       </div>

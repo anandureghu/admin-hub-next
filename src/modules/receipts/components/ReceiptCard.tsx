@@ -50,7 +50,7 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
 
           {/* Receipt View Link */}
           <a 
-            href={receipt.receipt_url} 
+            href={receipt.image_url} 
             target="_blank" 
             rel="noreferrer"
             className="text-xs text-blue-500 font-medium hover:underline flex items-center gap-1"

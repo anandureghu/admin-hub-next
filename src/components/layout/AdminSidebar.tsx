@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
   Users, 
@@ -12,8 +12,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ConfirmationModal } from "../ui/confirmation-modal";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -43,7 +43,7 @@ export function AdminSidebar() {
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="stat-icon w-10 h-10">
+          <div className="stat-icon w-10 h-10 flex items-center justify-center bg-primary rounded-lg">
             <Truck className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
@@ -73,15 +73,21 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Logout */}
+      {/* Logout with Confirmation Modal */}
       <div className="p-4 border-t border-sidebar-border mt-auto">
-        <button
-          onClick={handleLogout}
-          className="nav-link w-full text-destructive hover:bg-destructive/10 hover:text-destructive"
+        <ConfirmationModal
+          title="Are you sure you want to log out?"
+          description="You will be securely signed out of the TripTrack Admin Portal. You will need to enter your credentials to access the dashboard again."
+          confirmText="Log out"
+          variant="destructive"
+          onConfirm={handleLogout}
         >
-          <LogOut className="w-5 h-5" />
-          <span>Logout</span>
-        </button>
+          {/* This button becomes the 'children' and acts as the trigger */}
+          <button className="nav-link w-full text-destructive hover:bg-destructive/10 hover:text-destructive cursor-pointer">
+            <LogOut className="w-5 h-5" />
+            <span>Logout</span>
+          </button>
+        </ConfirmationModal>
       </div>
     </aside>
   );

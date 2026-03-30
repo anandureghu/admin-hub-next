@@ -8,7 +8,7 @@ interface ReceiptData {
   id: string;
   amount: number;
   description: string | null;
-  receipt_url: string | null;
+  image_url: string | null;
   created_at: string;
   profiles: { name: string } | null;
 }
@@ -120,9 +120,9 @@ export default function Receipts() {
                 <Calendar className="w-3 h-3" />
                 <span>{new Date(receipt.created_at).toLocaleDateString()}</span>
               </div>
-              {receipt.receipt_url && (
+              {receipt.image_url && (
                 <a
-                  href={receipt.receipt_url}
+                  href={receipt.image_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 inline-block text-sm text-primary hover:underline"
