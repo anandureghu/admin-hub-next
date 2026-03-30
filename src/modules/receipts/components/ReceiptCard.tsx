@@ -13,6 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
   const updateStatus = useUpdateReceiptStatus();
@@ -36,7 +41,7 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
   return (
     <div className="bg-card border border-border rounded-xl p-5 hover:shadow-md transition-all group">
       <div className="space-y-4">
-        
+
         {/* Top Section: Amount & Status Dropdown */}
         <div className="flex justify-between items-start">
           <div className="flex items-center text-xl font-bold text-foreground">
@@ -45,14 +50,14 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
           </div>
 
           {/* Interactive Status Badge */}
-          <Select 
-            value={receipt.status} 
+          <Select
+            value={receipt.status}
             onValueChange={handleStatusChange}
             disabled={updateStatus.isPending}
           >
-            <SelectTrigger 
+            <SelectTrigger
               className={cn(
-                "w-fit gap-2 h-7 text-[10px] uppercase font-bold px-2 py-0 border tracking-wider", 
+                "w-fit gap-2 h-7 text-[10px] uppercase font-bold px-2 py-0 border tracking-wider",
                 statusColors[receipt.status as keyof typeof statusColors],
                 updateStatus.isPending && "opacity-50"
               )}
@@ -60,7 +65,7 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
               {/* Force the trigger to ALWAYS display the raw database status (PENDING, VERIFIED, REJECTED) */}
               <SelectValue>{receipt.status}</SelectValue>
             </SelectTrigger>
-            
+
             <SelectContent>
               {/* These are the options the user sees in the dropdown menu */}
               <SelectItem value="PENDING" className="text-[11px] font-medium uppercase text-yellow-500">
@@ -77,20 +82,31 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
         </div>
 
         {/* Description & Employee */}
-        <div className="space-y-2">
-          <h3 className="font-semibold text-foreground leading-tight">
-            {receipt.description || "No description"}
-          </h3>
-          
+        <div className="space-y-2 overflow-hidden">
+          <Tooltip>
+            {/* asChild lets the h3 styling apply directly while receiving trigger props */}
+            <TooltipTrigger asChild>
+              <h3 className="font-semibold text-foreground leading-tight truncate block cursor-pointer">
+                {receipt.description || "No description"}
+              </h3>
+            </TooltipTrigger>
+            {/* Only show tooltip content if there is an actual description to show */}
+            {receipt.description && (
+              <TooltipContent side="top" className="max-w-[280px] break-words text-center">
+                <p>{receipt.description}</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+
           <div className="flex items-center justify-between">
-            <Link 
+            <Link
               to={`/employees/${receipt.users?.id}`}
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors w-fit"
             >
               <User className="w-3.5 h-3.5" />
               <span>{receipt.users?.name || "Unknown employee"}</span>
             </Link>
-            
+
             <span className="text-[10px] text-muted-foreground font-medium">
               {format(new Date(receipt.created_at), "dd MMM yyyy")}
             </span>
@@ -99,7 +115,7 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
 
         {/* Footer */}
         <div className="pt-3 border-t border-border/50 flex items-center justify-between">
-          <Link 
+          <Link
             to={`/trip/${receipt.trips?.id}`}
             className={cn(
               "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-secondary/80",
@@ -110,9 +126,9 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
             Trip on {receipt.trips?.trip_date ? format(new Date(receipt.trips.trip_date), "MMM d") : "N/A"}
           </Link>
 
-          <a 
-            href={receipt.image_url} 
-            target="_blank" 
+          <a
+            href={receipt.image_url}
+            target="_blank"
             rel="noreferrer"
             className="text-xs text-blue-500 font-medium hover:underline flex items-center gap-1"
           >

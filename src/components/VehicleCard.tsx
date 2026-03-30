@@ -3,6 +3,7 @@ import { Button } from "./ui/button";
 import { StatusBadge } from "./ui/status-badge";
 import { forwardRef } from "react";
 import { Vehicle } from "@/types/vehicleType";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
@@ -28,15 +29,24 @@ const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
           )}
         </div>
         <div className="flex flex-row justify-between">
-          <div>
+          <div className="overflow-hidden mr-2">
             <h3 className="text-lg font-semibold text-foreground mb-1">
               {vehicle.vehicle_number.toUpperCase()}
             </h3>
-            <p className="text-muted-foreground text-sm mb-4">
-              {vehicle.vehicle_type}
-            </p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="text-muted-foreground text-sm mb-4 truncate block cursor-pointer">
+                  {vehicle.vehicle_type}
+                </p>
+              </TooltipTrigger>
+              {vehicle.vehicle_type && (
+                <TooltipContent side="top" className="max-w-[280px] break-words text-center">
+                  <p>{vehicle.vehicle_type}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
           </div>
-          <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-2 shrink-0">
             <Button
               variant="ghost"
               size="icon"
