@@ -94,7 +94,7 @@ export default function Trips() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col pl-1 sm:flex-row gap-4">
 
         <UserMultiSelect
           users={usersData}

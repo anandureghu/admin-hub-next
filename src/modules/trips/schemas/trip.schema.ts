@@ -2,6 +2,7 @@ import * as z from "zod";
 import { userSchema } from "./user.schema";
 import { vehicleSchema } from "./vehicle.schema";
 import { workSessionSchema } from "./work.schema";
+import { receiptListResponseSchema } from "@/modules/receipts/schemas/receipt.schema";
 
 export const tripSchema = z.object({
   id: z.string().uuid(),
@@ -44,6 +45,7 @@ export const tripDetailResponseSchema = tripSchema.extend({
     email: z.string()
   }).nullable(),
   work_sessions: z.array(workSessionSchema).default([]),
+  receipts: z.array(receiptListResponseSchema).optional().nullable(),
   start_image: z.string().nullable(),
   end_image: z.string().nullable(),
 });

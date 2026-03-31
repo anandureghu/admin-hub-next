@@ -3,6 +3,11 @@ import { Calendar, User, FileText, ExternalLink, MapPin, Image } from "lucide-re
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
     return (
@@ -35,12 +40,21 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                     )}
                 </div>
 
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 min-w-0 space-y-4">
                     <div className="flex justify-between items-start gap-4">
-                        <div className="space-y-1">
-                            <h3 className="font-bold text-lg leading-tight text-foreground">
-                                {accident.description}
-                            </h3>
+                        <div className="space-y-1 overflow-hidden w-full">
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <h3 className="font-bold text-lg leading-tight text-foreground truncate block cursor-pointer">
+                                        {accident.description || "No description"}
+                                    </h3>
+                                </TooltipTrigger>
+                                {accident.description && (
+                                    <TooltipContent side="top" className="max-w-[400px] break-words text-left">
+                                        <p>{accident.description}</p>
+                                    </TooltipContent>
+                                )}
+                            </Tooltip>
                             <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
                                 {/* Employee Link */}
                                 <Link

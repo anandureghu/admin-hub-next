@@ -81,7 +81,7 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Total Employees"
+          title="Active Employees"
           value={stats.totalEmployees}
           icon={Users}
         // trend={{ value: 12, isPositive: true }}
