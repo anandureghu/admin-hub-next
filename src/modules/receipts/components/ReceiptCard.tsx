@@ -57,7 +57,7 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
           >
             <SelectTrigger
               className={cn(
-                "w-fit gap-2 h-7 text-[10px] uppercase font-bold px-2 py-0 border tracking-wider",
+                "w-fit gap-2 h-7 text-[10px] uppercase font-bold px-2 py-0 border tracking-wider cursor-pointer",
                 statusColors[receipt.status as keyof typeof statusColors],
                 updateStatus.isPending && "opacity-50"
               )}
@@ -68,13 +68,13 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
 
             <SelectContent>
               {/* These are the options the user sees in the dropdown menu */}
-              <SelectItem value="PENDING" className="text-[11px] font-medium uppercase text-yellow-500">
+              <SelectItem value="PENDING" className="text-[11px] font-medium uppercase text-yellow-500 cursor-pointer">
                 Pending
               </SelectItem>
-              <SelectItem value="VERIFIED" className="text-[11px] font-medium uppercase text-green-500">
+              <SelectItem value="VERIFIED" className="text-[11px] font-medium uppercase text-green-500 cursor-pointer">
                 Verify
               </SelectItem>
-              <SelectItem value="REJECTED" className="text-[11px] font-medium uppercase text-destructive">
+              <SelectItem value="REJECTED" className="text-[11px] font-medium uppercase text-destructive cursor-pointer">
                 Reject
               </SelectItem>
             </SelectContent>
