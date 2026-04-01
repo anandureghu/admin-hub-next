@@ -117,7 +117,7 @@ export default function Trips() {
         <DatePickerWithRange
           date={dateRange}
           onDateChange={setDateRange}
-          className="w-64"
+          className="w-full lg:w-72 shrink-0"
         />
       </div>
 

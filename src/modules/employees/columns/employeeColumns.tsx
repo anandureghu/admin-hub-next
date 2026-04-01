@@ -46,21 +46,15 @@ export const columns: ColumnDef<Employee>[] = [
   },
   {
     accessorKey: "phone",
-    header: ({ column }) => {
-      return <SortableHeader column={column} title={"Phone"} />;
-    },
+    header: "Phone",
   },
   {
     accessorKey: "role",
-    header: ({ column }) => {
-      return <SortableHeader column={column} title={"Role"} />;
-    },
+    header: "Role",
   },
   {
     accessorKey: "is_active",
-    header: ({ column }) => {
-      return <SortableHeader column={column} title={"Status"} />;
-    },
+    header: "Status",
     cell: ({ row }) => {
       const employee = row.original;
       return (
@@ -71,9 +65,7 @@ export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: "created_at",
     accessorFn: (row) => row.created_at ? new Date(row.created_at).toLocaleDateString() : "-",
-    header: ({ column }) => {
-      return <SortableHeader column={column} title={"Joined"} />;
-    },
+    header: "Joined"
   },
   {
     id: "actions",
@@ -103,7 +95,7 @@ export const columns: ColumnDef<Employee>[] = [
                 actions.onToggleStatus(employee.id, employee.is_active);
               }}
             >
-              {employee.is_active ? "Deactivate" : "Activate"}
+              {employee.is_active ? "Set as Inactive" : "Activate"}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

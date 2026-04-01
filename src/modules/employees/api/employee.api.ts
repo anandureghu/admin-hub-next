@@ -26,10 +26,13 @@ export const employeeApi = {
 
     // Filters
     filters.forEach((filter) => {
-      if (filter.value === undefined || filter.value === null) return;
+      if (filter.value === undefined || filter.value === null || filter.value === "") return;
 
+      // FIX: Use .or() to search both name AND phone columns
       if (filter.id === "name") {
-        query = query.ilike("name", `%${filter.value as string}%`);
+        const searchTerm = filter.value as string;
+        // ilike is case-insensitive. We use % for wildcard matching.
+        query = query.or(`name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`);
       }
 
       if (filter.id === "role") {

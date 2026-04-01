@@ -45,21 +45,18 @@ export function TripCard({ trip }: TripCardProps) {
                             {trip.vehicles?.vehicle_type ? (
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        {/* FIX: Wrapped the text in a span so Radix can attach event listeners! */}
                                         <span className="cursor-pointed">
                                             {" "}• {trip.vehicles.vehicle_type} •{" "}
                                         </span>
                                     </TooltipTrigger>
-                                    <TooltipContent 
-  side="top" 
-  // Added 'whitespace-normal' to allow the text to wrap to new lines
-  className="max-w-[400px] whitespace-normal break-words text-left"
->
-    {trip.vehicles.vehicle_type}
-</TooltipContent>
+                                    <TooltipContent
+                                        side="top"
+                                        className="max-w-[400px] whitespace-normal break-words text-left"
+                                    >
+                                        {trip.vehicles.vehicle_type}
+                                    </TooltipContent>
                                 </Tooltip>
                             ) : (
-                                // Fallback if there is no vehicle type
                                 <span> • </span>
                             )}
 
@@ -91,10 +88,10 @@ export function TripCard({ trip }: TripCardProps) {
                     <div className="flex items-center border-l border-border pl-6 ml-auto lg:ml-0">
                         <Link
                             to={`/trip/${trip.id}`}
-                            className="text-primary font-medium underline underline-offset-4 hover:text-primary/80 transition-colors inline-flex items-center gap-1 group/link"
+                            className="bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-white border border-blue-500/20 rounded-lg px-4 py-2 text-sm font-semibold transition-all inline-flex items-center gap-2 group/link"
                         >
                             View Details
-                            <ArrowRight className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
+                            <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
                         </Link>
                     </div>
                 </div>

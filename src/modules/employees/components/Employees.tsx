@@ -14,6 +14,7 @@ import { EmployeeDialog } from "./EmployeeDialog";
 import { Employee } from "../schemas/employee.schema";
 import { columns } from "../columns/employeeColumns";
 import { useNavigate } from "react-router-dom";
+import { DebouncedInput } from "@/components/ui/debounced-input";
 
 export default function Employees() {
   const navigate = useNavigate();
@@ -79,13 +80,14 @@ export default function Employees() {
         }}
         toolbar={(table) => (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 gap-4 px-1">
-            <Input
-              placeholder="Search names..."
+            <DebouncedInput
+              placeholder="Search names or phone numbers..."
               value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-              onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
+              onChange={(value) =>
+                table.getColumn("name")?.setFilterValue(value)
               }
               className="max-w-sm bg-input border-border"
+              debounce={500} // Optional: adjust the delay here!
             />
 
             <div className="flex items-center gap-6">
