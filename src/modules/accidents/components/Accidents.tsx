@@ -103,7 +103,7 @@ export default function Accidents() {
           <DatePickerWithRange
             date={dateRange}
             onDateChange={setDateRange}
-            className="w-full sm:w-64"
+            className="w-full lg:w-72"
           />
         </div>
       </div>

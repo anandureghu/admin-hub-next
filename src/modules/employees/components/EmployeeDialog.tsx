@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client"; // IMPORT SUPABASE
 import {
     Dialog,
     DialogContent,
@@ -12,6 +13,7 @@ import {
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -19,6 +21,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import {
     employeeFormSchema,
     type EmployeeFormValues,
@@ -32,11 +41,6 @@ interface EmployeeDialogProps {
     employee: Employee | null;
 }
 
-interface ApiError extends Error {
-    code?: string;
-    status?: number;
-}
-
 export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogProps) {
     const mutation = useEmployeeMutation();
 
@@ -46,24 +50,63 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
             name: "",
             email: "",
             phone: "",
+            role: "EMPLOYEE",
         },
     });
 
-    // Sync form with employee data when editing
     useEffect(() => {
         if (employee) {
             form.reset({
                 name: employee.name,
                 email: employee.email,
                 phone: employee.phone ?? "",
+                role: employee.role ?? "EMPLOYEE",
             });
         } else {
-            form.reset({ name: "", email: "", phone: "" });
+            form.reset({ name: "", email: "", phone: "", role: "EMPLOYEE" });
         }
     }, [employee, form, open]);
 
+    // NEW: Helper function to check for duplicates
+    async function checkDuplicates(email: string, phone: string, currentEmployeeId: string | null) {
+        let query = supabase
+            .from("users")
+            .select("id, email, phone")
+            .or(`email.eq.${email},phone.eq.${phone}`);
+
+        if (currentEmployeeId) {
+            query = query.neq("id", currentEmployeeId);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error("Error checking duplicates:", error);
+            throw new Error("Failed to validate employee data.");
+        }
+
+        if (data && data.length > 0) {
+            const emailConflict = data.some(u => u.email === email);
+            const phoneConflict = data.some(u => u.phone === phone);
+
+            if (emailConflict) return "An employee with this email already exists.";
+            if (phoneConflict) return "An employee with this phone number already exists.";
+        }
+
+        return null; // No duplicates found
+    }
+
     async function onSubmit(values: EmployeeFormValues) {
         try {
+            // 1. Run the duplicate check first
+            const duplicateError = await checkDuplicates(values.email, values.phone, employee?.id ?? null);
+
+            if (duplicateError) {
+                toast.error(duplicateError);
+                return; // Stop execution
+            }
+
+            // 2. If no duplicates, proceed with mutation
             await mutation.mutateAsync({
                 id: employee?.id ?? null,
                 payload: values,
@@ -71,16 +114,9 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
 
             toast.success(employee ? "Employee updated" : "Employee created");
             onOpenChange(false);
-        } catch (error: unknown) {
-            if (error instanceof Error) {
-                const apiError = error as ApiError; // Narrowing the type
-
-                if (apiError.code === "23505") {
-                    toast.error("An employee with this email already exists");
-                } else {
-                    toast.error(apiError.message || "Something went wrong");
-                }
-            }
+        } catch (error) {
+            // Fallback error handling
+            toast.error(error.message || "Something went wrong while saving the employee.");
         }
     }
 
@@ -96,6 +132,8 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        {/* ... (Name and Email FormFields remain exactly the same) ... */}
+
                         <FormField
                             control={form.control}
                             name="name"
@@ -129,20 +167,50 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                             )}
                         />
 
+                        {/* UPDATE: Added asterisk to Phone label */}
                         <FormField
                             control={form.control}
                             name="phone"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Phone</FormLabel>
+                                    <FormLabel>Phone *</FormLabel>
                                     <FormControl>
+                                        {/* 1. Simplify placeholder to one clean example */}
                                         <Input
                                             type="tel"
-                                            placeholder="+1 234 567 8900"
+                                            placeholder="+49 151 23456789"
                                             className="bg-input"
                                             {...field}
                                         />
                                     </FormControl>
+
+                                    {/* 2. Add helper text to explain acceptable formats */}
+                                    <FormDescription className="text-[11px] text-muted-foreground/80">
+                                        Formats: +49, 0049, or 0 (e.g., 0172 1234567)
+                                    </FormDescription>
+
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="role"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Role *</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-input border-border">
+                                                <SelectValue placeholder="Select a role" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent className="bg-card border-border">
+                                            <SelectItem value="EMPLOYEE">Employee</SelectItem>
+                                            <SelectItem value="ADMIN">Admin</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}

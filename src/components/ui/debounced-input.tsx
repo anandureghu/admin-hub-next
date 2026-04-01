@@ -1,0 +1,39 @@
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+
+interface DebouncedInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+  value: string | number;
+  onChange: (value: string | number) => void;
+  debounce?: number;
+}
+
+export function DebouncedInput({
+  value: initialValue,
+  onChange,
+  debounce = 500, // Default to 500ms delay
+  ...props
+}: DebouncedInputProps) {
+  const [value, setValue] = useState(initialValue);
+
+  // Sync local state if the external value changes
+  useEffect(() => {
+    setValue(initialValue);
+  }, [initialValue]);
+
+  // The actual debounce logic
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      onChange(value);
+    }, debounce);
+
+    return () => clearTimeout(timeout);
+  }, [value, debounce, onChange]);
+
+  return (
+    <Input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
+}

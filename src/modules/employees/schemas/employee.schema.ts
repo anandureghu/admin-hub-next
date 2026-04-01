@@ -1,5 +1,7 @@
 import * as z from "zod";
 
+const germanMobileRegex = /^(\+49|0049|0)\s?1[567]\d{1,2}\s?\d{7,8}$/;
+
 // Base Employee Schema
 export const employeeSchema = z.object({
   id: z.string().uuid(),
@@ -8,7 +10,7 @@ export const employeeSchema = z.object({
   email: z.string().email(),
   phone: z.string().nullable(),
   avatar_url: z.string().nullable(),
-  role: z.enum(["ADMIN", "EMPLOYEE"]), // Strict enum handles the 'string' error
+  role: z.enum(["ADMIN", "EMPLOYEE"]),
   is_active: z.boolean(),
   created_at: z.string(),
   updated_at: z.string().nullable(),
@@ -29,11 +31,9 @@ const nestedTripSchema = z.object({
   updated_at: z.string(),
   start_image: z.string().nullable(),
   end_image: z.string().nullable(),
-  // Use z.any() for locations since they are Geography objects from Supabase
   start_location: z.any().nullable(),
   end_location: z.any().nullable(),
   current_location: z.any().nullable(),
-  // Add these as optional because the backend JSON you shared doesn't include them
   vehicles: z.object({ vehicle_number: z.string(), vehicle_type: z.string().nullable() }).nullable().optional(),
   users: z.object({ name: z.string() }).nullable().optional(),
 });
@@ -58,7 +58,8 @@ export const employeeResponseSchema = z.object({
 export const employeeFormSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().optional(),
+  phone: z.string().regex(germanMobileRegex, "Invalid phone number format"),
+  role: z.enum(["ADMIN", "EMPLOYEE"]).default("EMPLOYEE"), 
 });
 
 export const tripSchema = z.object({
@@ -92,7 +93,7 @@ export const createEmployeeSchema = employeeSchema.omit({
   id: true, 
   created_at: true, 
   updated_at: true, 
-  auth_user_id: true 
+  auth_user_id: true,
 });
 export type Employee = z.infer<typeof employeeSchema>;
 export type EmployeeResponse = z.infer<typeof employeeResponseSchema>;

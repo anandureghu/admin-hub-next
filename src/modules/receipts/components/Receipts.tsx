@@ -54,7 +54,6 @@ export default function Receipts() {
     status: statusFilter 
   });
 
-  // Flatten the pages array into a single list of receipts
   const receipts = data?.pages.flatMap((page) => page.data) ?? [];
 
   // --- 3. Intersection Observer for Infinite Scroll ---
@@ -74,7 +73,7 @@ export default function Receipts() {
     if (!sentinel) return;
 
     const observer = new IntersectionObserver(handleObserver, {
-      root: null, // Uses the closest scrollable ancestor (our flex-1 div below)
+      root: null,
       rootMargin: "200px", 
       threshold: 0,
     });
@@ -84,7 +83,6 @@ export default function Receipts() {
   }, [handleObserver]);
 
   return (
-    // Outer container: Flex column, hiding overflow to prevent page scrolling
     <div className="flex flex-col overflow-hidden">
       
       {/* --- STATIC TOP SECTION (Header + Filters) --- */}
@@ -138,7 +136,7 @@ export default function Receipts() {
           <DatePickerWithRange
             date={dateRange}
             onDateChange={setDateRange}
-            className="w-full lg:w-64 shrink-0"
+            className="w-full lg:w-72 shrink-0"
           />
         </div>
       </div>
@@ -146,7 +144,6 @@ export default function Receipts() {
 
 
       {/* --- SCROLLING LIST SECTION --- */}
-      {/* flex-1 makes it fill remaining space, overflow-y-auto handles the scrolling */}
       <div className="flex-1 overflow-y-auto max-h-165 pt-6 pr-2 custom-scrollbar">
         
         {isLoading ? (

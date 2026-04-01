@@ -1,18 +1,19 @@
 import { Car, Pencil } from "lucide-react";
-import { Button } from "./ui/button";
-import { StatusBadge } from "./ui/status-badge";
+import { Button } from "@/components/ui/button";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { forwardRef } from "react";
-import { Vehicle } from "@/types/vehicleType";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { Vehicle } from "../schemas/vehicle.schema";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface VehicleCardProps {
   vehicle: Vehicle;
   toggleVehicleStatus: (id: string, currentStatus: boolean) => void;
   handleOpenEditDialog: (vehicle: Vehicle) => void;
+  isToggling?: boolean;
 }
 
 const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
-  ({ vehicle, toggleVehicleStatus, handleOpenEditDialog }, ref) => {
+  ({ vehicle, toggleVehicleStatus, handleOpenEditDialog, isToggling }, ref) => {
     return (
       <div ref={ref} className="stat-card animate-fade-in">
         <div className="flex items-start justify-center mb-4">
@@ -69,6 +70,7 @@ const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
             <Button
               variant="ghost"
               size="sm"
+              disabled={isToggling}
               onClick={() => toggleVehicleStatus(vehicle.id, vehicle.is_active)}
             >
               {vehicle.is_active ? "Mark as Unavailable" : "Mark as Available"}

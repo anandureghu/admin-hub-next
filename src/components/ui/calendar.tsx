@@ -15,8 +15,20 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
+        
+        // --- Centered & Aligned Header ---
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        caption_label: "flex text-sm font-medium gap-1 items-center",
+        
+        // --- Dropdown Styling ---
+        caption_dropdowns: "flex justify-center gap-2",
+        dropdown_month: "relative inline-flex items-center rounded-md border border-input px-2 py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+        dropdown_year: "relative inline-flex items-center rounded-md border border-input px-2 py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
+        // The select element is absolute and invisible, but fully clickable over the styled containers
+        dropdown: "absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer appearance-none",
+        dropdown_icon: "ml-1 h-3 w-3 opacity-50",
+        vhidden: "sr-only",
+
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -42,7 +54,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         day_range_end: "day-range-end",
         day_selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-        day_today: "bg-accent/50 text-accent-foreground", // Added 50% opacity
+        day_today: "border border-accent/50",
         day_outside:
           "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
         day_disabled: "text-muted-foreground opacity-50",
