@@ -1,4 +1,4 @@
-# Admin Hub
+# TripOps
 
 A comprehensive administrative management system built with React, Vite, and Supabase. This project provides a robust dashboard for managing employees, vehicles, trips, receipts, and settings.
 
