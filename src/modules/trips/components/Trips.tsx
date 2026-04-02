@@ -87,14 +87,14 @@ export default function Trips() {
   }
 
   return (
-    <div className="space-y-6 overflow-hidden">
-      <div>
+    <div className="flex flex-col h-full gap-6 overflow-hidden">
+      <div className="shrink-0">
         <h1 className="page-header">Trips</h1>
         <p className="text-muted-foreground">Track all trip activities</p>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col pl-1 sm:flex-row gap-4">
+      <div className="flex flex-col pl-1 sm:flex-row gap-4 shrink-0">
 
         <UserMultiSelect
           users={usersData}
@@ -122,7 +122,7 @@ export default function Trips() {
       </div>
 
       {/* Trips List */}
-      <div className="space-y-4 overflow-y-auto max-h-165 pr-1">
+      <div className="flex-1 min-h-0 space-y-4 overflow-y-auto pr-2 pb-4 custom-scrollbar">
         {isLoading ? (
           <div className="text-center py-8 text-muted-foreground">
             Loading trips...

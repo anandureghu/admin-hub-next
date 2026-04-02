@@ -44,8 +44,8 @@ export default function Employees() {
   };
 
   return (
-    <div className="space-y-6 overflow-hidden">
-      <div className="flex items-center justify-between mb-3">
+    <div className="flex flex-col h-full gap-6 overflow-hidden">
+      <div className="flex items-center justify-between shrink-0">
         <div>
           <h1 className="page-header">Employees</h1>
           <p className="text-muted-foreground">Manage your team members</p>
@@ -73,7 +73,6 @@ export default function Employees() {
         setSorting={setSorting}
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
-        tableContainerClassName="max-h-150"
         meta={{
           onToggleStatus: handleToggleStatus,
           onEditEmployee: handleEdit,

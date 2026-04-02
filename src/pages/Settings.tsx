@@ -81,7 +81,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-8 max-w-2xl">
+    <div className="flex flex-col h-full overflow-y-auto space-y-8 max-w-2xl pr-2 pb-4 custom-scrollbar">
       <div>
         <h1 className="page-header">Settings</h1>
         <p className="text-muted-foreground">Manage your account and preferences</p>

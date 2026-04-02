@@ -16,7 +16,7 @@ export default function Dashboard() {
   const recentTrips = data?.recentTrips || [];
 
   return (
-    <div className="space-y-8">
+    <div className="flex flex-col h-full overflow-y-auto space-y-8 pr-2 pb-4 custom-scrollbar">
       <div>
         <h1 className="page-header">Dashboard</h1>
         <p className="text-muted-foreground">Welcome back! Here's your fleet overview.</p>
