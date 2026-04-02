@@ -73,19 +73,6 @@ export default function Trips() {
     return () => observer.disconnect();
   }, [handleObserver]);
 
-  function formatTime(timestamp: string | null) {
-    if (!timestamp) return "—";
-    return new Date(timestamp).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-
-  function calculateDistance(startKm: number | null, endKm: number | null) {
-    if (startKm === null || endKm === null) return "—";
-    return `${endKm - startKm} km`;
-  }
-
   return (
     <div className="flex flex-col h-full gap-6 overflow-hidden">
       <div className="shrink-0">

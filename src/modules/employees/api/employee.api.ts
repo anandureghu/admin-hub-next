@@ -28,10 +28,8 @@ export const employeeApi = {
     filters.forEach((filter) => {
       if (filter.value === undefined || filter.value === null || filter.value === "") return;
 
-      // FIX: Use .or() to search both name AND phone columns
       if (filter.id === "name") {
         const searchTerm = filter.value as string;
-        // ilike is case-insensitive. We use % for wildcard matching.
         query = query.or(`name.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`);
       }
 
@@ -80,47 +78,44 @@ export const employeeApi = {
     if (error) throw error;
   },
 
-async getById(id: string): Promise<EmployeeDetail> {
-  const { data, error } = await supabase
-    .from("users")
-    .select(`
+  async getById(id: string): Promise<EmployeeDetail> {
+    const { data, error } = await supabase
+      .from("users")
+      .select(`
       *,
       trips (*, users(name), vehicles(vehicle_number, vehicle_type)),
       work_sessions (*)
     `)
-    .eq("id", id)
-    .single();
+      .eq("id", id)
+      .single();
 
-  if (error) throw error;
-  
-  // Use the detailed schema to parse the nested arrays
-  return employeeDetailSchema.parse(data);
-},
+    if (error) throw error;
 
-  // Add to employeeApi object
-async getEmployeeActivity(userId: string) {
-  // Fetch trips with vehicle info
-  const tripsPromise = supabase
-    .from("trips")
-    .select(`*, vehicles(vehicle_number, vehicle_type)`)
-    .eq("user_id", userId)
-    .order("trip_date", { ascending: false });
+    return employeeDetailSchema.parse(data);
+  },
 
-  // Fetch work sessions
-  const sessionsPromise = supabase
-    .from("work_sessions")
-    .select(`*`)
-    .eq("user_id", userId)
-    .order("start_time", { ascending: false });
+  async getEmployeeActivity(userId: string) {
+    const tripsPromise = supabase
+      .from("trips")
+      .select(`*, vehicles(vehicle_number, vehicle_type)`)
+      .eq("user_id", userId)
+      .order("trip_date", { ascending: false });
 
-  const [tripsRes, sessionsRes] = await Promise.all([tripsPromise, sessionsPromise]);
+    // Fetch work sessions
+    const sessionsPromise = supabase
+      .from("work_sessions")
+      .select(`*`)
+      .eq("user_id", userId)
+      .order("start_time", { ascending: false });
 
-  if (tripsRes.error) throw tripsRes.error;
-  if (sessionsRes.error) throw sessionsRes.error;
+    const [tripsRes, sessionsRes] = await Promise.all([tripsPromise, sessionsPromise]);
 
-  return {
-    trips: tripsRes.data,
-    sessions: sessionsRes.data,
-  };
-},
+    if (tripsRes.error) throw tripsRes.error;
+    if (sessionsRes.error) throw sessionsRes.error;
+
+    return {
+      trips: tripsRes.data,
+      sessions: sessionsRes.data,
+    };
+  },
 };

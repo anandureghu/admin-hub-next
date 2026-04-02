@@ -132,7 +132,6 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        {/* ... (Name and Email FormFields remain exactly the same) ... */}
 
                         <FormField
                             control={form.control}
@@ -167,7 +166,6 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                             )}
                         />
 
-                        {/* UPDATE: Added asterisk to Phone label */}
                         <FormField
                             control={form.control}
                             name="phone"
@@ -175,7 +173,6 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                                 <FormItem>
                                     <FormLabel>Phone *</FormLabel>
                                     <FormControl>
-                                        {/* 1. Simplify placeholder to one clean example */}
                                         <Input
                                             type="tel"
                                             placeholder="+49 151 23456789"
@@ -184,7 +181,6 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                                         />
                                     </FormControl>
 
-                                    {/* 2. Add helper text to explain acceptable formats */}
                                     <FormDescription className="text-[11px] text-muted-foreground/80">
                                         Formats: +49, 0049, or 0 (e.g., 0172 1234567)
                                     </FormDescription>

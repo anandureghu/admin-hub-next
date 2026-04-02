@@ -21,15 +21,8 @@ interface MetaTypes {
 
 
 const getInitials = (name: string) => {
-  if (!name) return ""; // Safety check for empty names
-
-  return name
-    .trim() // Remove leading/trailing spaces
-    .split(/\s+/) // Split by one or more spaces safely
-    .slice(0, 2) // Take only the first two words
-    .map((part) => part[0]) // Get the first letter of each word
-    .join("") // Join them back together
-    .toUpperCase(); // Ensure uppercase
+  if (!name) return "";
+  return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 };
 
 export const columns: ColumnDef<Employee>[] = [

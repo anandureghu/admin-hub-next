@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useReceiptsQuery } from "../hooks/useReceiptsQuery";
 import { ReceiptCard } from "./ReceiptCard";
-import { UserMultiSelect } from "@/components/UserMultiSelect"; // Adjust path if needed
+import { UserMultiSelect } from "@/components/UserMultiSelect";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
@@ -24,7 +24,6 @@ export default function Receipts() {
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [statusFilter, setStatusFilter] = useState<ReceiptFilters["status"]>("all");
-  
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   // --- 1. Fetch Users for Dropdown ---
@@ -41,17 +40,8 @@ export default function Receipts() {
   });
 
   // --- 2. Fetch Receipts (Hook handles Infinite Scroll + Filtering) ---
-  const { 
-    data, 
-    isLoading, 
-    isFetchingNextPage, 
-    fetchNextPage, 
-    hasNextPage 
-  } = useReceiptsQuery({ 
-    search, 
-    userIds: selectedUserIds, 
-    dateRange, 
-    status: statusFilter 
+  const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage } = useReceiptsQuery({
+    search, userIds: selectedUserIds, dateRange, status: statusFilter
   });
 
   const receipts = data?.pages.flatMap((page) => page.data) ?? [];
@@ -74,17 +64,17 @@ export default function Receipts() {
 
     const observer = new IntersectionObserver(handleObserver, {
       root: null,
-      rootMargin: "200px", 
+      rootMargin: "200px",
       threshold: 0,
     });
-    
+
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [handleObserver]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      
+
       {/* --- STATIC TOP SECTION (Header + Filters) --- */}
       <div className="shrink-0 space-y-6 pb-6 pl-1 border-b border-border/40">
         <div>
@@ -94,7 +84,7 @@ export default function Receipts() {
 
         {/* Filters Row */}
         <div className="flex flex-col lg:flex-row items-center gap-4">
-          
+
           {/* Search Bar */}
           <div className="relative w-full lg:w-72 shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -117,8 +107,8 @@ export default function Receipts() {
           </div>
 
           {/* Status Filter */}
-          <Select 
-            value={statusFilter} 
+          <Select
+            value={statusFilter}
             onValueChange={(val) => setStatusFilter(val as ReceiptFilters["status"])}
           >
             <SelectTrigger className="w-full lg:w-40 bg-input border-border shrink-0">
@@ -145,7 +135,7 @@ export default function Receipts() {
 
       {/* --- SCROLLING LIST SECTION --- */}
       <div className="flex-1 overflow-y-auto min-h-0 pt-6 pr-2 pb-4 custom-scrollbar">
-        
+
         {isLoading ? (
           // Loading Skeletons
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 pb-10">

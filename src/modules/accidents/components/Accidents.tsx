@@ -11,7 +11,6 @@ import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { DateRange } from "react-day-picker";
 
 export default function Accidents() {
-  // Filter States
   const [search, setSearch] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -60,7 +59,7 @@ export default function Accidents() {
 
     const observer = new IntersectionObserver(handleObserver, {
       root: null,
-      rootMargin: "200px", // Trigger fetch 200px before user reaches bottom
+      rootMargin: "200px",
       threshold: 0,
     });
 

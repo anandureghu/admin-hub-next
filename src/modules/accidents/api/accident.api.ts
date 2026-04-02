@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { format } from "date-fns";
 import { AccidentFilters, AccidentListResponse, accidentListResponseSchema } from "../schemas/accident.schema";
 
 const PAGE_SIZE = 10;
@@ -46,7 +45,7 @@ export const accidentApi = {
     if (error) throw error;
 
     const parsed = (data || []).map((item) => accidentListResponseSchema.parse(item));
-    
+
     return {
       data: parsed,
       nextPage: parsed.length === PAGE_SIZE ? page + 1 : null,

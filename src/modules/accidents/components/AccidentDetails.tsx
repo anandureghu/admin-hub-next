@@ -10,7 +10,6 @@ export default function AccidentDetails() {
     const { accidentId } = useParams<{ accidentId: string }>();
     const navigate = useNavigate();
 
-    // NEW: State to track if the image failed to load
     const [imageError, setImageError] = useState(false);
 
     const { data: accident, isLoading } = useAccidentDetailQuery(accidentId);
@@ -44,18 +43,16 @@ export default function AccidentDetails() {
 
                     {/* Photo Card */}
                     <div className="stat-card overflow-hidden p-0 border-border">
-                        {/* CHANGED: Render image only if url exists AND there's no error */}
                         {accident.photo_url && !imageError ? (
                             <img
                                 src={accident.photo_url}
                                 alt="Accident Scene"
                                 className="w-full h-64 sm:h-80 object-cover"
-                                onError={() => setImageError(true)} // Trigger state change on error
+                                onError={() => setImageError(true)}
                             />
                         ) : (
                             <div className="w-full h-64 sm:h-80 bg-secondary/30 flex flex-col items-center justify-center text-muted-foreground">
                                 <ImageIcon className="w-12 h-12 mb-3 opacity-20" />
-                                {/* Dynamic message based on whether it's missing or broken */}
                                 <p className="font-medium">
                                     {accident.photo_url ? "Failed to load photo" : "No photo provided"}
                                 </p>
