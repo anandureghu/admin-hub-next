@@ -73,52 +73,57 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="overflow-hidden space-y-4">
+    // The outer container stays flex-1 so the entire block can fill the page if needed
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden space-y-4">
       {toolbar?.(table)}
-      <Table wrapperClassName={`rounded-md border pr-1 ${tableContainerClassName || "max-h-130"}`}>
+
+      {/* THE FIX: Replaced 'flex-1' with 'shrink' in the wrapperClassName */}
+      <Table wrapperClassName={`rounded-md border pr-1 shrink min-h-0 overflow-y-auto custom-scrollbar pb-2 ${tableContainerClassName || ""}`}>
         <TableHeader className="sticky top-0 z-10 bg-background outline outline-1 outline-border">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                    </TableHead>
-                  );
-                })}
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                onClick={() => onRowClick?.(row.original)}
+                className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  onClick={() => onRowClick?.(row.original)}
-                  className={onRowClick ? "cursor-pointer hover:bg-muted/50" : ""}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      <div className="my-4">
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                No results.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      {/* Pagination Footer */}
+      <div className="mt-4 py-3 px-4 rounded-md border border-border bg-secondary/20 flex items-center justify-end shadow-sm">
         <DataTablePagination table={table} />
       </div>
     </div>

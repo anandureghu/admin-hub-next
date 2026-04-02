@@ -20,7 +20,7 @@ export default function WorkDetail() {
   const coordinates = getCoordinatesFromHex(work.location);
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-500 w-full h-full overflow-y-auto pr-4 custom-scrollbar pb-10">
       
       {/* HEADER */}
       <div className="flex items-center gap-3">

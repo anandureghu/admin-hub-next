@@ -41,7 +41,7 @@ export default function TripDetails() {
     }
 
     return (
-        <div className="space-y-8 pb-10 max-w-7xl mx-auto">
+        <div className="space-y-8 pb-10 w-full h-full overflow-y-auto pr-4 custom-scrollbar">
             {/* --- HEADER --- */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -60,11 +60,11 @@ export default function TripDetails() {
             <div className="grid gap-6 lg:grid-cols-3">
                 {/* --- LEFT COLUMN (Wider) --- */}
                 <div className="lg:col-span-2 space-y-6">
-                    
+
                     {/* Unified Overview Card */}
                     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-8 gap-x-12">
-                            
+
                             {/* Date */}
                             <div className="flex gap-4 items-start">
                                 <div className="p-2.5 bg-primary/10 rounded-lg shrink-0">
@@ -84,8 +84,8 @@ export default function TripDetails() {
                                 <div>
                                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Timeframe</p>
                                     <p className="font-medium text-foreground">
-                                        {trip.start_time ? format(new Date(trip.start_time), "h:mm a") : "—"} 
-                                        <span className="text-muted-foreground mx-1">→</span> 
+                                        {trip.start_time ? format(new Date(trip.start_time), "h:mm a") : "—"}
+                                        <span className="text-muted-foreground mx-1">→</span>
                                         {trip.end_time ? format(new Date(trip.end_time), "h:mm a") : <span className="text-primary font-medium">Active Now</span>}
                                     </p>
                                 </div>
@@ -152,14 +152,14 @@ export default function TripDetails() {
 
                 {/* --- RIGHT COLUMN (Narrower) --- */}
                 <div className="space-y-6">
-                    
+
                     {/* Odometer Card */}
                     <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
                         <div className="flex items-center gap-2 mb-5">
                             <Route className="w-4 h-4 text-muted-foreground" />
                             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Odometer Readings</h3>
                         </div>
-                        
+
                         <div className="space-y-4">
                             <div className="flex justify-between items-center pb-3 border-b border-border/50">
                                 <span className="text-sm text-muted-foreground font-medium">Start Reading</span>
@@ -169,7 +169,7 @@ export default function TripDetails() {
                                 <span className="text-sm text-muted-foreground font-medium">End Reading</span>
                                 <span className="text-base font-semibold">{trip.end_km ? `${trip.end_km.toLocaleString()} km` : "—"}</span>
                             </div>
-                            
+
                             <div className="pt-2 bg-secondary/30 -mx-5 -mb-5 p-5 rounded-b-xl border-t border-border/50 mt-4">
                                 <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">Total Distance</span>
                                 <p className="text-3xl font-bold text-primary">

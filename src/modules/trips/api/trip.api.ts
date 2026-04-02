@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 import {
   Trip,
   tripListResponseSchema,
@@ -36,19 +37,15 @@ export const tripApi = {
       query = query.in("user_id", userIds);
     }
 
-    // REFACTORED DATE LOGIC
+    // REFACTORED DATE LOGIC to prevent UTC timezone shifts
     if (dateRange?.from) {
-      // Set from date to start of day (00:00:00)
-      const fromDate = new Date(dateRange.from);
-      fromDate.setHours(0, 0, 0, 0);
+      const fromStr = format(dateRange.from, "yyyy-MM-dd");
+      const toStr = format(dateRange.to || dateRange.from, "yyyy-MM-dd");
 
-      // Use the 'to' date if it exists, otherwise fall back to the 'from' date for a single-day query
-      const toDate = new Date(dateRange.to || dateRange.from);
-      toDate.setHours(23, 59, 59, 999);
-
+      // For date strings, we can use the formatted local date string directly
       query = query
-        .gte("trip_date", fromDate.toISOString())
-        .lte("trip_date", toDate.toISOString());
+        .gte("trip_date", fromStr)
+        .lte("trip_date", toStr + "T23:59:59.999Z");
     }
 
     const { data, error } = await query;

@@ -69,8 +69,8 @@ export default function Accidents() {
   }, [handleObserver]);
 
   return (
-    <div className="space-y-6 overflow-hidden">
-      <div className="flex flex-col gap-4">
+    <div className="flex flex-col h-full gap-6 overflow-hidden">
+      <div className="flex flex-col gap-4 shrink-0">
         <div>
           <h1 className="page-header">Accident Reports</h1>
           <p className="text-muted-foreground">Monitor and review incident logs</p>
@@ -109,7 +109,7 @@ export default function Accidents() {
       </div>
 
       {/* Accidents List */}
-      <div className="space-y-4 overflow-y-auto max-h-165 pr-1">
+      <div className="flex-1 min-h-0 space-y-4 overflow-y-auto pr-2 pb-4 custom-scrollbar">
         {isLoading ? (
           Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-xl" />)
         ) : accidents.length === 0 ? (

@@ -38,11 +38,11 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
-      <div className="sticky top-0 h-screen shrink-0">
+    <div className="flex h-screen w-full bg-background overflow-hidden">
+      <div className="shrink-0 h-full">
         <AdminSidebar />
       </div>
-      <main className="flex-1 p-8 min-w-0">
+      <main className="flex flex-col flex-1 p-8 min-w-0 overflow-hidden">
         <Outlet />
       </main>
     </div>

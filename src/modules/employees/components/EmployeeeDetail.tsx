@@ -22,7 +22,7 @@ export default function EmployeeDetail() {
     if (!employee) return <div className="p-8 text-center">Employee not found.</div>;
 
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-6">
+        <div className="w-full h-full space-y-6 overflow-y-auto pr-4 custom-scrollbar pb-10">
             {/* Back Button */}
             <Button
                 variant="ghost"

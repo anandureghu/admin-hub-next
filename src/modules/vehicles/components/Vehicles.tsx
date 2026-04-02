@@ -52,8 +52,8 @@ export default function Vehicles() {
   const vehicles = data?.pages.flatMap((page) => page.data) || [];
 
   return (
-    <div className="space-y-6 overflow-hidden">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col h-full gap-6 overflow-hidden">
+      <div className="flex items-center justify-between shrink-0">
         <div>
           <h1 className="page-header">Vehicles</h1>
           <p className="text-muted-foreground">Manage your Vehicles</p>
@@ -65,7 +65,7 @@ export default function Vehicles() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-md pl-1">
+      <div className="relative max-w-md pl-1 shrink-0">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <DebouncedInput
           placeholder="Search vehicles..."
@@ -77,7 +77,7 @@ export default function Vehicles() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto max-h-165">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 flex-1 min-h-0 overflow-y-auto pr-2 pb-4 custom-scrollbar">
         {isLoading &&
           Array.from({ length: 6 }).map((_, index) => (
             <VehicleCardSkeleton key={`init-skeleton-${index}`} />

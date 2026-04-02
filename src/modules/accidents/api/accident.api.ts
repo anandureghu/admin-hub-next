@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 import { AccidentFilters, AccidentListResponse, accidentListResponseSchema } from "../schemas/accident.schema";
 
 const PAGE_SIZE = 10;
@@ -39,7 +40,7 @@ export const accidentApi = {
     }
 
     const { data, error } = await query
-      .order("updated_at", { ascending: false })
+      .order("created_at", { ascending: false })
       .range(from, to);
 
     if (error) throw error;

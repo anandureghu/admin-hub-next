@@ -83,7 +83,7 @@ export default function Receipts() {
   }, [handleObserver]);
 
   return (
-    <div className="flex flex-col overflow-hidden">
+    <div className="flex flex-col h-full overflow-hidden">
       
       {/* --- STATIC TOP SECTION (Header + Filters) --- */}
       <div className="shrink-0 space-y-6 pb-6 pl-1 border-b border-border/40">
@@ -144,7 +144,7 @@ export default function Receipts() {
 
 
       {/* --- SCROLLING LIST SECTION --- */}
-      <div className="flex-1 overflow-y-auto max-h-165 pt-6 pr-2 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto min-h-0 pt-6 pr-2 pb-4 custom-scrollbar">
         
         {isLoading ? (
           // Loading Skeletons
