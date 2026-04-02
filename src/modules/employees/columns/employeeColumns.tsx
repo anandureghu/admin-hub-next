@@ -19,6 +19,19 @@ interface MetaTypes {
   onEditEmployee: (employee: Employee) => void;
 }
 
+
+const getInitials = (name: string) => {
+  if (!name) return ""; // Safety check for empty names
+
+  return name
+    .trim() // Remove leading/trailing spaces
+    .split(/\s+/) // Split by one or more spaces safely
+    .slice(0, 2) // Take only the first two words
+    .map((part) => part[0]) // Get the first letter of each word
+    .join("") // Join them back together
+    .toUpperCase(); // Ensure uppercase
+};
+
 export const columns: ColumnDef<Employee>[] = [
   {
     accessorKey: "name",
@@ -34,9 +47,10 @@ export const columns: ColumnDef<Employee>[] = [
       return (
         <div className="flex items-center gap-4">
           <Avatar>
-            <AvatarImage src={employee.avatar_url} alt="avatar" />
-            <AvatarFallback>
-              <img src="/profile.png" alt="fallback" className="" />
+            <AvatarImage src={employee.avatar_url} alt={`${employee.name}'s avatar`} />
+            {/* UPDATE: Fallback now displays dynamic initials and a new style */}
+            <AvatarFallback className="flex items-center justify-center font-bold text-lg bg-gray-200 text-gray-800 rounded-full w-full h-full">
+              {getInitials(employee.name)}
             </AvatarFallback>
           </Avatar>
           <span>{employee.name}</span>
@@ -86,7 +100,7 @@ export const columns: ColumnDef<Employee>[] = [
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" onClick={(e) => {e.stopPropagation()}}>
+          <DropdownMenuContent align="end" onClick={(e) => { e.stopPropagation() }}>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={(e) => {

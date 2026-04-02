@@ -16,6 +16,7 @@ import WorkDetails from "./modules/trips/components/WorkDetails";
 import Employees from "./modules/employees/components/Employees";
 import EmployeeDetail from "./modules/employees/components/EmployeeeDetail";
 import Accidents from "./modules/accidents/components/Accidents";
+import AccidentDetails from "./modules/accidents/components/AccidentDetails";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/vehicles" element={<Vehicles />} />
             <Route path="/trips" element={<Trips />} />
             <Route path="/accidents" element={<Accidents />} />
+            <Route path="/accidents/:accidentId" element={<AccidentDetails />} />
             {/* New Dynamic Route for Trip Details */}
             <Route path="/trip/:id" element={<TripDetails />} />
             <Route path="/employees/:id" element={<EmployeeDetail />} />

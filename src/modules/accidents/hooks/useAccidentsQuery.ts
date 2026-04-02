@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQueryClient, InfiniteData } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient, InfiniteData, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { accidentApi } from "../api/accident.api";
 import { accidentKeys } from "../constants/accident.key";
@@ -39,5 +39,13 @@ export const useAccidentsQuery = (filters: AccidentFilters = DEFAULT_FILTERS) =>
       accidentApi.get(pageParam as number, filters),
     getNextPageParam: (lastPage) => lastPage.nextPage,
     initialPageParam: 0,
+  });
+};
+
+export const useAccidentDetailQuery = (id: string | undefined) => {
+  return useQuery({
+    queryKey: [...accidentKeys.all, "detail", id],
+    queryFn: () => accidentApi.getById(id!),
+    enabled: !!id,
   });
 };
