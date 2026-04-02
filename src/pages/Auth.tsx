@@ -43,9 +43,11 @@ export default function Auth() {
         return;
       }
 
-      if (userRecord.role === "EMPLOYEE" && !userRecord.is_active) {
+      if (userRecord.role === "EMPLOYEE" || !userRecord.is_active) {
         await supabase.auth.signOut();
-        toast.error("Your employee account is inactive.");
+        toast.error(
+          "Access denied. You are not authorized to use this application.",
+        );
         setIsChecking(false);
         return;
       }
@@ -116,9 +118,7 @@ export default function Auth() {
             <div className="stat-icon w-16 h-16 mx-auto mb-4">
               <Truck className="w-8 h-8 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
-              TripTrack Pro
-            </h1>
+            <h1 className="text-2xl font-bold text-foreground">TripOps</h1>
             <p className="text-muted-foreground mt-1">Admin Portal</p>
           </div>
 
