@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Plus, Search, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VehicleCard from "./VehicleCard";

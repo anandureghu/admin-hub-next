@@ -1,6 +1,5 @@
-// components/receipts/ReceiptCard.tsx
 import { Link } from "react-router-dom";
-import { User, MapPin, IndianRupee, ExternalLink, ChevronDown } from "lucide-react";
+import { User, MapPin, IndianRupee, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { ReceiptListResponse } from "../schemas/receipt.schema";
 import { cn } from "@/lib/utils";

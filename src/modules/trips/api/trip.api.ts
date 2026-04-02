@@ -59,42 +59,22 @@ export const tripApi = {
   },
 
   async getById(id: string): Promise<TripDetailResponse> {
-  const { data, error } = await supabase
-    .from("trips")
-    .select(`
+    const { data, error } = await supabase
+      .from("trips")
+      .select(`
       *,
-      vehicles (
-        vehicle_number, 
-        vehicle_type
-      ),
-      users (
-        name, 
-        email
-      ),
-      work_sessions (
-        id,
-        start_time,
-        end_time,
-        notes,
-        location,
-        created_at
-      ),
-      receipts (
-        id,
-        amount,
-        description,
-        image_url,
-        created_at,
-        updated_at,
-        users(id, name),
-        trips(id, trip_date)
-      )
+      vehicles (vehicle_number, vehicle_type),
+      users (name, email),
+      work_sessions (id, start_time, end_time, notes, location, created_at),
+      receipts (id, amount, description, image_url, created_at, updated_at, users(id, name), trips(id, trip_date)),
+      vehicle_photos (id, photo_type, photo_url, taken_at),
+      accident_reports (id, description, photo_url, location, created_at)
     `)
-    .eq("id", id)
-    .single();
+      .eq("id", id)
+      .single();
 
-  if (error) throw error;
-  
-  return tripDetailResponseSchema.parse(data);
-}
+    if (error) throw error;
+
+    return tripDetailResponseSchema.parse(data);
+  }
 };

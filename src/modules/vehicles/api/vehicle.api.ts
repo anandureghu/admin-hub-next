@@ -2,9 +2,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { VehicleFilters, Vehicle, vehicleSchema } from "../schemas/vehicle.schema";
 import { Database } from "@/integrations/supabase/types";
 
-export type VehicleInsert = Database["public"]["Tables"]["vehicles"]["Insert"];
-export type VehicleUpdate = Database["public"]["Tables"]["vehicles"]["Update"];
-
 export const vehicleApi = {
   async get(page = 0, itemSize = 9, filters: VehicleFilters = {}): Promise<{ data: Vehicle[]; nextPage: number | null }> {
     const from = page * itemSize;
@@ -83,3 +80,7 @@ export const vehicleApi = {
     return `${data.publicUrl}?t=${Date.now()}`;
   }
 };
+
+
+export type VehicleInsert = Database["public"]["Tables"]["vehicles"]["Insert"];
+export type VehicleUpdate = Database["public"]["Tables"]["vehicles"]["Update"];

@@ -38,6 +38,16 @@ export const tripListResponseSchema = z.object({
   users: userSchema.nullable(),
 });
 
+export const vehiclePhotoSchema = z.object({
+  id: z.string().uuid(),
+  photo_type: z.enum([
+    'START_FRONT', 'START_BACK', 'START_LEFT', 'START_RIGHT',
+    'END_FRONT', 'END_BACK', 'END_LEFT', 'END_RIGHT'
+  ]),
+  photo_url: z.string(),
+  taken_at: z.string().nullable().optional(),
+});
+
 export const tripDetailResponseSchema = tripSchema.extend({
   vehicles: vehicleSchema.nullable(),
   users: z.object({
@@ -48,6 +58,14 @@ export const tripDetailResponseSchema = tripSchema.extend({
   receipts: z.array(receiptListResponseSchema).optional().nullable(),
   start_image: z.string().nullable(),
   end_image: z.string().nullable(),
+  vehicle_photos: z.array(vehiclePhotoSchema).default([]),
+  accident_reports: z.array(z.object({
+    id: z.string().uuid(),
+    description: z.string(),
+    photo_url: z.string().nullable(),
+    location: z.any().nullable(),
+    created_at: z.string(),
+  })).default([]),
 });
 
 export type Trip = z.infer<typeof tripSchema>;
