@@ -51,5 +51,20 @@ export const accidentApi = {
       data: parsed,
       nextPage: parsed.length === PAGE_SIZE ? page + 1 : null,
     };
+  },
+
+  async getById(id: string) {
+    const { data, error } = await supabase
+      .from("accident_reports")
+      .select(`
+        *,
+        users (name, email, phone, avatar_url),
+        trips (trip_date, status)
+      `)
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 };
