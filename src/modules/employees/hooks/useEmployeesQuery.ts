@@ -3,6 +3,7 @@ import { employeeApi } from "../api/employee.api";
 import { employeeKeys } from "../constants/employee.key";
 import { SortingState, ColumnFiltersState } from "@tanstack/react-table";
 import { Employee, EmployeeDetail, EmployeeResponse } from "../schemas/employee.schema";
+import { toast } from "sonner";
 
 export const useEmployeesQuery = (
   pageIndex: number,
@@ -54,5 +55,21 @@ export const useEmployeeActivityQuery = (userId: string | undefined) => {
     queryKey: [...employeeKeys.detail(userId!), "activity"],
     queryFn: () => employeeApi.getEmployeeActivity(userId!),
     enabled: !!userId,
+  });
+};
+
+export const useResetDeviceMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => employeeApi.resetDevice(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
+      toast.success("Device reset successfully!");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("Failed to reset device.");
+    },
   });
 };

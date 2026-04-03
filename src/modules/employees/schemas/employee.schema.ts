@@ -15,6 +15,7 @@ export const employeeSchema = z.object({
   created_at: z.string(),
   updated_at: z.string().nullable(),
   auth_user_id: z.string().nullable(),
+  device_id: z.string().nullable(),
 });
 
 const nestedTripSchema = z.object({

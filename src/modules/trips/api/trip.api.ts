@@ -14,7 +14,7 @@ export const tripApi = {
     page = 0,
     status?: string,
     userIds?: string[],
-    dateRange?: { from: Date; to: Date }
+    dateRange?: { from: Date; to?: Date },
   ): Promise<{ data: Trip[]; nextPage: number | null }> {
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
@@ -24,7 +24,7 @@ export const tripApi = {
       .select(
         `*,
         vehicles(vehicle_number, vehicle_type),
-        users(id, name, email, phone, avatar_url, role, is_active, company_id)`
+        users(id, name, email, phone, avatar_url, role, is_active, company_id)`,
       )
       .order("trip_date", { ascending: false })
       .range(from, to);
@@ -37,12 +37,10 @@ export const tripApi = {
       query = query.in("user_id", userIds);
     }
 
-    // REFACTORED DATE LOGIC to prevent UTC timezone shifts
     if (dateRange?.from) {
       const fromStr = format(dateRange.from, "yyyy-MM-dd");
       const toStr = format(dateRange.to || dateRange.from, "yyyy-MM-dd");
 
-      // For date strings, we can use the formatted local date string directly
       query = query
         .gte("trip_date", fromStr)
         .lte("trip_date", toStr + "T23:59:59.999Z");
@@ -61,7 +59,8 @@ export const tripApi = {
   async getById(id: string): Promise<TripDetailResponse> {
     const { data, error } = await supabase
       .from("trips")
-      .select(`
+      .select(
+        `
       *,
       vehicles (vehicle_number, vehicle_type),
       users (name, email),
@@ -69,12 +68,52 @@ export const tripApi = {
       receipts (id, amount, description, image_url, created_at, updated_at, users(id, name), trips(id, trip_date)),
       vehicle_photos (id, photo_type, photo_url, taken_at),
       accident_reports (id, description, photo_url, location, created_at)
-    `)
+    `,
+      )
       .eq("id", id)
       .single();
 
     if (error) throw error;
 
     return tripDetailResponseSchema.parse(data);
-  }
+  },
+
+  async exportTrips(
+    status?: string,
+    userIds?: string[],
+    dateRange?: { from: Date; to?: Date },
+  ) {
+    let query = supabase
+      .from("trips")
+      .select(
+        `
+      *,
+      vehicles(vehicle_number, vehicle_type),
+      users(name, email),
+      work_sessions(start_time, end_time, notes),
+      accident_reports(description, created_at),
+      receipts(amount, description, created_at)
+    `,
+      )
+      .order("trip_date", { ascending: false });
+
+    if (status && status !== "all") {
+      query = query.eq("status", status);
+    }
+    if (userIds && userIds.length > 0) {
+      query = query.in("user_id", userIds);
+    }
+    if (dateRange?.from) {
+      const fromStr = format(dateRange.from, "yyyy-MM-dd");
+      const toStr = format(dateRange.to || dateRange.from, "yyyy-MM-dd");
+      query = query
+        .gte("trip_date", fromStr)
+        .lte("trip_date", toStr + "T23:59:59.999Z");
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    return data;
+  },
 };

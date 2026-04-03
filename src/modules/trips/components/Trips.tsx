@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MapPin, Loader2 } from "lucide-react";
+import { MapPin, Loader2, Download } from "lucide-react";
 import { toast } from "sonner";
 import {
   Select,
@@ -8,6 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { useTripsQuery } from "../hooks/useTripsQuery";
 import { useUsersQuery } from "../hooks/useUserQuery";
@@ -15,12 +21,18 @@ import type { TripListResponse as Trip } from "../schemas/trip.schema";
 import { UserMultiSelect } from "@/components/UserMultiSelect";
 import { DateRange } from "react-day-picker";
 import { TripCard } from "./TripCard";
+import { downloadCSV } from "@/lib/csv";
+import { format } from "date-fns";
+import { tripApi } from "../api/trip.api";
+import { Button } from "@/components/ui/button";
 
 export default function Trips() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [isExporting, setIsExporting] = useState(false);
+
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const { data: usersData = [], isLoading: usersLoading } = useUsersQuery();
@@ -40,7 +52,38 @@ export default function Trips() {
     toast.error("Failed to load trips");
   }
 
-  // Client-side search filter only (status + user filtering is server-side)
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+
+      const allData = await tripApi.exportTrips(statusFilter, selectedUserIds, dateRange);
+
+      const finalDataToExport = allData.filter((trip) => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return (
+          trip.vehicles?.vehicle_number.toLowerCase().includes(q) ||
+          trip.users?.name.toLowerCase().includes(q) ||
+          trip.users?.email.toLowerCase().includes(q)
+        );
+      });
+
+      if (finalDataToExport.length === 0) {
+        toast.error("No data to export with current filters", { id: "export-toast" });
+        return;
+      }
+
+      // 3. Convert and download
+      downloadCSV(finalDataToExport, `Trips_Export_${format(new Date(), "yyyy-MM-dd")}`);
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export data", { id: "export-toast" });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const filteredTrips = trips.filter((trip) => {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
@@ -81,31 +124,56 @@ export default function Trips() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col pl-1 sm:flex-row gap-4 shrink-0">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 shrink-0 pl-1 w-full">
 
-        <UserMultiSelect
-          users={usersData}
-          selectedIds={selectedUserIds}
-          onChange={setSelectedUserIds}
-          isLoading={usersLoading}
-        />
+        {/* Left Side: Filters */}
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto flex-1">
+          <div className="w-full sm:w-auto">
+            <UserMultiSelect
+              users={usersData}
+              selectedIds={selectedUserIds}
+              onChange={setSelectedUserIds}
+              isLoading={usersLoading}
+            />
+          </div>
 
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40 bg-input border-border">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent className="bg-card border-border">
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="STARTED">In Progress</SelectItem>
-            <SelectItem value="ENDED">Completed</SelectItem>
-          </SelectContent>
-        </Select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-40 bg-input border-border">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent className="bg-card border-border">
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="STARTED">In Progress</SelectItem>
+              <SelectItem value="ENDED">Completed</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <DatePickerWithRange
-          date={dateRange}
-          onDateChange={setDateRange}
-          className="w-full lg:w-72 shrink-0"
-        />
+          <DatePickerWithRange
+            date={dateRange}
+            onDateChange={setDateRange}
+            className="w-full lg:w-72 shrink-0"
+          />
+        </div>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                onClick={handleExport}
+                disabled={isExporting || isLoading}
+                className="w-full lg:w-auto shrink-0 bg-input border-border hover:bg-accent hover:text-accent-foreground lg:ml-auto"
+              >
+                {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+                Export CSV
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[250px] text-center">
+              <p>Exports the current filtered details of the trips</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
       </div>
 
       {/* Trips List */}

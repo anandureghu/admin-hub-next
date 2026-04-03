@@ -118,4 +118,13 @@ export const employeeApi = {
       sessions: sessionsRes.data,
     };
   },
+
+  async resetDevice(id: string) {
+    const { error } = await supabase
+      .from("users")
+      .update({ device_id: null } as Partial<Employee>)
+      .eq("id", id);
+      
+    if (error) throw error;
+  },
 };

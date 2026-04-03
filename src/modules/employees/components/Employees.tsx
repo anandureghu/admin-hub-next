@@ -4,9 +4,20 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { DataTable } from "@/components/ui/data-table";
 import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import {
   useEmployeesQuery,
+  useResetDeviceMutation,
   useToggleEmployeeStatusMutation,
 } from "../hooks/useEmployeesQuery";
 import { EmployeeDialog } from "./EmployeeDialog";
@@ -24,14 +35,17 @@ export default function Employees() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
 
+  const toggleStatusMutation = useToggleEmployeeStatusMutation();
+  const resetDeviceMutation = useResetDeviceMutation(); // 2. Initialize mutation
+
+  const [resetDeviceId, setResetDeviceId] = useState<string | null>(null);
+
   const { data, isLoading } = useEmployeesQuery(
     pagination.pageIndex,
     pagination.pageSize,
     sorting,
     columnFilters
   );
-
-  const toggleStatusMutation = useToggleEmployeeStatusMutation();
 
   const handleEdit = (employee: Employee) => {
     setEditingEmployee(employee);
@@ -40,6 +54,19 @@ export default function Employees() {
 
   const handleToggleStatus = (id: string, status: boolean) => {
     toggleStatusMutation.mutate({ id, currentStatus: status });
+  };
+
+  // NEW: Instead of mutating immediately, just set the ID to open the modal
+  const handleResetDevice = (id: string) => {
+    setResetDeviceId(id);
+  };
+
+  // NEW: The actual mutation trigger when the user clicks "Confirm"
+  const confirmResetDevice = () => {
+    if (resetDeviceId) {
+      resetDeviceMutation.mutate(resetDeviceId);
+    }
+    setResetDeviceId(null); // Close the modal
   };
 
   return (
@@ -75,6 +102,7 @@ export default function Employees() {
         meta={{
           onToggleStatus: handleToggleStatus,
           onEditEmployee: handleEdit,
+          onResetDevice: handleResetDevice,
         }}
         toolbar={(table) => (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 gap-4 px-1">
@@ -85,7 +113,7 @@ export default function Employees() {
                 table.getColumn("name")?.setFilterValue(value)
               }
               className="max-w-sm bg-input border-border"
-              debounce={500} // Optional: adjust the delay here!
+              debounce={500} 
             />
 
             <div className="flex items-center gap-6">
@@ -126,6 +154,29 @@ export default function Employees() {
         onOpenChange={setDialogOpen}
         employee={editingEmployee}
       />
+
+      <AlertDialog 
+        open={!!resetDeviceId} 
+        onOpenChange={(open) => !open && setResetDeviceId(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset Employee Device?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action will clear the employee's currently registered device. They will be forced to log in again and register their new device to track trips. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmResetDevice}
+              className="bg-amber-500 hover:bg-amber-600 text-white"
+            >
+              Reset Device
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

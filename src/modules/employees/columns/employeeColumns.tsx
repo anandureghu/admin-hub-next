@@ -17,6 +17,7 @@ import { SortableHeader } from "../../../../src/components/ui/sortable-header";
 interface MetaTypes {
   onToggleStatus: (id: string, currentStatus: boolean) => Promise<void>;
   onEditEmployee: (employee: Employee) => void;
+  onResetDevice: (id: string) => void;
 }
 
 
@@ -95,15 +96,32 @@ export const columns: ColumnDef<Employee>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => { e.stopPropagation() }}>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            
             <DropdownMenuItem
               onClick={(e) => {
                 e?.preventDefault?.();
                 e?.stopPropagation?.();
                 actions.onToggleStatus(employee.id, employee.is_active);
               }}
+              className="cursor-pointer"
             >
               {employee.is_active ? "Set as Inactive" : "Activate"}
             </DropdownMenuItem>
+
+            {/* NEW: Conditionally render the Reset Device option */}
+            {employee.device_id && (
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e?.preventDefault?.();
+                  e?.stopPropagation?.();
+                  actions.onResetDevice(employee.id);
+                }}
+                className="text-amber-500 focus:text-amber-500 focus:bg-amber-500/10 cursor-pointer" // Optional: gives it a distinct warning color
+              >
+                Reset Device
+              </DropdownMenuItem>
+            )}
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={(e) => {
@@ -111,6 +129,7 @@ export const columns: ColumnDef<Employee>[] = [
                 e?.stopPropagation?.();
                 actions.onEditEmployee(employee);
               }}
+              className="cursor-pointer"
             >
               Edit Employee
             </DropdownMenuItem>

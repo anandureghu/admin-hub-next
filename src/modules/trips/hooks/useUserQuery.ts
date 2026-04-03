@@ -7,6 +7,5 @@ export const useUsersQuery = () => {
   return useQuery<User[]>({
     queryKey: userKeys.list(),
     queryFn: () => userApi.getAll(),
-    staleTime: 5 * 60 * 1000,
   });
 };
