@@ -28,7 +28,7 @@ export default function EmployeeDetail() {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate(-1)}
-                className="gap-2 text-muted-foreground hover:text-foreground -ml-2"
+                className="gap-2 text-muted-foreground hover:text-foreground"
             >
                 <ArrowLeft className="w-4 h-4" />
                 Back

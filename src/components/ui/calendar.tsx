@@ -5,6 +5,14 @@ import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
 function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
@@ -16,17 +24,13 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         
-        // --- Centered & Aligned Header ---
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "flex text-sm font-medium gap-1 items-center",
         
-        // --- Dropdown Styling ---
-        caption_dropdowns: "flex justify-center gap-2",
-        dropdown_month: "relative inline-flex items-center rounded-md border border-input px-2 py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-        dropdown_year: "relative inline-flex items-center rounded-md border border-input px-2 py-1 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-        // The select element is absolute and invisible, but fully clickable over the styled containers
-        dropdown: "absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer appearance-none",
-        dropdown_icon: "ml-1 h-3 w-3 opacity-50",
+        caption_dropdowns: "flex justify-center gap-1",
+        dropdown_month: "flex", 
+        dropdown_year: "flex",
+        dropdown: "", 
         vhidden: "sr-only",
 
         nav: "space-x-1 flex items-center",
@@ -65,6 +69,38 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       components={{
         IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+        
+        // --- CUSTOM SHADCN DROPDOWN OVERRIDE ---
+        Dropdown: ({ value, onChange, children, ...props }: { value: string; onChange: (e: { target: { value: string } }) => void; children: React.ReactNode }) => {
+          const options = React.Children.toArray(children) as React.ReactElement<{ value: string; children: React.ReactNode }>[];
+          const selected = options.find((child) => child.props.value === value);
+
+          const handleChange = (val: string) => {
+            const changeEvent = { target: { value: val } };
+            onChange?.(changeEvent);
+          };
+
+          return (
+            <Select
+              value={value?.toString()}
+              onValueChange={(val) => handleChange(val)}
+            >
+              <SelectTrigger className="h-8 w-fit bg-transparent border-input px-2 py-1 focus:ring-0 focus:ring-offset-0 font-medium hover:bg-accent hover:text-accent-foreground shadow-none">
+                <SelectValue>{selected?.props?.children}</SelectValue>
+              </SelectTrigger>
+              <SelectContent position="popper" className="max-h-[250px] overflow-y-auto">
+                {options.map((option, id: number) => (
+                  <SelectItem 
+                    key={`${option.props.value}-${id}`} 
+                    value={option.props.value?.toString() ?? ""}
+                  >
+                    {option.props.children}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          );
+        },
       }}
       {...props}
     />
