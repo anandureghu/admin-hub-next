@@ -134,7 +134,7 @@ export default function Receipts() {
 
 
       {/* --- SCROLLING LIST SECTION --- */}
-      <div className="flex-1 overflow-y-auto min-h-0 pt-6 pr-2 pb-4 custom-scrollbar">
+      <div key={JSON.stringify({ statusFilter, selectedUserIds, dateRange, search })} className="flex-1 overflow-y-auto min-h-0 pt-6 pr-2 pb-4 custom-scrollbar">
 
         {isLoading ? (
           // Loading Skeletons
