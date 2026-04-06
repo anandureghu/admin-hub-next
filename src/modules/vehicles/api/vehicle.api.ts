@@ -19,6 +19,12 @@ export const vehicleApi = {
       );
     }
 
+    if (filters.status === "available") {
+      query = query.eq("is_active", true);
+    } else if (filters.status === "unavailable") {
+      query = query.eq("is_active", false);
+    }
+
     const { data, error } = await query;
 
     if (error) throw error;
