@@ -56,6 +56,32 @@ export default function Settings() {
 
     setSaving(true);
     try {
+      // 1. NEW: Strict Format Validation (German Mobile Number)
+      const phoneRegex = /^(\+49|0049|0)\s?1[567]\d{1,2}\s?\d{7,8}$/;
+      if (formData.phone && !phoneRegex.test(formData.phone)) {
+        toast.error("Please enter a valid German mobile number.");
+        setSaving(false);
+        return; // Stop the save
+      }
+
+      // 2. Duplicate Check
+      if (formData.phone && formData.phone !== profile.phone) {
+        const { data: existingUsers, error: checkError } = await supabase
+          .from("users")
+          .select("id")
+          .eq("phone", formData.phone)
+          .neq("email", profile.email);
+
+        if (checkError) throw checkError;
+
+        if (existingUsers && existingUsers.length > 0) {
+          toast.error("An account with this phone number already exists.");
+          setSaving(false);
+          return; // Stop the save
+        }
+      }
+
+      // 3. Proceed with update
       const { error } = await supabase
         .from("users")
         .update({
@@ -127,7 +153,10 @@ export default function Settings() {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => {
+                    const cleanedValue = e.target.value.replace(/[^\d+\s]/g, "");
+                    setFormData({ ...formData, phone: cleanedValue });
+                  }}
                   className="bg-input border-border"
                   placeholder="+1 234 567 8900"
                 />

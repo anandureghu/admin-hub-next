@@ -34,11 +34,17 @@ export default function Employees() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [prevFilters, setPrevFilters] = useState<ColumnFiltersState>([]);
 
   const toggleStatusMutation = useToggleEmployeeStatusMutation();
   const resetDeviceMutation = useResetDeviceMutation(); // 2. Initialize mutation
 
   const [resetDeviceId, setResetDeviceId] = useState<string | null>(null);
+
+  if (JSON.stringify(prevFilters) !== JSON.stringify(columnFilters)) {
+    setPrevFilters(columnFilters);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  }
 
   const { data, isLoading } = useEmployeesQuery(
     pagination.pageIndex,
@@ -113,7 +119,7 @@ export default function Employees() {
                 table.getColumn("name")?.setFilterValue(value)
               }
               className="max-w-sm bg-input border-border"
-              debounce={500} 
+              debounce={500}
             />
 
             <div className="flex items-center gap-6">
@@ -155,8 +161,8 @@ export default function Employees() {
         employee={editingEmployee}
       />
 
-      <AlertDialog 
-        open={!!resetDeviceId} 
+      <AlertDialog
+        open={!!resetDeviceId}
         onOpenChange={(open) => !open && setResetDeviceId(null)}
       >
         <AlertDialogContent>
@@ -168,7 +174,7 @@ export default function Employees() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={confirmResetDevice}
               className="bg-amber-500 hover:bg-amber-600 text-white"
             >

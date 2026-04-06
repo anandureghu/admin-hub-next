@@ -178,6 +178,10 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                                             placeholder="+49 151 23456789"
                                             className="bg-input"
                                             {...field}
+                                            onChange={(e) => {
+                                                const cleanedValue = e.target.value.replace(/[^\d+\s]/g, "");
+                                                field.onChange(cleanedValue);
+                                            }}
                                         />
                                     </FormControl>
 

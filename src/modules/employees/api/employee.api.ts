@@ -21,7 +21,7 @@ export const employeeApi = {
       const { id, desc } = sorting[0];
       query = query.order(id, { ascending: !desc });
     } else {
-      query = query.order("created_at", { ascending: false });
+      query = query.order("created_at", { ascending: false }).order("name", { ascending: true });
     }
 
     // Filters
@@ -124,7 +124,7 @@ export const employeeApi = {
       .from("users")
       .update({ device_id: null } as Partial<Employee>)
       .eq("id", id);
-      
+
     if (error) throw error;
   },
 };

@@ -23,6 +23,7 @@ export const vehicleSchema = z.object({
 
 export const vehicleFiltersSchema = z.object({
   search: z.string().optional(),
+  status: z.enum(["all", "available", "unavailable"]).optional(),
 });
 
 export const vehicleFormSchema = z.object({

@@ -15,7 +15,7 @@ interface VehicleCardProps {
 const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
   ({ vehicle, toggleVehicleStatus, handleOpenEditDialog, isToggling }, ref) => {
     return (
-      <div ref={ref} className="stat-card animate-fade-in">
+      <div ref={ref} className="stat-card animate-fade-in flex flex-col h-full">
         <div className="flex items-start justify-center mb-4">
           {vehicle.image_url ? (
             <img
@@ -62,7 +62,7 @@ const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
             />
           </div>
         </div>
-        <div className="flex items-center justify-between pt-4 border-t border-border">
+        <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
           <span className="text-xs text-muted-foreground">
             Added {new Date(vehicle.created_at).toLocaleDateString()}
           </span>
