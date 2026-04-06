@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { User, Building, Shield } from "lucide-react";
+import { User, Building, Shield, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AppConfigs } from "@/modules/settings/components/AppConfigs";
 
 interface Profile {
   id: string;
@@ -81,70 +83,91 @@ export default function Settings() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto space-y-8 max-w-2xl pr-2 pb-4 custom-scrollbar">
+    <div className="flex flex-col h-full overflow-y-auto space-y-8 max-w-4xl pr-2 pb-4 custom-scrollbar">
       <div>
         <h1 className="page-header">Settings</h1>
-        <p className="text-muted-foreground">Manage your account and preferences</p>
+        <p className="text-muted-foreground">Manage your account and app preferences</p>
       </div>
 
-      {/* Profile Settings */}
-      <div className="stat-card">
-        <div className="flex items-center gap-3 mb-6">
-          <User className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold">Profile Settings</h2>
-        </div>
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className="mb-6 bg-input">
+          <TabsTrigger value="profile" className="flex items-center gap-2">
+            <User className="w-4 h-4" />
+            Profile
+          </TabsTrigger>
+          <TabsTrigger value="app-config" className="flex items-center gap-2">
+            <Smartphone className="w-4 h-4" />
+            App Configuration
+          </TabsTrigger>
+        </TabsList>
 
-        <form onSubmit={handleSave} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="bg-input border-border"
-              required
-            />
+        <TabsContent value="profile" className="space-y-8">
+          {/* Profile Settings */}
+          <div className="stat-card">
+            <div className="flex items-center gap-3 mb-6">
+              <User className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold">Profile Settings</h2>
+            </div>
+
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="bg-input border-border"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="bg-input border-border"
+                  placeholder="+1 234 567 8900"
+                />
+              </div>
+
+              <Button type="submit" disabled={saving}>
+                {saving ? "Saving..." : "Save Changes"}
+              </Button>
+            </form>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="bg-input border-border"
-              placeholder="+1 234 567 8900"
-            />
+          {/* Company Settings (placeholder) */}
+          <div className="stat-card">
+            <div className="flex items-center gap-3 mb-6">
+              <Building className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold">Company Settings</h2>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              Company settings will be available in a future update. You'll be able to manage company details, branding, and team preferences here.
+            </p>
           </div>
 
-          <Button type="submit" disabled={saving}>
-            {saving ? "Saving..." : "Save Changes"}
-          </Button>
-        </form>
-      </div>
+          {/* Security Settings (placeholder) */}
+          <div className="stat-card">
+            <div className="flex items-center gap-3 mb-6">
+              <Shield className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold">Security</h2>
+            </div>
+            <p className="text-muted-foreground text-sm mb-4">
+              Security settings including password changes and two-factor authentication will be available in a future update.
+            </p>
+          </div>
+        </TabsContent>
 
-      {/* Company Settings (placeholder) */}
-      <div className="stat-card">
-        <div className="flex items-center gap-3 mb-6">
-          <Building className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold">Company Settings</h2>
-        </div>
-        <p className="text-muted-foreground text-sm">
-          Company settings will be available in a future update. You'll be able to manage company details, branding, and team preferences here.
-        </p>
-      </div>
-
-      {/* Security Settings (placeholder) */}
-      <div className="stat-card">
-        <div className="flex items-center gap-3 mb-6">
-          <Shield className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold">Security</h2>
-        </div>
-        <p className="text-muted-foreground text-sm mb-4">
-          Security settings including password changes and two-factor authentication will be available in a future update.
-        </p>
-      </div>
+        <TabsContent value="app-config">
+          <div className="stat-card">
+            <AppConfigs />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
