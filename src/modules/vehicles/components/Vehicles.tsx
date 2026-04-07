@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next"; // Added
 import { Plus, Search, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VehicleCard from "./VehicleCard";
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/select";
 
 export default function Vehicles() {
+  const { t } = useTranslation(); // Initialize translation
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -64,12 +66,12 @@ export default function Vehicles() {
     <div className="flex flex-col h-full gap-6 overflow-hidden">
       <div className="flex items-center justify-between shrink-0">
         <div>
-          <h1 className="page-header">Vehicles</h1>
-          <p className="text-muted-foreground">Manage your Vehicles</p>
+          <h1 className="page-header">{t("vehicles.title")}</h1>
+          <p className="text-muted-foreground">{t("vehicles.subtitle")}</p>
         </div>
         <Button onClick={handleOpenAddDialog}>
           <Plus className="w-4 h-4 mr-2" />
-          Add Vehicle
+          {t("vehicles.addVehicle")}
         </Button>
       </div>
 
@@ -79,7 +81,7 @@ export default function Vehicles() {
         <div className="relative flex-1 w-full max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <DebouncedInput
-            placeholder="Search vehicles..."
+            placeholder={t("vehicles.searchPlaceholder")}
             value={(searchQuery as string) ?? ""}
             onChange={(value) => setSearchQuery(value as string)}
             className="pl-10 bg-input border-border"
@@ -87,15 +89,15 @@ export default function Vehicles() {
           />
         </div>
 
-        {/* NEW: Status Dropdown */}
+        {/* Status Dropdown */}
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-full sm:w-40 bg-input border-border">
-            <SelectValue placeholder="All Status" />
+            <SelectValue placeholder={t("vehicles.status.all")} />
           </SelectTrigger>
           <SelectContent className="bg-card border-border">
-            <SelectItem value="all">All Vehicles</SelectItem>
-            <SelectItem value="available">Available</SelectItem>
-            <SelectItem value="unavailable">Unavailable</SelectItem>
+            <SelectItem value="all">{t("vehicles.allVehicles")}</SelectItem>
+            <SelectItem value="available">{t("vehicles.available")}</SelectItem>
+            <SelectItem value="unavailable">{t("vehicles.unavailable")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -127,8 +129,8 @@ export default function Vehicles() {
             <Car className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
               {searchQuery || statusFilter !== "all"
-                ? "No vehicles match your filters"
-                : "No vehicles yet. Add your first vehicle to get started."}
+                ? t("vehicles.noMatch")
+                : t("vehicles.noVehicles")}
             </p>
           </div>
         )}

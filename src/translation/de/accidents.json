@@ -1,0 +1,33 @@
+{
+  "title": "Unfallberichte",
+  "subtitle": "Ereignisprotokolle überwachen und überprüfen",
+  "searchPlaceholder": "Beschreibung suchen...",
+  "noMatch": "Keine Unfälle entsprechen Ihren Filtern.",
+  "noAccidents": "Noch keine Unfälle gemeldet.",
+  "loadingMore": "Weitere Berichte werden geladen...",
+  "allLoaded": "Alle Ereignisberichte wurden geladen.",
+  "card": {
+    "noDescription": "Keine Beschreibung",
+    "unknownEmployee": "Unbekannter Mitarbeiter",
+    "viewDetails": "Details anzeigen",
+    "tripOn": "Trip am {{date}}",
+    "unknownDate": "Unbekanntes Datum",
+    "incidentImage": "Ereignisbild"
+  },
+  "details": {
+    "title": "Details zum Ereignisbericht",
+    "back": "Zurück",
+    "notFound": "Unfallbericht nicht gefunden.",
+    "photoAlt": "Unfallstelle",
+    "photoError": "Foto konnte nicht geladen werden",
+    "noPhoto": "Kein Foto bereitgestellt",
+    "incidentDescription": "Ereignisbeschreibung",
+    "reportedOn": "Gemeldet am",
+    "reportedBy": "Gemeldet von",
+    "unknown": "Unbekannt",
+    "tripOn": "Trip am {{date}}",
+    "incidentLocation": "Ereignisort",
+    "noCoordinates": "Keine Koordinaten aufgezeichnet",
+    "noLocationData": "Für diesen Vorfall wurden keine Standortdaten erfasst."
+  }
+}

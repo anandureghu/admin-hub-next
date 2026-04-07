@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,6 +43,7 @@ interface EmployeeDialogProps {
 }
 
 export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogProps) {
+    const { t } = useTranslation();
     const mutation = useEmployeeMutation();
 
     const form = useForm<EmployeeFormValues>({
@@ -55,19 +57,18 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
     });
 
     useEffect(() => {
-        if (employee) {
+        if (employee && open) {
             form.reset({
                 name: employee.name,
                 email: employee.email,
                 phone: employee.phone ?? "",
                 role: employee.role ?? "EMPLOYEE",
             });
-        } else {
+        } else if (open) {
             form.reset({ name: "", email: "", phone: "", role: "EMPLOYEE" });
         }
     }, [employee, form, open]);
 
-    // NEW: Helper function to check for duplicates
     async function checkDuplicates(email: string, phone: string, currentEmployeeId: string | null) {
         let query = supabase
             .from("users")
@@ -82,15 +83,15 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
 
         if (error) {
             console.error("Error checking duplicates:", error);
-            throw new Error("Failed to validate employee data.");
+            throw new Error(t("employees.dialog.errorValidation"));
         }
 
         if (data && data.length > 0) {
             const emailConflict = data.some(u => u.email === email);
             const phoneConflict = data.some(u => u.phone === phone);
 
-            if (emailConflict) return "An employee with this email already exists.";
-            if (phoneConflict) return "An employee with this phone number already exists.";
+            if (emailConflict) return t("employees.dialog.errorDuplicateEmail");
+            if (phoneConflict) return t("employees.dialog.errorDuplicatePhone");
         }
 
         return null;
@@ -98,25 +99,22 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
 
     async function onSubmit(values: EmployeeFormValues) {
         try {
-            // 1. Run the duplicate check first
             const duplicateError = await checkDuplicates(values.email, values.phone, employee?.id ?? null);
 
             if (duplicateError) {
                 toast.error(duplicateError);
-                return; // Stop execution
+                return;
             }
 
-            // 2. If no duplicates, proceed with mutation
             await mutation.mutateAsync({
                 id: employee?.id ?? null,
                 payload: values,
             });
 
-            toast.success(employee ? "Employee updated" : "Employee created");
+            toast.success(employee ? t("employees.dialog.successUpdate") : t("employees.dialog.successCreate"));
             onOpenChange(false);
         } catch (error) {
-            // Fallback error handling
-            toast.error(error.message || "Something went wrong while saving the employee.");
+            toast.error(error.message || t("employees.dialog.errorGeneric"));
         }
     }
 
@@ -124,9 +122,11 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="bg-card border-border sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>{employee ? "Edit Employee" : "Add New Employee"}</DialogTitle>
+                    <DialogTitle>
+                        {employee ? t("employees.dialog.titleEdit") : t("employees.dialog.titleAdd")}
+                    </DialogTitle>
                     <DialogDescription>
-                        {employee ? "Update employee details." : "Create a new team member."}
+                        {employee ? t("employees.dialog.descriptionEdit") : t("employees.dialog.descriptionAdd")}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -138,9 +138,9 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Full Name *</FormLabel>
+                                    <FormLabel>{t("employees.dialog.nameLabel")}</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="John Doe" className="bg-input" {...field} />
+                                        <Input placeholder={t("employees.dialog.namePlaceholder")} className="bg-input" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -152,11 +152,11 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email *</FormLabel>
+                                    <FormLabel>{t("employees.dialog.emailLabel")}</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="email"
-                                            placeholder="john@company.com"
+                                            placeholder={t("employees.dialog.emailPlaceholder")}
                                             className="bg-input"
                                             {...field}
                                         />
@@ -171,11 +171,11 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                             name="phone"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Phone *</FormLabel>
+                                    <FormLabel>{t("employees.dialog.phoneLabel")}</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="tel"
-                                            placeholder="+49 151 23456789"
+                                            placeholder={t("employees.dialog.phonePlaceholder")}
                                             className="bg-input"
                                             {...field}
                                             onChange={(e) => {
@@ -186,7 +186,7 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                                     </FormControl>
 
                                     <FormDescription className="text-[11px] text-muted-foreground/80">
-                                        Formats: +49, 0049, or 0 (e.g., 0172 1234567)
+                                        {t("employees.dialog.phoneDescription")}
                                     </FormDescription>
 
                                     <FormMessage />
@@ -199,16 +199,16 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                             name="role"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Role *</FormLabel>
+                                    <FormLabel>{t("employees.dialog.roleLabel")}</FormLabel>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <FormControl>
                                             <SelectTrigger className="bg-input border-border">
-                                                <SelectValue placeholder="Select a role" />
+                                                <SelectValue placeholder={t("employees.dialog.rolePlaceholder")} />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent className="bg-card border-border">
-                                            <SelectItem value="EMPLOYEE">Employee</SelectItem>
-                                            <SelectItem value="ADMIN">Admin</SelectItem>
+                                            <SelectItem value="EMPLOYEE">{t("employees.dialog.roleEmployee")}</SelectItem>
+                                            <SelectItem value="ADMIN">{t("employees.dialog.roleAdmin")}</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage />
@@ -223,14 +223,17 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
                                 onClick={() => onOpenChange(false)}
                                 className="flex-1"
                             >
-                                Cancel
+                                {t("employees.dialog.cancel")}
                             </Button>
                             <Button
                                 type="submit"
                                 className="flex-1"
                                 disabled={mutation.isPending}
                             >
-                                {mutation.isPending ? "Saving..." : employee ? "Update" : "Create"}
+                                {mutation.isPending 
+                                    ? t("employees.dialog.saving") 
+                                    : (employee ? t("employees.dialog.update") : t("employees.dialog.create"))
+                                }
                             </Button>
                         </div>
                     </form>

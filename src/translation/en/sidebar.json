@@ -1,0 +1,7 @@
+{
+  "language": "Language",
+  "logout": "Logout",
+  "areYouSure": "Are you sure you want to log out?",
+  "logoutDescription": "You will be securely signed out of the TripTrack Admin Portal. You will need to enter your credentials to access the dashboard again.",
+  "confirmLogout": "Log out"
+}

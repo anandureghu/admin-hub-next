@@ -1,0 +1,58 @@
+{
+  "title": "Einstellungen",
+  "subtitle": "Verwalten Sie Ihr Konto und Ihre App-Einstellungen",
+  "profile": "Profil",
+  "appConfiguration": "App-Konfiguration",
+  "profileSettings": "Profileinstellungen",
+  "fullName": "Vollständiger Name",
+  "phoneNumber": "Telefonnummer",
+  "saveChanges": "Änderungen speichern",
+  "saving": "Wird gespeichert...",
+  "changeSaved": "Änderungen erfolgreich gespeichert",
+  "errorSaving": "Fehler beim Speichern von Änderungen",
+  "loading": "Einstellungen werden geladen...",
+  "validation": {
+    "invalidPhone": "Bitte geben Sie eine gültige deutsche Mobilnummer ein.",
+    "phoneExists": "Ein Konto mit dieser Telefonnummer existiert bereits."
+  },
+  "appConfigs": {
+    "title": "App-Versionen & Konfiguration",
+    "newConfig": "Neue Konfiguration",
+    "loading": "Konfigurationen werden geladen...",
+    "noConfigs": "Keine Konfigurationen gefunden. Erstellen Sie eine, um zu beginnen.",
+    "minVersion": "Min",
+    "updates": "Updates",
+    "maintenance": "Wartung",
+    "active": "Aktiv",
+    "deleteTitle": "Konfiguration löschen",
+    "deleteDesc": "Sind Sie sicher, dass Sie die Version {{version}} löschen möchten? Dies kann nicht rückgängig gemacht werden.",
+    "deleteSuccess": "App-Konfiguration gelöscht",
+    "dialog": {
+      "editTitle": "App-Konfiguration bearbeiten",
+      "newTitle": "Neue App-Konfiguration",
+      "activeLabel": "Aktive Konfiguration",
+      "activeDesc": "Das Aktivieren dieser Option deaktiviert automatisch alle anderen aktiven Konfigurationen.",
+      "latestVersion": "Neueste Version",
+      "minVersion": "Min. unterstützte Version",
+      "updateMode": "Update-Modus",
+      "apkUrl": "APK-URL",
+      "updateMessages": "Update-Nachrichten",
+      "warningMessage": "Warnmeldung",
+      "warningPlaceholder": "Nachricht für optionales Update",
+      "forceMessage": "Erzwingungs-Nachricht",
+      "forcePlaceholder": "Nachricht für erzwungenes Update",
+      "maintenanceMode": "Wartungsmodus",
+      "maintenanceMessage": "Wartungsmeldung",
+      "maintenancePlaceholder": "Nachricht während der Wartung",
+      "cancel": "Abbrechen",
+      "save": "Konfiguration speichern",
+      "successCreate": "App-Konfiguration erstellt",
+      "successUpdate": "App-Konfiguration aktualisiert",
+      "mode": {
+        "none": "Keiner",
+        "warning": "Warnung",
+        "force": "Gewalt"
+      }
+    }
+  }
+}

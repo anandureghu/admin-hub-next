@@ -1,0 +1,137 @@
+{
+  "title": "Fahrten",
+  "subtitle": "Alle Fahrtaktivitäten verfolgen",
+  "allStatus": "Alle Status",
+  "inProgress": "In Bearbeitung",
+  "completed": "Abgeschlossen",
+  "exportCsv": "CSV Exportieren",
+  "exportTooltip": "Fahrtdaten konfigurieren und exportieren",
+  "loading": "Fahrten werden geladen...",
+  "noMatch": "Keine Fahrten entsprechen Ihren Filtern",
+  "noTrips": "Noch keine Fahrten aufgezeichnet. Fahrten erscheinen hier, sobald Mitarbeiter mit dem Tracking beginnen.",
+  "allLoaded": "Alle Fahrten geladen",
+  "errorLoad": "Fahrten konnten nicht geladen werden",
+  "details": {
+    "title": "Fahrtzusammenfassung",
+    "back": "Zurück",
+    "notFound": "Fahrt nicht gefunden oder ein Fehler ist aufgetreten.",
+    "backToTrips": "Zurück zu Fahrten",
+    "loading": "Fahrtdetails werden geladen...",
+    "status": {
+      "started": "Gestartet",
+      "ended": "Beendet"
+    },
+    "sections": {
+      "overview": "Übersicht",
+      "workSessions": "Arbeitszeiten",
+      "odometerMap": "Tachostand & Karte",
+      "inspections": "Inspektionsfotos",
+      "receipts": "Belege",
+      "incidents": "Zwischenfälle"
+    }
+  },
+  "card": {
+    "trip": "Fahrt",
+    "noVehicle": "Kein Fahrzeug",
+    "unknownUser": "Unbekannter Benutzer",
+    "distance": "Distanz",
+    "viewDetails": "Details anzeigen",
+    "startKm": "Start KM",
+    "endKm": "Ende KM",
+    "status": {
+      "started": "Gestartet",
+      "ended": "Beendet"
+    }
+  },
+  "export": {
+    "title": "Fahrtdaten exportieren",
+    "description": "Passen Sie die untenstehenden Filter an, um zu konfigurieren, welche Daten in Ihre CSV exportiert werden.",
+    "employees": "Mitarbeiter",
+    "tripStatus": "Fahrtstatus",
+    "allStatus": "Alle Status",
+    "inProgress": "In Bearbeitung",
+    "completed": "Abgeschlossen",
+    "quickSelect": "Schnellauswahl Datum",
+    "selectTimeframe": "Zeitraum auswählen",
+    "today": "Heutige Fahrten",
+    "thisWeek": "Fahrten dieser Woche",
+    "thisMonth": "Fahrten diesen Monats",
+    "allTime": "Gesamter Zeitraum",
+    "custom": "Benutzerdefinierter Bereich",
+    "specificRange": "Spezifischer Datumsbereich",
+    "calculating": "Berechnung...",
+    "matchingTrips": " passende Fahrten gefunden",
+    "clearFilters": "Filter löschen",
+    "cancel": "Abbrechen",
+    "confirmExport": "Export bestätigen",
+    "exporting": "Exportieren...",
+    "noDataError": "Keine Daten zum Exportieren mit ausgewählten Filtern gefunden",
+    "failError": "Fehler beim Exportieren der Daten"
+  },
+  "incidents": {
+    "title": "Ereignisberichte",
+    "noIncidents": "Keine Ereignisse gemeldet",
+    "safeTrip": "Diese Fahrt wurde sicher abgeschlossen."
+  },
+  "overview": {
+    "date": "Datum",
+    "timeframe": "Zeitraum",
+    "activeNow": "Jetzt aktiv",
+    "driver": "Fahrer",
+    "vehicle": "Fahrzeug",
+    "unassigned": "Nicht zugewiesen"
+  },
+  "odometerMap": {
+    "odometerTitle": "Kilometerstände",
+    "startReading": "Startwert",
+    "endReading": "Endwert",
+    "totalDistance": "Gesamtdistanz",
+    "routeTitle": "Fahrtroute",
+    "start": "Start",
+    "end": "Ende",
+    "pinned": "Markiert",
+    "missing": "Fehlt",
+    "noLocation": "Keine Standortdaten erfasst"
+  },
+  "inspections": {
+    "title": "Inspektions- & Tachofotos",
+    "startTitle": "Inspektion bei Fahrtantritt",
+    "endTitle": "Inspektion bei Fahrtende",
+    "types": {
+      "odometer": "Tachostand",
+      "front": "Vorne",
+      "back": "Hinten",
+      "left": "Links",
+      "right": "Rechts"
+    }
+  },
+  "receipts": {
+    "title": "Fahrtbelege",
+    "noReceipts": "Keine Belege eingereicht"
+  },
+  "workSessions": {
+    "title": "Arbeitszeiten",
+    "noSessions": "Keine Arbeitszeiten aufgezeichnet"
+  },
+  "workDetails": {
+    "title": "Details der Arbeitssitzung",
+    "notFound": "Arbeitssitzung nicht gefunden.",
+    "inProgress": "In Bearbeitung",
+    "active": "Aktiv",
+    "minutes": "Min.",
+    "timing": "Zeitraum",
+    "duration": "Dauer",
+    "notes": "Notizen",
+    "noNotes": "Keine Notizen für diese Sitzung vorhanden.",
+    "locationTracking": "Standortverfolgung",
+    "captured": "Erfasst",
+    "notRecorded": "Nicht aufgezeichnet",
+    "noCoordinates": "Keine Koordinaten verfügbar",
+    "noLocationData": "Die Standortverfolgung war während dieser Sitzung deaktiviert oder nicht verfügbar."
+  },
+  "workSession": {
+    "activeNow": "Jetzt aktiv",
+    "noNotes": "Keine Notizen vorhanden",
+    "completed": "Abgeschlossen"
+  }
+}

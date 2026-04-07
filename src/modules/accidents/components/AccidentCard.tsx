@@ -2,6 +2,7 @@ import { AccidentListResponse } from "../schemas/accident.schema";
 import { Calendar, User, ExternalLink, MapPin, Image, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import {
     Tooltip,
@@ -10,6 +11,8 @@ import {
 } from "@/components/ui/tooltip";
 
 export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
+    const { t } = useTranslation();
+
     return (
         <div className="bg-card border border-border rounded-xl p-5 hover:shadow-md transition-all group relative">
             <div className="flex flex-col sm:flex-row gap-5">
@@ -18,7 +21,7 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                     {accident.photo_url ? (
                         <img
                             src={accident.photo_url}
-                            alt="Incident"
+                            alt={t("accidents.card.incidentImage")}
                             className="w-full sm:w-24 h-40 sm:h-24 rounded-lg object-cover border border-border"
                             onError={(e) => {
                                 (e.target as HTMLImageElement).style.display = 'none';
@@ -49,7 +52,7 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                             <Tooltip>
                                 <TooltipTrigger asChild>
                                     <h3 className="font-bold text-lg leading-tight text-foreground truncate block cursor-pointer">
-                                        {accident.description || "No description"}
+                                        {accident.description || t("accidents.card.noDescription")}
                                     </h3>
                                 </TooltipTrigger>
                                 {accident.description && (
@@ -65,7 +68,7 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                                     className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors font-medium"
                                 >
                                     <User className="w-4 h-4 text-primary/60" />
-                                    {accident.users?.name || "Unknown Employee"}
+                                    {accident.users?.name || t("accidents.card.unknownEmployee")}
                                 </Link>
 
                                 <span className="flex items-center gap-1.5 text-muted-foreground">
@@ -75,12 +78,12 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                             </div>
                         </div>
 
-                        {/* VIEW DETAILS BUTTON (Moved to Top Right) */}
+                        {/* VIEW DETAILS BUTTON */}
                         <Link
                             to={`/accidents/${accident.id}`}
                             className="shrink-0 bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-white border border-blue-500/20 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all inline-flex items-center gap-1 group/link"
                         >
-                            View Details
+                            {t("accidents.card.viewDetails")}
                             <ArrowRight className="w-3 h-3 transition-transform group-hover/link:translate-x-1" />
                         </Link>
 
@@ -96,7 +99,9 @@ export function AccidentCard({ accident }: { accident: AccidentListResponse }) {
                             )}
                         >
                             <MapPin className="w-3 h-3" />
-                            Trip on {accident.trips?.trip_date ? format(new Date(accident.trips.trip_date), "PP") : "Unknown Date"}
+                            {accident.trips?.trip_date 
+                                ? t("accidents.card.tripOn", { date: format(new Date(accident.trips.trip_date), "PP") }) 
+                                : t("accidents.card.unknownDate")}
                             <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
                         </Link>
                     </div>

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { appConfigFormSchema, AppConfigFormValues, AppConfig } from "../schemas/appConfig.schema";
 import { useUpsertAppConfig } from "../hooks/useAppConfig";
@@ -24,6 +25,7 @@ interface AppConfigDialogProps {
 }
 
 export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogProps) {
+  const { t } = useTranslation();
   const { mutateAsync: upsertAppConfig, isPending } = useUpsertAppConfig();
 
   const form = useForm<AppConfigFormValues>({
@@ -73,11 +75,15 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
   const onSubmit = async (data: AppConfigFormValues) => {
     try {
       await upsertAppConfig(data);
-      toast.success(config ? "App configuration updated" : "App configuration created");
+      toast.success(
+        config 
+          ? t("settings.appConfigs.dialog.successUpdate") 
+          : t("settings.appConfigs.dialog.successCreate")
+      );
       onOpenChange(false);
     } catch (error) {
       console.error(error);
-      toast.error(error instanceof Error ? error.message : "Failed to save app configuration");
+      toast.error(t("settings.errorSaving"));
     }
   };
 
@@ -88,15 +94,17 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
-          <DialogTitle>{config ? "Edit App Configuration" : "New App Configuration"}</DialogTitle>
+          <DialogTitle>
+            {config ? t("settings.appConfigs.dialog.editTitle") : t("settings.appConfigs.dialog.newTitle")}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
           <div className="flex items-center justify-between border p-3 rounded-lg bg-muted/20">
             <div className="space-y-0.5">
-              <Label>Active Configuration</Label>
+              <Label>{t("settings.appConfigs.dialog.activeLabel")}</Label>
               <p className="text-xs text-muted-foreground">
-                Turning this on will automatically deactivate any other active configuration.
+                {t("settings.appConfigs.dialog.activeDesc")}
               </p>
             </div>
             <Switch
@@ -107,7 +115,7 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Latest Version</Label>
+              <Label>{t("settings.appConfigs.dialog.latestVersion")}</Label>
               <Input
                 {...form.register("latest_version")}
                 placeholder="e.g. 1.0.0"
@@ -119,7 +127,7 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
             </div>
 
             <div className="space-y-2">
-              <Label>Min Supported Version</Label>
+              <Label>{t("settings.appConfigs.dialog.minVersion")}</Label>
               <Input
                 {...form.register("min_supported_version")}
                 placeholder="e.g. 0.9.0"
@@ -131,7 +139,7 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
             </div>
 
             <div className="space-y-2">
-              <Label>Update Mode</Label>
+              <Label>{t("settings.appConfigs.dialog.updateMode")}</Label>
               <Select
                 value={updateMode}
                 onValueChange={(val: "NONE" | "WARNING" | "FORCE") => form.setValue("update_mode", val)}
@@ -140,15 +148,15 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
                   <SelectValue placeholder="Select mode" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="NONE">None</SelectItem>
-                  <SelectItem value="WARNING">Warning</SelectItem>
-                  <SelectItem value="FORCE">Force</SelectItem>
+                  <SelectItem value="NONE">{t("settings.appConfigs.dialog.mode.none")}</SelectItem>
+                  <SelectItem value="WARNING">{t("settings.appConfigs.dialog.mode.warning")}</SelectItem>
+                  <SelectItem value="FORCE">{t("settings.appConfigs.dialog.mode.force")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>APK URL</Label>
+              <Label>{t("settings.appConfigs.dialog.apkUrl")}</Label>
               <Input
                 {...form.register("apk_url")}
                 placeholder="https://..."
@@ -161,23 +169,23 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
           </div>
 
           <div className="space-y-4 pt-4 border-t border-border">
-            <h3 className="font-medium text-sm">Update Messages</h3>
+            <h3 className="font-medium text-sm">{t("settings.appConfigs.dialog.updateMessages")}</h3>
 
             <div className="space-y-2">
-              <Label>Warning Message</Label>
+              <Label>{t("settings.appConfigs.dialog.warningMessage")}</Label>
               <Textarea
                 {...form.register("warning_message")}
-                placeholder="Message shown for optional update"
+                placeholder={t("settings.appConfigs.dialog.warningPlaceholder")}
                 className="bg-input border-border resize-none"
                 rows={2}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Force Message</Label>
+              <Label>{t("settings.appConfigs.dialog.forceMessage")}</Label>
               <Textarea
                 {...form.register("force_message")}
-                placeholder="Message shown for forced update"
+                placeholder={t("settings.appConfigs.dialog.forcePlaceholder")}
                 className="bg-input border-border resize-none"
                 rows={2}
               />
@@ -186,7 +194,7 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
 
           <div className="space-y-4 pt-4 border-t border-border">
             <h3 className="font-medium text-sm flex items-center justify-between">
-              <span>Maintenance Mode</span>
+              <span>{t("settings.appConfigs.dialog.maintenanceMode")}</span>
               <Switch
                 checked={maintenanceMode}
                 onCheckedChange={(val) => form.setValue("maintenance_mode", val)}
@@ -195,10 +203,10 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
 
             {maintenanceMode && (
               <div className="space-y-2">
-                <Label>Maintenance Message</Label>
+                <Label>{t("settings.appConfigs.dialog.maintenanceMessage")}</Label>
                 <Textarea
                   {...form.register("maintenance_message")}
-                  placeholder="Message shown during maintenance"
+                  placeholder={t("settings.appConfigs.dialog.maintenancePlaceholder")}
                   className="bg-input border-border resize-none"
                   rows={2}
                 />
@@ -208,10 +216,10 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
 
           <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+              {t("settings.appConfigs.dialog.cancel")}
             </Button>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Saving..." : "Save Configuration"}
+              {isPending ? t("settings.saving") : t("settings.appConfigs.dialog.save")}
             </Button>
           </div>
         </form>

@@ -1,0 +1,33 @@
+{
+  "title": "Accident Reports",
+  "subtitle": "Monitor and review incident logs",
+  "searchPlaceholder": "Search description...",
+  "noMatch": "No accidents match your filters.",
+  "noAccidents": "No accidents reported yet.",
+  "loadingMore": "Loading more reports...",
+  "allLoaded": "All incident reports have been loaded.",
+  "card": {
+    "noDescription": "No description",
+    "unknownEmployee": "Unknown Employee",
+    "viewDetails": "View Details",
+    "tripOn": "Trip on {{date}}",
+    "unknownDate": "Unknown Date",
+    "incidentImage": "Incident Image"
+  },
+  "details": {
+    "title": "Incident Report Details",
+    "back": "Back",
+    "notFound": "Accident report not found.",
+    "photoAlt": "Accident Scene",
+    "photoError": "Failed to load photo",
+    "noPhoto": "No photo provided",
+    "incidentDescription": "Incident Description",
+    "reportedOn": "Reported On",
+    "reportedBy": "Reported By",
+    "unknown": "Unknown",
+    "tripOn": "Trip on {{date}}",
+    "incidentLocation": "Incident Location",
+    "noCoordinates": "No coordinates recorded",
+    "noLocationData": "Location data was not captured for this incident."
+  }
+}

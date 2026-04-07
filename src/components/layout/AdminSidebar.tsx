@@ -1,4 +1,6 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { TFunction } from "i18next";
 import { 
   LayoutDashboard, 
   Users, 
@@ -14,20 +16,23 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ConfirmationModal } from "../ui/confirmation-modal";
+import { LanguageSwitcher } from "../LanguageSwitcher";
 
-const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/employees", label: "Employees", icon: Users },
-  { to: "/vehicles", label: "Vehicles", icon: Car },
-  { to: "/trips", label: "Trips", icon: MapPin },
-  { to: "/accidents", label: "Accidents", icon: AlertOctagon },
-  { to: "/receipts", label: "Receipts", icon: Receipt },
-  { to: "/settings", label: "Settings", icon: Settings },
+const getNavItems = (t: TFunction) => [
+  { to: "/dashboard", label: t("navigation.dashboard"), icon: LayoutDashboard },
+  { to: "/employees", label: t("navigation.employees"), icon: Users },
+  { to: "/vehicles", label: t("navigation.vehicles"), icon: Car },
+  { to: "/trips", label: t("navigation.trips"), icon: MapPin },
+  { to: "/accidents", label: t("navigation.accidents"), icon: AlertOctagon },
+  { to: "/receipts", label: t("navigation.receipts"), icon: Receipt },
+  { to: "/settings", label: t("navigation.settings"), icon: Settings },
 ];
 
 export function AdminSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const navItems = getNavItems(t);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -73,19 +78,20 @@ export function AdminSidebar() {
         })}
       </nav>
 
-      {/* Logout with Confirmation Modal */}
-      <div className="p-4 border-t border-sidebar-border mt-auto">
+      {/* Language Switcher and Logout */}
+      <div className="space-y-3 p-4 border-t border-sidebar-border mt-auto">
+        <LanguageSwitcher />
         <ConfirmationModal
-          title="Are you sure you want to log out?"
-          description="You will be securely signed out of the TripTrack Admin Portal. You will need to enter your credentials to access the dashboard again."
-          confirmText="Log out"
+          title={t("sidebar.areYouSure")}
+          description={t("sidebar.logoutDescription")}
+          confirmText={t("sidebar.confirmLogout")}
           variant="destructive"
           onConfirm={handleLogout}
         >
           {/* This button becomes the 'children' and acts as the trigger */}
           <button className="nav-link w-full text-destructive hover:bg-destructive/10 hover:text-destructive cursor-pointer">
             <LogOut className="w-5 h-5" />
-            <span>Logout</span>
+            <span>{t("sidebar.logout")}</span>
           </button>
         </ConfirmationModal>
       </div>

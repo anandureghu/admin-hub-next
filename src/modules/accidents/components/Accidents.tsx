@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next"; // Added
 import { AlertOctagon, Loader2, Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +12,7 @@ import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { DateRange } from "react-day-picker";
 
 export default function Accidents() {
+  const { t } = useTranslation(); // Initialize translation
   const [search, setSearch] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -71,8 +73,8 @@ export default function Accidents() {
     <div className="flex flex-col h-full gap-6 overflow-hidden">
       <div className="flex flex-col gap-4 shrink-0">
         <div>
-          <h1 className="page-header">Accident Reports</h1>
-          <p className="text-muted-foreground">Monitor and review incident logs</p>
+          <h1 className="page-header">{t("accidents.title")}</h1>
+          <p className="text-muted-foreground">{t("accidents.subtitle")}</p>
         </div>
 
         {/* Filters Row */}
@@ -81,7 +83,7 @@ export default function Accidents() {
           <div className="relative w-full md:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search description..."
+              placeholder={t("accidents.searchPlaceholder")}
               className="pl-10 bg-input border-border"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -116,8 +118,8 @@ export default function Accidents() {
             <AlertOctagon className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
             <p className="text-muted-foreground">
               {search || selectedUserIds.length > 0 || dateRange
-                ? "No accidents match your filters."
-                : "No accidents reported yet."}
+                ? t("accidents.noMatch")
+                : t("accidents.noAccidents")}
             </p>
           </div>
         ) : (
@@ -131,12 +133,12 @@ export default function Accidents() {
           {isFetchingNextPage && (
             <div className="flex items-center gap-2 text-muted-foreground animate-pulse">
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm font-medium">Loading more reports...</span>
+              <span className="text-sm font-medium">{t("accidents.loadingMore")}</span>
             </div>
           )}
           {!hasNextPage && accidents.length > 0 && !isLoading && (
             <p className="text-sm text-muted-foreground italic">
-              All incident reports have been loaded.
+              {t("accidents.allLoaded")}
             </p>
           )}
         </div>

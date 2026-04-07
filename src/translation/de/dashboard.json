@@ -1,0 +1,23 @@
+{
+  "title": "Armaturenbrett",
+  "subtitle": "Willkommen zurück! Hier ist Ihre Flottenübersicht.",
+  "activeEmployees": "Aktive Mitarbeiter",
+  "activeVehicles": "Aktive Fahrzeuge",
+  "tripsToday": "Trips heute",
+  "pendingReceipts": "Ausstehende Belege",
+  "recentTrips": "Aktuelle Trips",
+  "loading": "Dashboard-Daten werden geladen...",
+  "noTrips": "Noch keine Trips aufgezeichnet. Trips erscheinen hier, sobald Mitarbeiter mit dem Tracking beginnen.",
+  "table": {
+    "employee": "Mitarbeiter",
+    "vehicle": "Fahrzeug",
+    "date": "Datum",
+    "status": "Status"
+  },
+  "status": {
+    "started": "Gestartet",
+    "ended": "Beendet"
+  },
+  "unknown": "Unbekannt",
+  "notAvailable": "N/A"
+}

@@ -1,0 +1,137 @@
+{
+  "title": "Trips",
+  "subtitle": "Track all trip activities",
+  "allStatus": "All Status",
+  "inProgress": "In Progress",
+  "completed": "Completed",
+  "exportCsv": "Export CSV",
+  "exportTooltip": "Configure and export trip data",
+  "loading": "Loading trips...",
+  "noMatch": "No trips match your filters",
+  "noTrips": "No trips recorded yet. Trips will appear here when employees start tracking.",
+  "allLoaded": "All trips loaded",
+  "errorLoad": "Failed to load trips",
+  "details": {
+    "title": "Trip Summary",
+    "back": "Back",
+    "notFound": "Trip not found or an error occurred.",
+    "backToTrips": "Back to Trips",
+    "loading": "Loading trip details...",
+    "status": {
+      "started": "Started",
+      "ended": "Ended"
+    },
+    "sections": {
+      "overview": "Overview",
+      "workSessions": "Work Sessions",
+      "odometerMap": "Odometer & Map",
+      "inspections": "Inspection Photos",
+      "receipts": "Receipts",
+      "incidents": "Incidents"
+    }
+  },
+  "card": {
+    "trip": "Trip",
+    "noVehicle": "No vehicle",
+    "unknownUser": "Unknown user",
+    "distance": "Distance",
+    "viewDetails": "View Details",
+    "startKm": "Start KM",
+    "endKm": "Ende KM",
+    "status": {
+      "started": "Started",
+      "ended": "Ended"
+    }
+  },
+  "export": {
+    "title": "Export Trips Data",
+    "description": "Adjust the filters below to configure what data gets exported to your CSV.",
+    "employees": "Employees",
+    "tripStatus": "Trip Status",
+    "allStatus": "All Status",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "quickSelect": "Quick Date Select",
+    "selectTimeframe": "Select timeframe",
+    "today": "Today's Trips",
+    "thisWeek": "This Week's Trips",
+    "thisMonth": "This Month's Trips",
+    "allTime": "All Time",
+    "custom": "Custom Range",
+    "specificRange": "Specific Date Range",
+    "calculating": "Calculating...",
+    "matchingTrips": " matching trips found",
+    "clearFilters": "Clear Filters",
+    "cancel": "Cancel",
+    "confirmExport": "Confirm Export",
+    "exporting": "Exporting...",
+    "noDataError": "No data to export with selected filters",
+    "failError": "Failed to export data"
+  },
+  "incidents": {
+    "title": "Incident Reports",
+    "noIncidents": "No incidents reported",
+    "safeTrip": "This trip was completed safely."
+  },
+  "overview": {
+    "date": "Date",
+    "timeframe": "Timeframe",
+    "activeNow": "Active Now",
+    "driver": "Driver",
+    "vehicle": "Vehicle",
+    "unassigned": "Unassigned"
+  },
+  "odometerMap": {
+    "odometerTitle": "Odometer Readings",
+    "startReading": "Start Reading",
+    "endReading": "End Reading",
+    "totalDistance": "Total Distance",
+    "routeTitle": "Trip Route",
+    "start": "Start",
+    "end": "Ende",
+    "pinned": "Pinned",
+    "missing": "Missing",
+    "noLocation": "No location data captured"
+  },
+  "inspections": {
+    "title": "Inspection & Odometer Photos",
+    "startTitle": "Start of Trip Inspection",
+    "endTitle": "End of Trip Inspection",
+    "types": {
+      "odometer": "Odometer",
+      "front": "Front",
+      "back": "Back",
+      "left": "Left",
+      "right": "Right"
+    }
+  },
+  "receipts": {
+    "title": "Trip Receipts",
+    "noReceipts": "No receipts submitted"
+  },
+  "workSessions": {
+    "title": "Work Sessions",
+    "noSessions": "No work sessions recorded"
+  },
+  "workDetails": {
+    "title": "Work Session Details",
+    "notFound": "Work session not found.",
+    "inProgress": "In Progress",
+    "active": "Active",
+    "minutes": "mins",
+    "timing": "Timing",
+    "duration": "Duration",
+    "notes": "Notes",
+    "noNotes": "No notes provided for this session.",
+    "locationTracking": "Location Tracking",
+    "captured": "Captured",
+    "notRecorded": "Not Recorded",
+    "noCoordinates": "No coordinates available",
+    "noLocationData": "Location tracking was disabled or unavailable during this session."
+  },
+  "workSession": {
+    "activeNow": "Active Now",
+    "noNotes": "No notes provided",
+    "completed": "Completed"
+  }
+}

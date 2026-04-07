@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { DebouncedInput } from "@/components/ui/debounced-input";
 
 export default function Employees() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
@@ -41,6 +43,7 @@ export default function Employees() {
 
   const [resetDeviceId, setResetDeviceId] = useState<string | null>(null);
 
+  // Reset to first page when filters change
   if (JSON.stringify(prevFilters) !== JSON.stringify(columnFilters)) {
     setPrevFilters(columnFilters);
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
@@ -77,8 +80,8 @@ export default function Employees() {
     <div className="flex flex-col h-full gap-6 overflow-hidden">
       <div className="flex items-center justify-between shrink-0">
         <div>
-          <h1 className="page-header">Employees</h1>
-          <p className="text-muted-foreground">Manage your team members</p>
+          <h1 className="page-header">{t("employees.title")}</h1>
+          <p className="text-muted-foreground">{t("employees.subtitle")}</p>
         </div>
         <Button
           onClick={() => {
@@ -87,7 +90,7 @@ export default function Employees() {
           }}
         >
           <Plus className="w-4 h-4 mr-2" />
-          Add Employee
+          {t("employees.addEmployee")}
         </Button>
       </div>
 
@@ -111,7 +114,7 @@ export default function Employees() {
         toolbar={(table) => (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-2 gap-4 px-1">
             <DebouncedInput
-              placeholder="Search names or phone numbers..."
+              placeholder={t("employees.searchPlaceholder")}
               value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
               onChange={(value) =>
                 table.getColumn("name")?.setFilterValue(value)
@@ -123,7 +126,7 @@ export default function Employees() {
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <Label htmlFor="active-filter" className="text-sm font-medium">
-                  Active Only
+                  {t("employees.activeOnly")}
                 </Label>
                 <Switch
                   id="active-filter"
@@ -138,7 +141,7 @@ export default function Employees() {
 
               <div className="flex items-center gap-2">
                 <Label htmlFor="admin-filter" className="text-sm font-medium">
-                  Admins
+                  {t("employees.admins")}
                 </Label>
                 <Switch
                   id="admin-filter"
@@ -165,18 +168,18 @@ export default function Employees() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Reset Employee Device?</AlertDialogTitle>
+            <AlertDialogTitle>{t("employees.resetDevice.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action will clear the employee's currently registered device. They will be forced to log in again and register their new device to track trips. This cannot be undone.
+              {t("employees.resetDevice.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("employees.resetDevice.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmResetDevice}
               className="bg-amber-500 hover:bg-amber-600 text-white"
             >
-              Reset Device
+              {t("employees.resetDevice.action")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

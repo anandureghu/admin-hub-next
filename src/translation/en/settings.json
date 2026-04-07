@@ -1,0 +1,58 @@
+{
+  "title": "Settings",
+  "subtitle": "Manage your account and app preferences",
+  "profile": "Profile",
+  "appConfiguration": "App Configuration",
+  "profileSettings": "Profile Settings",
+  "fullName": "Full Name",
+  "phoneNumber": "Phone Number",
+  "saveChanges": "Save Changes",
+  "saving": "Saving...",
+  "changeSaved": "Changes saved successfully",
+  "errorSaving": "Error saving changes",
+  "loading": "Loading settings...",
+  "validation": {
+    "invalidPhone": "Please enter a valid German mobile number.",
+    "phoneExists": "An account with this phone number already exists."
+  },
+  "appConfigs": {
+    "title": "App Versions & Configuration",
+    "newConfig": "New Configuration",
+    "loading": "Loading configurations...",
+    "noConfigs": "No configurations found. Create one to get started.",
+    "minVersion": "Min",
+    "updates": "Updates",
+    "maintenance": "Maintenance",
+    "active": "Active",
+    "deleteTitle": "Delete Configuration",
+    "deleteDesc": "Are you sure you want to delete version {{version}}? This action cannot be undone.",
+    "deleteSuccess": "App configuration deleted",
+    "dialog": {
+      "editTitle": "Edit App Configuration",
+      "newTitle": "New App Configuration",
+      "activeLabel": "Active Configuration",
+      "activeDesc": "Turning this on will automatically deactivate any other active configuration.",
+      "latestVersion": "Latest Version",
+      "minVersion": "Min Supported Version",
+      "updateMode": "Update Mode",
+      "apkUrl": "APK URL",
+      "updateMessages": "Update Messages",
+      "warningMessage": "Warning Message",
+      "warningPlaceholder": "Message shown for optional update",
+      "forceMessage": "Force Message",
+      "forcePlaceholder": "Message shown for forced update",
+      "maintenanceMode": "Maintenance Mode",
+      "maintenanceMessage": "Maintenance Message",
+      "maintenancePlaceholder": "Message shown during maintenance",
+      "cancel": "Cancel",
+      "save": "Save Configuration",
+      "successCreate": "App configuration created",
+      "successUpdate": "App configuration updated",
+      "mode": {
+        "none": "None",
+        "warning": "Warning",
+        "force": "Force"
+      }
+    }
+  }
+}

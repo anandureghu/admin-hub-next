@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { User, MapPin, IndianRupee, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { ReceiptListResponse } from "../schemas/receipt.schema";
 import { cn } from "@/lib/utils";
 import { useUpdateReceiptStatus } from "../hooks/useReceiptsQuery";
@@ -19,14 +20,15 @@ import {
 } from "@/components/ui/tooltip";
 
 export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
+  const { t } = useTranslation();
   const updateStatus = useUpdateReceiptStatus();
 
   const handleStatusChange = (newStatus: "PENDING" | "VERIFIED" | "REJECTED") => {
     updateStatus.mutate(
       { id: receipt.id, status: newStatus },
       {
-        onSuccess: () => toast.success("Receipt status updated!"),
-        onError: () => toast.error("Failed to update status"),
+        onSuccess: () => toast.success(t("receipts.statusUpdated")),
+        onError: () => toast.error(t("receipts.statusUpdateFailed")),
       }
     );
   };
@@ -48,7 +50,6 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
             {receipt.amount?.toFixed(2)}
           </div>
 
-          {/* Interactive Status Badge */}
           <Select
             value={receipt.status}
             onValueChange={handleStatusChange}
@@ -61,20 +62,21 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
                 updateStatus.isPending && "opacity-50"
               )}
             >
-              {/* Force the trigger to ALWAYS display the raw database status (PENDING, VERIFIED, REJECTED) */}
-              <SelectValue>{receipt.status}</SelectValue>
+              <SelectValue>
+                {/* Dynamically translate the current status display */}
+                {t(`receipts.${receipt.status?.toLowerCase()}`)}
+              </SelectValue>
             </SelectTrigger>
 
             <SelectContent>
-              {/* These are the options the user sees in the dropdown menu */}
               <SelectItem value="PENDING" className="text-[11px] font-medium uppercase text-yellow-500 cursor-pointer">
-                Pending
+                {t("receipts.pending")}
               </SelectItem>
               <SelectItem value="VERIFIED" className="text-[11px] font-medium uppercase text-green-500 cursor-pointer">
-                Verify
+                {t("receipts.verify")}
               </SelectItem>
               <SelectItem value="REJECTED" className="text-[11px] font-medium uppercase text-destructive cursor-pointer">
-                Reject
+                {t("receipts.reject")}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -83,13 +85,11 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
         {/* Description & Employee */}
         <div className="space-y-2 overflow-hidden">
           <Tooltip>
-            {/* asChild lets the h3 styling apply directly while receiving trigger props */}
             <TooltipTrigger asChild>
               <h3 className="font-semibold text-foreground leading-tight truncate block cursor-pointer">
-                {receipt.description || "No description"}
+                {receipt.description || t("receipts.noDescription")}
               </h3>
             </TooltipTrigger>
-            {/* Only show tooltip content if there is an actual description to show */}
             {receipt.description && (
               <TooltipContent side="top" className="max-w-[280px] break-words text-center">
                 <p>{receipt.description}</p>
@@ -103,7 +103,7 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
               className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors w-fit"
             >
               <User className="w-3.5 h-3.5" />
-              <span>{receipt.users?.name || "Unknown employee"}</span>
+              <span>{receipt.users?.name || t("receipts.unknownEmployee")}</span>
             </Link>
 
             <span className="text-[10px] text-muted-foreground font-medium">
@@ -122,7 +122,9 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
             )}
           >
             <MapPin className="w-3 h-3" />
-            Trip on {receipt.trips?.trip_date ? format(new Date(receipt.trips.trip_date), "MMM d") : "N/A"}
+            {receipt.trips?.trip_date 
+              ? t("receipts.tripOn", { date: format(new Date(receipt.trips.trip_date), "MMM d") }) 
+              : t("receipts.noTrip")}
           </Link>
 
           <a
@@ -131,7 +133,7 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptListResponse }) {
             rel="noreferrer"
             className="text-xs text-blue-500 font-medium hover:underline flex items-center gap-1"
           >
-            View Receipt <ExternalLink className="w-3 h-3" />
+            {t("receipts.viewReceipt")} <ExternalLink className="w-3 h-3" />
           </a>
         </div>
       </div>

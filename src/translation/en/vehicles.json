@@ -1,0 +1,56 @@
+{
+  "title": "Vehicles",
+  "subtitle": "Manage your Vehicles",
+  "addVehicle": "Add Vehicle",
+  "searchPlaceholder": "Search vehicles...",
+  "allVehicles": "All Vehicles",
+  "available": "Available",
+  "unavailable": "Unavailable",
+  "noMatch": "No vehicles match your filters",
+  "noVehicles": "No vehicles yet. Add your first vehicle to get started.",
+  "loading": "Loading vehicles...",
+  "loadingMore": "Loading more vehicles...",
+  "status": {
+    "all": "All Status",
+    "available": "Available",
+    "unavailable": "Unavailable"
+  },
+  "dialog": {
+    "titleEdit": "Edit Vehicle",
+    "titleAdd": "Add New Vehicle",
+    "descriptionEdit": "Edit the vehicle details.",
+    "descriptionAdd": "Add a new vehicle to the fleet.",
+    "vehicleNumberLabel": "Vehicle Number / License Plate *",
+    "vehicleNumberPlaceholder": "ABC-1234",
+    "vehicleTypeLabel": "Vehicle Type *",
+    "vehicleTypePlaceholder": "Select vehicle type",
+    "vehiclePictureLabel": "Vehicle Picture",
+    "cancel": "Cancel",
+    "save": "Save Configuration",
+    "add": "Add Vehicle",
+    "update": "Update Vehicle",
+    "saving": "Saving...",
+    "errorDuplicate": "A vehicle with this number already exists.",
+    "errorValidation": "Failed to validate vehicle data."
+  },
+  "card": {
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "added": "Added {{date}}",
+    "markAvailable": "Mark as Available",
+    "markUnavailable": "Mark as Unavailable",
+    "edit": "Edit",
+    "imageAlt": "Vehicle image"
+  },
+  "types": {
+    "Sedan": "Sedan",
+    "SUV": "SUV",
+    "Truck": "Truck",
+    "Van": "Van",
+    "Ford Transit": "Ford Transit",
+    "Pickup": "Pickup",
+    "Bus": "Bus",
+    "Motorcycle": "Motorcycle",
+    "Other": "Other"
+  }
+}

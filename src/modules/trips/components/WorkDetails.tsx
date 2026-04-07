@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useWorkDetailQuery } from "../hooks/useWorkQuery";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, StickyNote, Loader2, MapPin, Hourglass } from "lucide-react";
@@ -6,16 +7,22 @@ import { format } from "date-fns";
 import { getCoordinatesFromHex } from "@/lib/geo";
 
 export default function WorkDetail() {
+  const { t } = useTranslation();
   const { workId } = useParams<{ workId: string }>();
   const navigate = useNavigate();
   const { data: work, isLoading } = useWorkDetailQuery(workId || "");
 
   if (isLoading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-primary" /></div>;
-  if (!work) return <div className="text-center p-10 text-muted-foreground">Work session not found.</div>;
+  
+  if (!work) return (
+    <div className="text-center p-10 text-muted-foreground">
+      {t("trips.workDetails.notFound")}
+    </div>
+  );
 
   const duration = work.end_time
-    ? `${Math.round((new Date(work.end_time).getTime() - new Date(work.start_time).getTime()) / 60000)} mins`
-    : "In Progress";
+    ? `${Math.round((new Date(work.end_time).getTime() - new Date(work.start_time).getTime()) / 60000)} ${t("trips.workDetails.minutes")}`
+    : t("trips.workDetails.inProgress");
 
   const coordinates = getCoordinatesFromHex(work.location);
 
@@ -33,14 +40,13 @@ export default function WorkDetail() {
           <ArrowLeft className="w-4 h-4" />
         </Button>
         <h1 className="text-2xl font-bold tracking-tight mt-0.5">
-          Work Session Details
+          {t("trips.workDetails.title")}
         </h1>
       </div>
 
-      {/* NEW STACKED LAYOUT */}
       <div className="flex flex-col gap-6">
         
-        {/* TOP ROW: Metadata (3 columns on desktop, 1 on mobile) */}
+        {/* TOP ROW: Metadata */}
         <div className="stat-card">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             
@@ -50,9 +56,11 @@ export default function WorkDetail() {
                 <Clock className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Timing</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  {t("trips.workDetails.timing")}
+                </p>
                 <p className="font-semibold text-foreground">
-                  {format(new Date(work.start_time), "pp")} - {work.end_time ? format(new Date(work.end_time), "pp") : "Active"}
+                  {format(new Date(work.start_time), "pp")} - {work.end_time ? format(new Date(work.end_time), "pp") : t("trips.workDetails.active")}
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {format(new Date(work.start_time), "PP")}
@@ -66,7 +74,9 @@ export default function WorkDetail() {
                 <Hourglass className="w-5 h-5 text-blue-500" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Duration</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  {t("trips.workDetails.duration")}
+                </p>
                 <p className="font-semibold text-foreground">{duration}</p>
               </div>
             </div>
@@ -77,9 +87,11 @@ export default function WorkDetail() {
                 <StickyNote className="w-5 h-5 text-amber-500" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Notes</p>
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  {t("trips.workDetails.notes")}
+                </p>
                 <p className="text-sm text-foreground leading-relaxed line-clamp-3">
-                  {work.notes || "No notes provided for this session."}
+                  {work.notes || t("trips.workDetails.noNotes")}
                 </p>
               </div>
             </div>
@@ -87,13 +99,15 @@ export default function WorkDetail() {
           </div>
         </div>
 
-        {/* BOTTOM ROW: Map (Spans full width) */}
+        {/* BOTTOM ROW: Map */}
         <div className="stat-card flex flex-col min-h-[450px]">
           
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-primary" />
-              <h2 className="font-semibold text-foreground">Location Tracking</h2>
+              <h2 className="font-semibold text-foreground">
+                {t("trips.workDetails.locationTracking")}
+              </h2>
             </div>
 
             {/* Status Badge */}
@@ -103,12 +117,12 @@ export default function WorkDetail() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                 </span>
-                Captured
+                {t("trips.workDetails.captured")}
               </div>
             ) : (
               <div className="flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive rounded-full text-xs font-medium">
                 <span className="h-2 w-2 rounded-full bg-destructive"></span>
-                Not Recorded
+                {t("trips.workDetails.notRecorded")}
               </div>
             )}
           </div>
@@ -119,7 +133,7 @@ export default function WorkDetail() {
                 <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
               </div>
               <iframe
-                title="Session Location"
+                title={t("trips.workDetails.locationTracking")}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -133,13 +147,15 @@ export default function WorkDetail() {
           ) : (
             <div className="w-full flex-1 mt-2 rounded-xl border border-dashed border-border/60 bg-secondary/20 flex flex-col items-center justify-center text-muted-foreground p-6 text-center">
               <MapPin className="w-10 h-10 mb-3 opacity-20" />
-              <p className="font-medium text-foreground mb-1">No coordinates available</p>
-              <p className="text-sm">Location tracking was disabled or unavailable during this session.</p>
+              <p className="font-medium text-foreground mb-1">
+                {t("trips.workDetails.noCoordinates")}
+              </p>
+              <p className="text-sm">
+                {t("trips.workDetails.noLocationData")}
+              </p>
             </div>
           )}
-          
         </div>
-
       </div>
     </div>
   );

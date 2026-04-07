@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { User, Building, Shield, Smartphone } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { User, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,16 +17,13 @@ interface Profile {
 }
 
 export default function Settings() {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({ name: "", phone: "" });
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  async function fetchProfile() {
+  const fetchProfile = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -44,11 +42,15 @@ export default function Settings() {
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
-      toast.error("Failed to load profile");
+      toast.error(t("settings.errorSaving"));
     } finally {
       setLoading(false);
     }
-  }
+  }, [t]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -56,26 +58,24 @@ export default function Settings() {
 
     setSaving(true);
     try {
-      // Strict Format Validation (German Mobile Number)
+      // German Mobile Validation
       const phoneRegex = /^(\+49|0049|0)\s?1[567]\d{1,2}\s?\d{7,8}$/;
       if (formData.phone && !phoneRegex.test(formData.phone)) {
-        toast.error("Please enter a valid German mobile number.");
+        toast.error(t("settings.validation.invalidPhone"));
         setSaving(false);
         return;
       }
 
-      // 2. Duplicate Check
+      // Duplicate Check
       if (formData.phone && formData.phone !== profile.phone) {
-        const { data: existingUsers, error: checkError } = await supabase
+        const { data: existingUsers } = await supabase
           .from("users")
           .select("id")
           .eq("phone", formData.phone)
           .neq("email", profile.email);
 
-        if (checkError) throw checkError;
-
         if (existingUsers && existingUsers.length > 0) {
-          toast.error("An account with this phone number already exists.");
+          toast.error(t("settings.validation.phoneExists"));
           setSaving(false);
           return;
         }
@@ -91,52 +91,48 @@ export default function Settings() {
 
       if (error) throw error;
 
-      toast.success("Profile updated successfully");
+      toast.success(t("settings.changeSaved"));
       fetchProfile();
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Failed to update profile");
+      toast.error(t("settings.errorSaving"));
     } finally {
       setSaving(false);
     }
   }
 
   if (loading) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">Loading settings...</div>
-    );
+    return <div className="text-center py-8 text-muted-foreground">{t("settings.loading")}</div>;
   }
 
   return (
     <div className="flex flex-col h-full overflow-y-auto space-y-8 max-w-4xl pr-2 pb-4 custom-scrollbar">
       <div>
-        <h1 className="page-header">Settings</h1>
-        <p className="text-muted-foreground">Manage your account and app preferences</p>
+        <h1 className="page-header">{t("settings.title")}</h1>
+        <p className="text-muted-foreground">{t("settings.subtitle")}</p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-6 bg-input">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="w-4 h-4" />
-            Profile
+            {t("settings.profile")}
           </TabsTrigger>
           <TabsTrigger value="app-config" className="flex items-center gap-2">
             <Smartphone className="w-4 h-4" />
-            App Configuration
+            {t("settings.appConfiguration")}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile" className="space-y-8">
-          {/* Profile Settings */}
           <div className="stat-card">
             <div className="flex items-center gap-3 mb-6">
               <User className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold">Profile Settings</h2>
+              <h2 className="text-lg font-semibold">{t("settings.profileSettings")}</h2>
             </div>
 
             <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">{t("settings.fullName")}</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -147,46 +143,21 @@ export default function Settings() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone">{t("settings.phoneNumber")}</Label>
                 <Input
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => {
-                    const cleanedValue = e.target.value.replace(/[^\d+\s]/g, "");
-                    setFormData({ ...formData, phone: cleanedValue });
-                  }}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^\d+\s]/g, "") })}
                   className="bg-input border-border"
-                  placeholder="+1 234 567 8900"
+                  placeholder="+49 151 12345678"
                 />
               </div>
 
               <Button type="submit" disabled={saving}>
-                {saving ? "Saving..." : "Save Changes"}
+                {saving ? t("settings.saving") : t("settings.saveChanges")}
               </Button>
             </form>
-          </div>
-
-          {/* Company Settings (placeholder) */}
-          <div className="stat-card">
-            <div className="flex items-center gap-3 mb-6">
-              <Building className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold">Company Settings</h2>
-            </div>
-            <p className="text-muted-foreground text-sm">
-              Company settings will be available in a future update. You'll be able to manage company details, branding, and team preferences here.
-            </p>
-          </div>
-
-          {/* Security Settings (placeholder) */}
-          <div className="stat-card">
-            <div className="flex items-center gap-3 mb-6">
-              <Shield className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold">Security</h2>
-            </div>
-            <p className="text-muted-foreground text-sm mb-4">
-              Security settings including password changes and two-factor authentication will be available in a future update.
-            </p>
           </div>
         </TabsContent>
 

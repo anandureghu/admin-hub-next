@@ -1,0 +1,72 @@
+{
+  "title": "Mitarbeiter",
+  "subtitle": "Verwalten Sie Ihre Teammitglieder",
+  "addEmployee": "Mitarbeiter hinzufügen",
+  "searchPlaceholder": "Namen oder Telefonnummern suchen...",
+  "activeOnly": "Nur Aktive",
+  "admins": "Admins",
+  "details": {
+    "back": "Zurück",
+    "notFound": "Mitarbeiter nicht gefunden.",
+    "memberSince": "Mitglied seit",
+    "tabs": {
+      "trips": "Trips",
+      "work": "Arbeitszeiten"
+    },
+    "loading": {
+      "profile": "Profil wird geladen...",
+      "trips": "Trips werden geladen..."
+    },
+    "empty": {
+      "trips": "Keine Trips für diesen Mitarbeiter aufgezeichnet.",
+      "work": "Keine Arbeitszeiten gefunden."
+    }
+  },
+  "resetDevice": {
+    "title": "Mitarbeiter-Gerät zurücksetzen?",
+    "description": "Diese Aktion löscht das aktuell registrierte Gerät des Mitarbeiters...",
+    "cancel": "Abbrechen",
+    "action": "Gerät zurücksetzen"
+  },
+  "dialog": {
+    "titleEdit": "Mitarbeiter bearbeiten",
+    "titleAdd": "Neuen Mitarbeiter hinzufügen",
+    "descriptionEdit": "Mitarbeiterdetails aktualisieren.",
+    "descriptionAdd": "Ein neues Teammitglied erstellen.",
+    "nameLabel": "Vollständiger Name *",
+    "namePlaceholder": "Max Mustermann",
+    "emailLabel": "E-Mail *",
+    "emailPlaceholder": "max@firma.de",
+    "phoneLabel": "Telefon *",
+    "phonePlaceholder": "+49 151 23456789",
+    "phoneDescription": "Formate: +49, 0049 oder 0 (z.B. 0172 1234567)",
+    "roleLabel": "Rolle *",
+    "rolePlaceholder": "Rolle auswählen",
+    "roleEmployee": "Mitarbeiter",
+    "roleAdmin": "Admin",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "update": "Aktualisieren",
+    "create": "Erstellen",
+    "saving": "Wird gespeichert...",
+    "successUpdate": "Mitarbeiter aktualisiert",
+    "successCreate": "Mitarbeiter erstellt",
+    "errorDuplicateEmail": "Ein Mitarbeiter mit dieser E-Mail existiert bereits.",
+    "errorDuplicatePhone": "Ein Mitarbeiter mit dieser Telefonnummer existiert bereits.",
+    "errorGeneric": "Beim Speichern des Mitarbeiters ist ein Fehler aufgetreten.",
+    "errorValidation": "Validierung der Mitarbeiterdaten fehlgeschlagen."
+  },
+  "columns": {
+    "name": "Name",
+    "phone": "Telefon",
+    "role": "Rolle",
+    "status": "Status",
+    "joined": "Beigetreten",
+    "actions": "Aktionen",
+    "srOpenMenu": "Menü öffnen",
+    "setInactive": "Als inaktiv setzen",
+    "activate": "Aktivieren",
+    "resetDevice": "Gerät zurücksetzen",
+    "editEmployee": "Mitarbeiter bearbeiten"
+  }
+}

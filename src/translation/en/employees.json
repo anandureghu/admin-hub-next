@@ -1,0 +1,72 @@
+{
+  "title": "Employees",
+  "subtitle": "Manage your team members",
+  "addEmployee": "Add Employee",
+  "searchPlaceholder": "Search names or phone numbers...",
+  "activeOnly": "Active Only",
+  "admins": "Admins",
+  "details": {
+    "back": "Back",
+    "notFound": "Employee not found.",
+    "memberSince": "Member Since",
+    "tabs": {
+      "trips": "Trips",
+      "work": "Work Sessions"
+    },
+    "loading": {
+      "profile": "Loading profile...",
+      "trips": "Loading trips..."
+    },
+    "empty": {
+      "trips": "No trips recorded for this employee.",
+      "work": "No work sessions found."
+    }
+  },
+  "resetDevice": {
+    "title": "Reset Employee Device?",
+    "description": "This action will clear the employee's currently registered device...",
+    "cancel": "Cancel",
+    "action": "Reset Device"
+  },
+  "dialog": {
+    "titleEdit": "Edit Employee",
+    "titleAdd": "Add New Employee",
+    "descriptionEdit": "Update employee details.",
+    "descriptionAdd": "Create a new team member.",
+    "nameLabel": "Full Name *",
+    "namePlaceholder": "John Doe",
+    "emailLabel": "Email *",
+    "emailPlaceholder": "john@company.com",
+    "phoneLabel": "Phone *",
+    "phonePlaceholder": "+49 151 23456789",
+    "phoneDescription": "Formats: +49, 0049, or 0 (e.g., 0172 1234567)",
+    "roleLabel": "Role *",
+    "rolePlaceholder": "Select a role",
+    "roleEmployee": "Employee",
+    "roleAdmin": "Admin",
+    "cancel": "Cancel",
+    "save": "Save",
+    "update": "Update",
+    "create": "Create",
+    "saving": "Saving...",
+    "successUpdate": "Employee updated",
+    "successCreate": "Employee created",
+    "errorDuplicateEmail": "An employee with this email already exists.",
+    "errorDuplicatePhone": "An employee with this phone number already exists.",
+    "errorGeneric": "Something went wrong while saving the employee.",
+    "errorValidation": "Failed to validate employee data."
+  },
+  "columns": {
+    "name": "Name",
+    "phone": "Phone",
+    "role": "Role",
+    "status": "Status",
+    "joined": "Joined",
+    "actions": "Actions",
+    "srOpenMenu": "Open menu",
+    "setInactive": "Set as Inactive",
+    "activate": "Activate",
+    "resetDevice": "Reset Device",
+    "editEmployee": "Edit Employee"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "title": "Belege",
+  "subtitle": "Trip-Ausgaben verwalten und verfolgen",
+  "searchPlaceholder": "Beschreibung suchen...",
+  "allStatus": "Alle Status",
+  "pending": "Ausstehend",
+  "verified": "Verifiziert",
+  "rejected": "Abgelehnt",
+  "verify": "Verifizieren",
+  "reject": "Ablehnen",
+  "noDescription": "Keine Beschreibung",
+  "unknownEmployee": "Unbekannter Mitarbeiter",
+  "tripOn": "Trip am {{date}}",
+  "viewReceipt": "Beleg ansehen",
+  "statusUpdated": "Belegstatus aktualisiert!",
+  "statusUpdateFailed": "Statusaktualisierung fehlgeschlagen",
+  "noTrip": "Kein Trip",
+  "allLoaded": "Alle Belege geladen.",
+  "loadingMore": "Ältere Belege werden geladen...",
+  "noReceipts": "Keine Belege gefunden",
+  "adjustFilters": "Versuchen Sie, Ihre Filter oder Suchanfrage anzupassen."
+}
