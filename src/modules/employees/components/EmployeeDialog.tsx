@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client"; // IMPORT SUPABASE
+import { supabase } from "@/integrations/supabase/client";
 import {
     Dialog,
     DialogContent,
@@ -93,7 +93,7 @@ export function EmployeeDialog({ open, onOpenChange, employee }: EmployeeDialogP
             if (phoneConflict) return "An employee with this phone number already exists.";
         }
 
-        return null; // No duplicates found
+        return null;
     }
 
     async function onSubmit(values: EmployeeFormValues) {

@@ -73,11 +73,9 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    // The outer container stays flex-1 so the entire block can fill the page if needed
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden space-y-4">
       {toolbar?.(table)}
 
-      {/* THE FIX: Replaced 'flex-1' with 'shrink' in the wrapperClassName */}
       <Table wrapperClassName={`rounded-md border pr-1 shrink min-h-0 overflow-y-auto custom-scrollbar pb-2 ${tableContainerClassName || ""}`}>
         <TableHeader className="sticky top-0 z-10 bg-background outline outline-1 outline-border">
           {table.getHeaderGroups().map((headerGroup) => (

@@ -1,4 +1,4 @@
-import { useState } from "react"; // NEW: Import useState
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2, MapPin, Calendar, User, FileText, Image as ImageIcon, ExternalLink } from "lucide-react";

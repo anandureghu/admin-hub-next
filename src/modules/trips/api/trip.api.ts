@@ -14,7 +14,7 @@ export const tripApi = {
     page = 0,
     status?: string,
     userIds?: string[],
-    dateRange?: { from: Date; to?: Date },
+    dateRange?: { from?: Date; to?: Date },
   ): Promise<{ data: Trip[]; nextPage: number | null }> {
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
@@ -81,7 +81,7 @@ export const tripApi = {
   async exportTrips(
     status?: string,
     userIds?: string[],
-    dateRange?: { from: Date; to?: Date },
+    dateRange?: { from?: Date; to?: Date },
   ) {
     let query = supabase
       .from("trips")
@@ -116,4 +116,40 @@ export const tripApi = {
 
     return data;
   },
+
+  // Add this inside your tripApi object
+  async getExportCount(
+    status?: string,
+    userIds?: string[],
+    dateRange?: { from?: Date; to?: Date }
+  ): Promise<number> {
+    let query = supabase
+      .from("trips")
+      .select("*", { count: "exact", head: true }); // head: true means "don't fetch data, just count"
+
+    if (status && status !== "all") {
+      query = query.eq("status", status);
+    }
+
+    if (userIds && userIds.length > 0) {
+      query = query.in("user_id", userIds);
+    }
+
+    if (dateRange?.from) {
+      const fromDate = format(dateRange.from, "yyyy-MM-dd");
+      const toDate = dateRange.to
+        ? format(dateRange.to, "yyyy-MM-dd")
+        : fromDate;
+
+      query = query
+        .gte("trip_date", fromDate)
+        .lte("trip_date", toDate + "T23:59:59.999Z");
+    }
+
+    const { count, error } = await query;
+    if (error) throw error;
+
+    return count || 0;
+  },
 };
+

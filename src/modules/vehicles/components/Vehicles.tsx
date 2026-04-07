@@ -8,7 +8,6 @@ import { useVehiclesQuery } from "../hooks/useVehiclesQuery";
 import { useVehicleMutations } from "../hooks/useVehicleMutations";
 import { VehicleDialog } from "./VehicleDialog";
 import { DebouncedInput } from "@/components/ui/debounced-input";
-// NEW: Import Select components
 import {
   Select,
   SelectContent,
@@ -19,9 +18,8 @@ import {
 
 export default function Vehicles() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all"); // NEW: State for dropdown
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  // NEW: Pass status to your query
   const { data, fetchNextPage, hasNextPage, isFetching, isLoading } = useVehiclesQuery({
     search: searchQuery,
     status: statusFilter as "all" | "available" | "unavailable",

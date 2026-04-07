@@ -1,5 +1,5 @@
 import { AlertOctagon, CheckCircle2 } from "lucide-react";
-import { AccidentCard } from "@/modules/accidents/components/AccidentCard"; // Adjust path as needed
+import { AccidentCard } from "@/modules/accidents/components/AccidentCard";
 import { TripDetailResponse } from "../schemas/trip.schema";
 
 export function TripIncidents({ trip }: { trip: TripDetailResponse }) {

@@ -21,17 +21,15 @@ import type { TripListResponse as Trip } from "../schemas/trip.schema";
 import { UserMultiSelect } from "@/components/UserMultiSelect";
 import { DateRange } from "react-day-picker";
 import { TripCard } from "./TripCard";
-import { downloadCSV } from "@/lib/csv";
-import { format } from "date-fns";
-import { tripApi } from "../api/trip.api";
 import { Button } from "@/components/ui/button";
+import { ExportTripsDialog } from "./ExportTripsDialog";
 
 export default function Trips() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [isExporting, setIsExporting] = useState(false);
+
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
@@ -52,45 +50,11 @@ export default function Trips() {
     toast.error("Failed to load trips");
   }
 
-  const handleExport = async () => {
-    try {
-      setIsExporting(true);
-
-      const allData = await tripApi.exportTrips(statusFilter, selectedUserIds, dateRange);
-
-      const finalDataToExport = allData.filter((trip) => {
-        if (!searchQuery) return true;
-        const q = searchQuery.toLowerCase();
-        return (
-          trip.vehicles?.vehicle_number.toLowerCase().includes(q) ||
-          trip.users?.name.toLowerCase().includes(q) ||
-          trip.users?.email.toLowerCase().includes(q)
-        );
-      });
-
-      if (finalDataToExport.length === 0) {
-        toast.error("No data to export with current filters", { id: "export-toast" });
-        return;
-      }
-
-      // 3. Convert and download
-      downloadCSV(finalDataToExport, `Trips_Export_${format(new Date(), "yyyy-MM-dd")}`);
-
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to export data", { id: "export-toast" });
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
   const filteredTrips = trips.filter((trip) => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
     return (
-      trip.vehicles?.vehicle_number.toLowerCase().includes(q) ||
-      trip.users?.name.toLowerCase().includes(q) ||
-      trip.users?.email.toLowerCase().includes(q)
+      trip.vehicles?.vehicle_number.toLowerCase() ||
+      trip.users?.name.toLowerCase() ||
+      trip.users?.email.toLowerCase()
     );
   });
 
@@ -123,10 +87,8 @@ export default function Trips() {
         <p className="text-muted-foreground">Track all trip activities</p>
       </div>
 
-      {/* Filters */}
+      {/* Page Filters */}
       <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 shrink-0 pl-1 w-full">
-
-        {/* Left Side: Filters */}
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto flex-1">
           <div className="w-full sm:w-auto">
             <UserMultiSelect
@@ -160,20 +122,19 @@ export default function Trips() {
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
-                onClick={handleExport}
-                disabled={isExporting || isLoading}
+                onClick={() => setExportModalOpen(true)}
+                disabled={isLoading}
                 className="w-full lg:w-auto shrink-0 bg-input border-border hover:bg-accent hover:text-accent-foreground lg:ml-auto"
               >
-                {isExporting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+                <Download className="w-4 h-4 mr-2" />
                 Export CSV
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-[250px] text-center">
-              <p>Exports the current filtered details of the trips</p>
+              <p>Configure and export trip data</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-
       </div>
 
       {/* Trips List */}
@@ -186,7 +147,7 @@ export default function Trips() {
           <div className="stat-card text-center py-12">
             <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground">
-              {searchQuery || statusFilter !== "all" || selectedUserIds.length > 0 || dateRange
+              {statusFilter !== "all" || selectedUserIds.length > 0 || dateRange
                 ? "No trips match your filters"
                 : "No trips recorded yet. Trips will appear here when employees start tracking."}
             </p>
@@ -197,7 +158,6 @@ export default function Trips() {
           ))
         )}
 
-        {/* Sentinel + loading spinner */}
         <div ref={sentinelRef} className="py-4 flex justify-center">
           {isFetchingNextPage && (
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -207,6 +167,16 @@ export default function Trips() {
           )}
         </div>
       </div>
+
+      <ExportTripsDialog
+        open={exportModalOpen}
+        onOpenChange={setExportModalOpen}
+        initialStatus={statusFilter}
+        initialUserIds={selectedUserIds}
+        initialDateRange={dateRange}
+        usersData={usersData}
+        usersLoading={usersLoading}
+      />
     </div>
   );
 }

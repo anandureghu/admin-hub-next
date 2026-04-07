@@ -37,7 +37,7 @@ export default function Employees() {
   const [prevFilters, setPrevFilters] = useState<ColumnFiltersState>([]);
 
   const toggleStatusMutation = useToggleEmployeeStatusMutation();
-  const resetDeviceMutation = useResetDeviceMutation(); // 2. Initialize mutation
+  const resetDeviceMutation = useResetDeviceMutation();
 
   const [resetDeviceId, setResetDeviceId] = useState<string | null>(null);
 
@@ -62,17 +62,15 @@ export default function Employees() {
     toggleStatusMutation.mutate({ id, currentStatus: status });
   };
 
-  // NEW: Instead of mutating immediately, just set the ID to open the modal
   const handleResetDevice = (id: string) => {
     setResetDeviceId(id);
   };
 
-  // NEW: The actual mutation trigger when the user clicks "Confirm"
   const confirmResetDevice = () => {
     if (resetDeviceId) {
       resetDeviceMutation.mutate(resetDeviceId);
     }
-    setResetDeviceId(null); // Close the modal
+    setResetDeviceId(null);
   };
 
   return (

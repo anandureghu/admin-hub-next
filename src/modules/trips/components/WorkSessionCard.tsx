@@ -25,7 +25,7 @@ export function WorkSessionCard({ session, tripId, index }: WorkSessionCardProps
       onClick={() => navigate(`/trips/${tripId}/work/${session.id}`)}
       className={cn(
         "group flex items-center justify-between p-4 border border-border rounded-xl bg-card transition-all cursor-pointer hover:border-primary hover:shadow-sm",
-        isActive && "border-l-4 border-l-primary" // Highlight active sessions
+        isActive && "border-l-4 border-l-primary"
       )}
     >
       <div className="flex items-center gap-4">
@@ -47,7 +47,7 @@ export function WorkSessionCard({ session, tripId, index }: WorkSessionCardProps
               </span>
             )}
           </div>
-          
+
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <StickyNote className="w-3 h-3" />
             <p className="line-clamp-1 italic">

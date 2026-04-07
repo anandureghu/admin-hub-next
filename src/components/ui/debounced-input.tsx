@@ -15,12 +15,10 @@ export function DebouncedInput({
 }: DebouncedInputProps) {
   const [value, setValue] = useState(initialValue);
 
-  // Sync local state if the external value changes
   useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
 
-  // The actual debounce logic
   useEffect(() => {
     const timeout = setTimeout(() => {
       onChange(value);

@@ -37,7 +37,7 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
       apk_url: "",
       maintenance_mode: false,
       maintenance_message: "",
-      is_active: false, // Default to false when creating new
+      is_active: false,
     },
   });
 
@@ -162,7 +162,7 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
 
           <div className="space-y-4 pt-4 border-t border-border">
             <h3 className="font-medium text-sm">Update Messages</h3>
-            
+
             <div className="space-y-2">
               <Label>Warning Message</Label>
               <Textarea
@@ -192,7 +192,7 @@ export function AppConfigDialog({ open, onOpenChange, config }: AppConfigDialogP
                 onCheckedChange={(val) => form.setValue("maintenance_mode", val)}
               />
             </h3>
-            
+
             {maintenanceMode && (
               <div className="space-y-2">
                 <Label>Maintenance Message</Label>

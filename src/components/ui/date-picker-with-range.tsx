@@ -8,7 +8,7 @@ import {
 import { format } from "date-fns"
 import { CalendarIcon, X } from "lucide-react"
 import { type DateRange } from "react-day-picker"
-import { cn } from "@/lib/utils" 
+import { cn } from "@/lib/utils"
 
 interface DatePickerWithRangeProps {
   date: DateRange | undefined
@@ -19,13 +19,14 @@ interface DatePickerWithRangeProps {
 export function DatePickerWithRange({ date, onDateChange, className }: DatePickerWithRangeProps) {
   return (
     <div className={cn("relative", className)}>
-      <Popover>
+      {/* ADDED modal={true} HERE */}
+      <Popover modal={true}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
               "justify-start px-3 font-normal w-full bg-secondary",
-              date?.from && "pr-10" 
+              date?.from && "pr-10"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
@@ -52,11 +53,11 @@ export function DatePickerWithRange({ date, onDateChange, className }: DatePicke
             selected={date}
             onSelect={onDateChange}
             numberOfMonths={2}
-            captionLayout="dropdown" 
-            fromYear={2000} 
-            toYear={2050}   
+            captionLayout="dropdown"
+            fromYear={2000}
+            toYear={2050}
           />
-          
+
           {date?.from && (
             <div className="border-t border-border p-3 flex justify-end">
               <Button

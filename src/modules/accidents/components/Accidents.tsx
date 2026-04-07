@@ -6,7 +6,7 @@ import { useAccidentsQuery } from "../hooks/useAccidentsQuery";
 import { AccidentCard } from "./AccidentCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { UserMultiSelect } from "../../../components/UserMultiSelect"; // Adjust path if needed
+import { UserMultiSelect } from "../../../components/UserMultiSelect";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { DateRange } from "react-day-picker";
 

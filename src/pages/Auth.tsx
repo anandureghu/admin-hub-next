@@ -69,7 +69,7 @@ export default function Auth() {
           .eq("email", data.user.email);
       }
 
-      // ✅ Allowed (ADMIN or active EMPLOYEE)
+      // Allowed (ADMIN or active EMPLOYEE)
       setIsChecking(false);
       navigate("/dashboard");
     };
