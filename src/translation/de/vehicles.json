@@ -1,0 +1,56 @@
+{
+  "title": "Fahrzeuge",
+  "subtitle": "Verwalten Sie Ihre Fahrzeuge",
+  "addVehicle": "Fahrzeug hinzufügen",
+  "searchPlaceholder": "Fahrzeuge suchen...",
+  "allVehicles": "Alle Fahrzeuge",
+  "available": "Verfügbar",
+  "unavailable": "Nicht verfügbar",
+  "noMatch": "Keine Fahrzeuge entsprechen Ihren Filtern",
+  "noVehicles": "Noch keine Fahrzeuge vorhanden. Füge dein erstes Fahrzeug hinzu, um zu beginnen.",
+  "loading": "Fahrzeuge werden geladen...",
+  "loadingMore": "Weitere Fahrzeuge werden geladen...",
+  "status": {
+    "all": "Alle Status",
+    "available": "Verfügbar",
+    "unavailable": "Nicht verfügbar"
+  },
+  "dialog": {
+    "titleEdit": "Fahrzeug bearbeiten",
+    "titleAdd": "Neues Fahrzeug hinzufügen",
+    "descriptionEdit": "Bearbeiten Sie die Fahrzeugdetails.",
+    "descriptionAdd": "Fügen Sie ein neues Fahrzeug zur Flotte hinzu.",
+    "vehicleNumberLabel": "Fahrzeugnummer / Kennzeichen *",
+    "vehicleNumberPlaceholder": "ABC-1234",
+    "vehicleTypeLabel": "Fahrzeugtyp *",
+    "vehicleTypePlaceholder": "Fahrzeugtyp auswählen",
+    "vehiclePictureLabel": "Fahrzeugbild",
+    "cancel": "Abbrechen",
+    "save": "Fahrzeug speichern",
+    "add": "Fahrzeug hinzufügen",
+    "update": "Fahrzeug aktualisieren",
+    "saving": "Wird gespeichert...",
+    "errorDuplicate": "Ein Fahrzeug mit dieser Nummer existiert bereits.",
+    "errorValidation": "Validierung der Fahrzeugdaten fehlgeschlagen."
+  },
+  "card": {
+    "available": "Verfügbar",
+    "unavailable": "Nicht verfügbar",
+    "added": "Hinzugefügt am {{date}}",
+    "markAvailable": "Als verfügbar markieren",
+    "markUnavailable": "Als nicht verfügbar markieren",
+    "edit": "Bearbeiten",
+    "imageAlt": "Fahrzeugbild"
+  },
+  "types": {
+    "Sedan": "Limousine",
+    "SUV": "SUV",
+    "Truck": "LKW",
+    "Van": "Transporter",
+    "Ford Transit": "Ford Transit",
+    "Pickup": "Pickup",
+    "Bus": "Bus",
+    "Motorcycle": "Motorrad",
+    "Other": "Andere"
+  }
+}

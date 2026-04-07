@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,6 +48,7 @@ export function VehicleDialog({
   onOpenChange,
   vehicle,
 }: VehicleDialogProps) {
+  const { t } = useTranslation();
   const { createVehicle, updateVehicle, isCreating, isUpdating } =
     useVehicleMutations();
   const [vehicleImage, setVehicleImage] = useState<File | null>(null);
@@ -61,13 +63,13 @@ export function VehicleDialog({
   });
 
   useEffect(() => {
-    if (vehicle) {
+    if (vehicle && open) {
       form.reset({
         vehicle_number: vehicle.vehicle_number,
         vehicle_type: vehicle.vehicle_type,
       });
       setExistingImageUrl(vehicle.image_url || "");
-    } else {
+    } else if (open) {
       form.reset({ vehicle_number: "", vehicle_type: "" });
       setExistingImageUrl("");
     }
@@ -90,7 +92,7 @@ export function VehicleDialog({
     const { data, error } = await query;
     if (error) {
       console.error("Error checking duplicate vehicle:", error);
-      throw new Error("Failed to validate vehicle data.");
+      throw new Error(t("vehicles.dialog.errorValidation"));
     }
 
     return data && data.length > 0;
@@ -103,10 +105,10 @@ export function VehicleDialog({
         vehicle?.id || null
       );
       if (isDuplicate) {
-        toast.error("A vehicle with this number already exists.");
+        toast.error(t("vehicles.dialog.errorDuplicate"));
         form.setError("vehicle_number", {
           type: "manual",
-          message: "A vehicle with this number already exists.",
+          message: t("vehicles.dialog.errorDuplicate"),
         });
         return;
       }
@@ -144,12 +146,12 @@ export function VehicleDialog({
       <DialogContent className="bg-card border-border sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            {vehicle ? "Edit Vehicle" : "Add New Vehicle"}
+            {vehicle ? t("vehicles.dialog.titleEdit") : t("vehicles.dialog.titleAdd")}
           </DialogTitle>
           <DialogDescription>
             {vehicle
-              ? "Edit the vehicle details."
-              : "Add a new vehicle to the fleet."}
+              ? t("vehicles.dialog.descriptionEdit")
+              : t("vehicles.dialog.descriptionAdd")}
           </DialogDescription>
         </DialogHeader>
 
@@ -160,10 +162,10 @@ export function VehicleDialog({
               name="vehicle_number"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vehicle Number / License Plate *</FormLabel>
+                  <FormLabel>{t("vehicles.dialog.vehicleNumberLabel")}</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="ABC-1234"
+                      placeholder={t("vehicles.dialog.vehicleNumberPlaceholder")}
                       className="bg-input uppercase"
                       {...field}
                       onChange={(e) =>
@@ -181,17 +183,17 @@ export function VehicleDialog({
               name="vehicle_type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vehicle Type *</FormLabel>
+                  <FormLabel>{t("vehicles.dialog.vehicleTypeLabel")}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className="bg-input border-border">
-                        <SelectValue placeholder="Select vehicle type" />
+                        <SelectValue placeholder={t("vehicles.dialog.vehicleTypePlaceholder")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-card border-border">
                       {vehicleTypes.map((type) => (
                         <SelectItem key={type} value={type}>
-                          {type}
+                          {t(`vehicles.types.${type}`)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -202,7 +204,7 @@ export function VehicleDialog({
             />
 
             <div className="space-y-2">
-              <FormLabel>Vehicle Picture</FormLabel>
+              <FormLabel>{t("vehicles.dialog.vehiclePictureLabel")}</FormLabel>
               <ImageUpload
                 value={existingImageUrl}
                 onChange={(file) => setVehicleImage(file)}
@@ -221,14 +223,14 @@ export function VehicleDialog({
                 className="flex-1"
                 disabled={isSaving}
               >
-                Cancel
+                {t("vehicles.dialog.cancel")}
               </Button>
               <Button type="submit" className="flex-1" disabled={isSaving}>
                 {isSaving
-                  ? "Saving..."
+                  ? t("vehicles.dialog.saving")
                   : vehicle
-                    ? "Update Vehicle"
-                    : "Add Vehicle"}
+                    ? t("vehicles.dialog.update")
+                    : t("vehicles.dialog.add")}
               </Button>
             </div>
           </form>

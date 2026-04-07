@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"; // Added
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -17,9 +18,10 @@ interface DatePickerWithRangeProps {
 }
 
 export function DatePickerWithRange({ date, onDateChange, className }: DatePickerWithRangeProps) {
+  const { t } = useTranslation(); // Initialize translation
+
   return (
     <div className={cn("relative", className)}>
-      {/* ADDED modal={true} HERE */}
       <Popover modal={true}>
         <PopoverTrigger asChild>
           <Button
@@ -41,7 +43,7 @@ export function DatePickerWithRange({ date, onDateChange, className }: DatePicke
                   format(date.from, "LLL dd, y")
                 )
               ) : (
-                <span>Pick a date range</span>
+                <span>{t("common.datePicker.placeholder")}</span>
               )}
             </span>
           </Button>
@@ -67,7 +69,7 @@ export function DatePickerWithRange({ date, onDateChange, className }: DatePicke
                 onClick={() => onDateChange(undefined)}
               >
                 <X className="mr-2 h-3 w-3" />
-                Clear Selection
+                {t("common.datePicker.clearSelection")}
               </Button>
             </div>
           )}
@@ -86,7 +88,7 @@ export function DatePickerWithRange({ date, onDateChange, className }: DatePicke
           }}
         >
           <X className="h-4 w-4" />
-          <span className="sr-only">Clear date range</span>
+          <span className="sr-only">{t("common.datePicker.srClear")}</span>
         </Button>
       )}
     </div>

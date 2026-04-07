@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useEmployeeQuery } from "../hooks/useEmployeesQuery";
 import { TripCard } from "../../trips/components/TripCard";
 import { WorkSessionCard } from "../../trips/components/WorkSessionCard";
@@ -9,17 +10,24 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 export default function EmployeeDetail() {
+    const { t } = useTranslation();
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
     const { data: employee, isLoading: empLoading } = useEmployeeQuery(id);
 
-    if (empLoading) return <div className="p-8 space-y-4">
-        <Skeleton className="h-20 w-full" />
-        <Skeleton className="h-64 w-full" />
-    </div>;
+    if (empLoading) return (
+        <div className="p-8 space-y-4">
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-64 w-full" />
+        </div>
+    );
 
-    if (!employee) return <div className="p-8 text-center">Employee not found.</div>;
+    if (!employee) return (
+        <div className="p-8 text-center">
+            {t("employees.details.notFound")}
+        </div>
+    );
 
     return (
         <div className="w-full h-full space-y-6 overflow-y-auto pr-4 custom-scrollbar pb-10">
@@ -31,7 +39,7 @@ export default function EmployeeDetail() {
                 className="gap-2 text-muted-foreground hover:text-foreground"
             >
                 <ArrowLeft className="w-4 h-4" />
-                Back
+                {t("employees.details.back")}
             </Button>
 
             {/* Profile Header */}
@@ -66,8 +74,12 @@ export default function EmployeeDetail() {
                     </div>
 
                     <div className="bg-secondary/50 px-4 py-2 rounded-lg text-left md:text-right border border-border/50">
-                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Member Since</p>
-                        <p className="text-sm font-medium">{new Date(employee.created_at).toLocaleDateString()}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                            {t("employees.details.memberSince")}
+                        </p>
+                        <p className="text-sm font-medium">
+                            {new Date(employee.created_at).toLocaleDateString()}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -75,17 +87,25 @@ export default function EmployeeDetail() {
             {/* Activity Tabs */}
             <Tabs defaultValue="trips" className="w-full">
                 <TabsList className="grid w-full max-w-[400px] grid-cols-2 mb-6">
-                    <TabsTrigger value="trips">Trips</TabsTrigger>
-                    <TabsTrigger value="work">Work Sessions</TabsTrigger>
+                    <TabsTrigger value="trips">
+                        {t("employees.details.tabs.trips")}
+                    </TabsTrigger>
+                    <TabsTrigger value="work">
+                        {t("employees.details.tabs.work")}
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="trips" className="space-y-4">
                     {empLoading ? (
-                        <p className="text-muted-foreground">Loading trips...</p>
+                        <p className="text-muted-foreground">
+                            {t("employees.details.loading.trips")}
+                        </p>
                     ) : employee?.trips.length === 0 ? (
                         <div className="text-center py-12 border-2 border-dashed rounded-xl">
                             <MapPin className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
-                            <p className="text-muted-foreground">No trips recorded for this employee.</p>
+                            <p className="text-muted-foreground">
+                                {t("employees.details.empty.trips")}
+                            </p>
                         </div>
                     ) : (
                         employee?.trips.map((trip) => (
@@ -98,7 +118,9 @@ export default function EmployeeDetail() {
                     {employee?.work_sessions?.length === 0 ? (
                         <div className="text-center py-12 border-2 border-dashed rounded-xl">
                             <Calendar className="w-10 h-10 text-muted-foreground/50 mx-auto mb-2" />
-                            <p className="text-muted-foreground">No work sessions found.</p>
+                            <p className="text-muted-foreground">
+                                {t("employees.details.empty.work")}
+                            </p>
                         </div>
                     ) : (
                         employee?.work_sessions?.map((session, index) => (

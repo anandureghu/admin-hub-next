@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next"; // Added
 import { FileText, Loader2, Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +20,8 @@ import {
 import { ReceiptFilters } from "../schemas/receipt.schema";
 
 export default function Receipts() {
-  // --- States for Filters ---
+  const { t } = useTranslation(); // Initialize translation
+  
   const [search, setSearch] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -74,12 +76,11 @@ export default function Receipts() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-
-      {/* --- STATIC TOP SECTION (Header + Filters) --- */}
+      {/* --- STATIC TOP SECTION --- */}
       <div className="shrink-0 space-y-6 pb-6 pl-1 border-b border-border/40">
         <div>
-          <h1 className="page-header">Receipts</h1>
-          <p className="text-muted-foreground">Manage and track trip expenses</p>
+          <h1 className="page-header">{t("receipts.title")}</h1>
+          <p className="text-muted-foreground">{t("receipts.subtitle")}</p>
         </div>
 
         {/* Filters Row */}
@@ -89,7 +90,7 @@ export default function Receipts() {
           <div className="relative w-full lg:w-72 shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search description..."
+              placeholder={t("receipts.searchPlaceholder")}
               className="pl-10 bg-input border-border"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -112,13 +113,13 @@ export default function Receipts() {
             onValueChange={(val) => setStatusFilter(val as ReceiptFilters["status"])}
           >
             <SelectTrigger className="w-full lg:w-40 bg-input border-border shrink-0">
-              <SelectValue placeholder="All Status" />
+              <SelectValue placeholder={t("receipts.allStatus")} />
             </SelectTrigger>
             <SelectContent className="bg-card border-border">
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="PENDING">Pending</SelectItem>
-              <SelectItem value="VERIFIED">Verified</SelectItem>
-              <SelectItem value="REJECTED">Rejected</SelectItem>
+              <SelectItem value="all">{t("receipts.allStatus")}</SelectItem>
+              <SelectItem value="PENDING">{t("receipts.pending")}</SelectItem>
+              <SelectItem value="VERIFIED">{t("receipts.verified")}</SelectItem>
+              <SelectItem value="REJECTED">{t("receipts.rejected")}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -147,8 +148,8 @@ export default function Receipts() {
           // Empty State
           <div className="flex flex-col items-center justify-center py-20 bg-card/30 border border-dashed border-border rounded-2xl text-muted-foreground">
             <FileText className="w-12 h-12 mb-4 opacity-20" />
-            <p className="text-base font-medium text-foreground">No receipts found</p>
-            <p className="text-sm mt-1">Try adjusting your filters or search query.</p>
+            <p className="text-base font-medium text-foreground">{t("receipts.noReceipts")}</p>
+            <p className="text-sm mt-1">{t("receipts.adjustFilters")}</p>
           </div>
         ) : (
           // Receipts Grid
@@ -164,12 +165,12 @@ export default function Receipts() {
           {isFetchingNextPage && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm font-medium">Loading older receipts...</span>
+              <span className="text-sm font-medium">{t("receipts.loadingMore")}</span>
             </div>
           )}
           {!hasNextPage && receipts.length > 0 && !isLoading && (
             <p className="text-sm text-muted-foreground italic">
-              All receipts loaded.
+              {t("receipts.allLoaded")}
             </p>
           )}
         </div>

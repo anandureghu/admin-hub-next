@@ -1,0 +1,33 @@
+{
+  "userMultiSelect": {
+    "placeholder": "All Users",
+    "searchPlaceholder": "Search users...",
+    "loading": "Loading users...",
+    "noMatch": "No users match your search",
+    "noUsers": "No users found",
+    "found": "{{count}} user found",
+    "found_plural": "{{count}} users found",
+    "more": "+{{count}} more"
+  },
+  "datePicker": {
+    "placeholder": "Pick a date range",
+    "clearSelection": "Clear Selection",
+    "srClear": "Clear date range"
+  },
+  "dataTable": {
+    "noResults": "No results.",
+    "loading": "Loading..."
+  },
+  "pagination": {
+    "rowsPerPage": "Rows per page",
+    "pageCounter": "Page {{current}} of {{total}}",
+    "firstPage": "Go to first page",
+    "prevPage": "Go to previous page",
+    "nextPage": "Go to next page",
+    "lastPage": "Go to last page"
+  },
+  "photoFrame": {
+    "errorLoading": "Error Loading",
+    "notUploaded": "Not Uploaded"
+  }
+}

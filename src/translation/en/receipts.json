@@ -1,0 +1,22 @@
+{
+  "title": "Receipts",
+  "subtitle": "Manage and track trip expenses",
+  "searchPlaceholder": "Search description...",
+  "allStatus": "All Status",
+  "pending": "Pending",
+  "verified": "Verified",
+  "rejected": "Rejected",
+  "verify": "Verify",
+  "reject": "Reject",
+  "noDescription": "No description",
+  "unknownEmployee": "Unknown employee",
+  "tripOn": "Trip on {{date}}",
+  "viewReceipt": "View Receipt",
+  "statusUpdated": "Receipt status updated!",
+  "statusUpdateFailed": "Failed to update status",
+  "noTrip": "N/A",
+  "allLoaded": "All receipts loaded.",
+  "loadingMore": "Loading older receipts...",
+  "noReceipts": "No receipts found",
+  "adjustFilters": "Try adjusting your filters or search query."
+}

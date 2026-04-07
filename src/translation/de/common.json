@@ -1,0 +1,32 @@
+{
+  "userMultiSelect": {
+    "placeholder": "Alle Benutzer",
+    "searchPlaceholder": "Benutzer suchen...",
+    "loading": "Benutzer werden geladen...",
+    "noMatch": "Keine Benutzer entsprechen Ihrer Suche",
+    "noUsers": "Keine Benutzer gefunden",
+    "found": "{{count}} Benutzer gefunden",
+    "more": "+{{count}} weitere"
+  },
+  "datePicker": {
+    "placeholder": "Zeitraum auswählen",
+    "clearSelection": "Auswahl löschen",
+    "srClear": "Datumsbereich löschen"
+  },
+  "dataTable": {
+    "noResults": "No results.",
+    "loading": "Loading..."
+  },
+  "pagination": {
+    "rowsPerPage": "Zeilen pro Seite",
+    "pageCounter": "Seite {{current}} von {{total}}",
+    "firstPage": "Zur ersten Seite",
+    "prevPage": "Zur vorherigen Seite",
+    "nextPage": "Zur nächsten Seite",
+    "lastPage": "Zur letzten Seite"
+  },
+  "photoFrame": {
+    "errorLoading": "Fehler beim Laden",
+    "notUploaded": "Nicht hochgeladen"
+  }
+}

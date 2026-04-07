@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { TripListResponse as Trip } from "../schemas/trip.schema";
@@ -9,6 +10,8 @@ interface TripCardProps {
 }
 
 export function TripCard({ trip }: TripCardProps) {
+    const { t } = useTranslation();
+
     // Helper to format time locally
     const formatTime = (timestamp: string | null) => {
         if (!timestamp) return "—";
@@ -33,19 +36,24 @@ export function TripCard({ trip }: TripCardProps) {
                     </div>
                     <div>
                         <div className="flex items-center gap-3 mb-1">
-                            <h3 className="font-semibold text-foreground italic">Trip</h3>
+                            <h3 className="font-semibold text-foreground italic">
+                                {t("trips.card.trip")}
+                            </h3>
                             <StatusBadge
                                 status={trip.status === "STARTED" ? "started" : "ended"}
+                                label={trip.status === "STARTED" 
+                                    ? t("trips.card.status.started") 
+                                    : t("trips.card.status.ended")
+                                }
                             />
                         </div>
                         <p className="text-sm text-muted-foreground w-full lg:max-w-xs truncate">
-                            {trip.vehicles?.vehicle_number || "No vehicle"}
+                            {trip.vehicles?.vehicle_number || t("trips.card.noVehicle")}
 
-                            {/* Conditionally render the entire Tooltip block only if vehicle_type exists */}
                             {trip.vehicles?.vehicle_type ? (
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <span className="cursor-pointed">
+                                        <span className="cursor-pointer">
                                             {" "}• {trip.vehicles.vehicle_type} •{" "}
                                         </span>
                                     </TooltipTrigger>
@@ -61,7 +69,7 @@ export function TripCard({ trip }: TripCardProps) {
                             )}
 
                             <span className="font-medium text-foreground/80">
-                                {trip.users?.name || "Unknown user"}
+                                {trip.users?.name || t("trips.card.unknownUser")}
                             </span>
                         </p>
                     </div>
@@ -79,7 +87,7 @@ export function TripCard({ trip }: TripCardProps) {
                         </span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">Distance:</span>
+                        <span className="text-muted-foreground">{t("trips.card.distance")}:</span>
                         <span className="font-medium">
                             {calculateDistance(trip.start_km, trip.end_km)}
                         </span>
@@ -90,7 +98,7 @@ export function TripCard({ trip }: TripCardProps) {
                             to={`/trip/${trip.id}`}
                             className="bg-blue-500/10 hover:bg-blue-500 text-blue-400 hover:text-white border border-blue-500/20 rounded-lg px-4 py-2 text-sm font-semibold transition-all inline-flex items-center gap-2 group/link"
                         >
-                            View Details
+                            {t("trips.card.viewDetails")}
                             <ArrowRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1" />
                         </Link>
                     </div>
@@ -100,11 +108,11 @@ export function TripCard({ trip }: TripCardProps) {
             {(trip.start_km || trip.end_km) && (
                 <div className="mt-4 pt-4 border-t border-border flex gap-6 text-sm">
                     <div>
-                        <span className="text-muted-foreground">Start KM:</span>{" "}
+                        <span className="text-muted-foreground">{t("trips.card.startKm")}:</span>{" "}
                         <span className="font-medium">{trip.start_km ?? "—"}</span>
                     </div>
                     <div>
-                        <span className="text-muted-foreground">End KM:</span>{" "}
+                        <span className="text-muted-foreground">{t("trips.card.endKm")}:</span>{" "}
                         <span className="font-medium">{trip.end_km ?? "—"}</span>
                     </div>
                 </div>

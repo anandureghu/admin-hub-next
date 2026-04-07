@@ -1,0 +1,23 @@
+{
+  "title": "Dashboard",
+  "subtitle": "Welcome back! Here's your fleet overview.",
+  "activeEmployees": "Active Employees",
+  "activeVehicles": "Active Vehicles",
+  "tripsToday": "Trips Today",
+  "pendingReceipts": "Pending Receipts",
+  "recentTrips": "Recent Trips",
+  "loading": "Loading dashboard data...",
+  "noTrips": "No trips recorded yet. Trips will appear here once employees start tracking.",
+  "table": {
+    "employee": "Employee",
+    "vehicle": "Vehicle",
+    "date": "Date",
+    "status": "Status"
+  },
+  "status": {
+    "started": "Started",
+    "ended": "Ended"
+  },
+  "unknown": "Unknown",
+  "notAvailable": "N/A"
+}

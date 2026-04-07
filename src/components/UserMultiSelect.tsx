@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next"; // Added
 import { Check, ChevronDown, X, Users, Search } from "lucide-react";
 import { User } from "@/modules/trips/schemas/user.schema";
 
@@ -15,6 +16,7 @@ export function UserMultiSelect({
     onChange,
     isLoading,
 }: UserMultiSelectProps) {
+    const { t } = useTranslation(); // Initialize translation
     const [open, setOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const ref = useRef<HTMLDivElement>(null);
@@ -23,7 +25,7 @@ export function UserMultiSelect({
         function handleClickOutside(e: MouseEvent) {
             if (ref.current && !ref.current.contains(e.target as Node)) {
                 setOpen(false);
-                setSearchQuery(""); // Clear search when closing
+                setSearchQuery(""); 
             }
         }
         document.addEventListener("mousedown", handleClickOutside);
@@ -52,14 +54,13 @@ export function UserMultiSelect({
     function handleOpen() {
         setOpen((o) => !o);
         if (!open) {
-            setSearchQuery(""); // Clear search when opening
+            setSearchQuery("");
         }
     }
 
     const selectedUsers = users.filter((u) => selectedIds.includes(u.id));
     const hasSelection = selectedIds.length > 0;
 
-    // Filter users based on search query
     const filteredUsers = users.filter((user) => {
         if (!searchQuery) return true;
         const query = searchQuery.toLowerCase();
@@ -70,12 +71,10 @@ export function UserMultiSelect({
     });
 
     return (
-        // 1. Increased width from w-56 to w-64 (or w-72 if you want even more space)
         <div ref={ref} className="relative w-76">
             <button
                 type="button"
                 onClick={handleOpen}
-                // FIX: Ensure bg is dark (bg-input/bg-background) and hover is subtle, not solid blue
                 className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-border bg-input text-sm text-foreground hover:bg-secondary/50 focus:ring-1 focus:ring-ring transition-colors min-h-[38px]"
             >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -85,7 +84,6 @@ export function UserMultiSelect({
                             {selectedUsers.slice(0, 2).map((u) => (
                                 <span
                                     key={u.id}
-                                    // Chips get the primary background to stand out
                                     className="flex items-center gap-1 bg-primary text-primary-foreground rounded px-2 py-0.5 text-xs font-medium"
                                 >
                                     {u.name.split(" ")[0]}
@@ -96,14 +94,15 @@ export function UserMultiSelect({
                                 </span>
                             ))}
                             {selectedUsers.length > 2 && (
-                                // FIX: Improved text contrast for "+X more"
                                 <span className="text-xs font-medium text-foreground whitespace-nowrap bg-secondary px-2 py-0.5 rounded">
-                                    +{selectedUsers.length - 2} more
+                                    {t("common.userMultiSelect.more", { count: selectedUsers.length - 2 })}
                                 </span>
                             )}
                         </div>
                     ) : (
-                        <span className="text-muted-foreground whitespace-nowrap">All Users</span>
+                        <span className="text-muted-foreground whitespace-nowrap">
+                            {t("common.userMultiSelect.placeholder")}
+                        </span>
                     )}
                 </div>
 
@@ -121,17 +120,13 @@ export function UserMultiSelect({
             </button>
 
             {open && (
-                // 1. Changed to 'bg-secondary' to make the entire dropdown distinctly lighter than the dark page background.
-                // (If it's STILL too dark, you can change 'bg-secondary' to 'bg-slate-800' or 'bg-[#1e293b]')
                 <div className="absolute z-50 mt-2 w-full rounded-md border border-border bg-secondary shadow-xl overflow-hidden">
-
-                    {/* Search Input */}
                     <div className="p-2 border-b border-border/50">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <input
                                 type="text"
-                                placeholder="Search users..."
+                                placeholder={t("common.userMultiSelect.searchPlaceholder")}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full pl-8 pr-3 py-2 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
@@ -142,17 +137,17 @@ export function UserMultiSelect({
 
                     {isLoading ? (
                         <div className="px-3 py-4 text-sm text-center text-muted-foreground">
-                            Loading users...
+                            {t("common.userMultiSelect.loading")}
                         </div>
                     ) : filteredUsers.length === 0 ? (
                         <div className="px-3 py-4 text-sm text-center text-muted-foreground">
-                            {searchQuery ? "No users match your search" : "No users found"}
+                            {searchQuery ? t("common.userMultiSelect.noMatch") : t("common.userMultiSelect.noUsers")}
                         </div>
                     ) : (
                         <div>
                             {searchQuery && (
                                 <div className="px-3 py-1 text-xs text-muted-foreground border-b border-border">
-                                    {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''} found
+                                    {t("common.userMultiSelect.found", { count: filteredUsers.length })}
                                 </div>
                             )}
                             <ul className="max-h-56 overflow-y-auto py-1">

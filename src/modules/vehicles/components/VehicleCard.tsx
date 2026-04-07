@@ -2,6 +2,7 @@ import { Car, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Vehicle } from "../schemas/vehicle.schema";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -14,13 +15,15 @@ interface VehicleCardProps {
 
 const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
   ({ vehicle, toggleVehicleStatus, handleOpenEditDialog, isToggling }, ref) => {
+    const { t } = useTranslation();
+
     return (
       <div ref={ref} className="stat-card animate-fade-in flex flex-col h-full">
         <div className="flex items-start justify-center mb-4">
           {vehicle.image_url ? (
             <img
               src={vehicle.image_url}
-              alt="vehicle image"
+              alt={t("vehicles.card.imageAlt")}
               className="h-52 w-80 object-cover"
             />
           ) : (
@@ -37,12 +40,13 @@ const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
             <Tooltip>
               <TooltipTrigger asChild>
                 <p className="text-muted-foreground text-sm mb-4 truncate block cursor-pointer">
-                  {vehicle.vehicle_type}
+                  {/* Translate the type stored in the database */}
+                  {t(`vehicles.types.${vehicle.vehicle_type}`)}
                 </p>
               </TooltipTrigger>
               {vehicle.vehicle_type && (
                 <TooltipContent side="top" className="max-w-[280px] break-words text-center">
-                  <p>{vehicle.vehicle_type}</p>
+                  <p>{t(`vehicles.types.${vehicle.vehicle_type}`)}</p>
                 </TooltipContent>
               )}
             </Tooltip>
@@ -58,13 +62,13 @@ const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
             </Button>
             <StatusBadge
               status={vehicle.is_active ? "active" : "inactive"}
-              label={vehicle.is_active ? "Available" : "Unavailable"}
+              label={vehicle.is_active ? t("vehicles.card.available") : t("vehicles.card.unavailable")}
             />
           </div>
         </div>
         <div className="flex items-center justify-between pt-4 border-t border-border mt-auto">
           <span className="text-xs text-muted-foreground">
-            Added {new Date(vehicle.created_at).toLocaleDateString()}
+            {t("vehicles.card.added", { date: new Date(vehicle.created_at).toLocaleDateString() })}
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -73,7 +77,7 @@ const VehicleCard = forwardRef<HTMLDivElement, VehicleCardProps>(
               disabled={isToggling}
               onClick={() => toggleVehicleStatus(vehicle.id, vehicle.is_active)}
             >
-              {vehicle.is_active ? "Mark as Unavailable" : "Mark as Available"}
+              {vehicle.is_active ? t("vehicles.card.markUnavailable") : t("vehicles.card.markAvailable")}
             </Button>
           </div>
         </div>

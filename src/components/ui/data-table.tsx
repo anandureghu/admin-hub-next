@@ -8,6 +8,7 @@ import {
   Table as TableType,
   useReactTable,
 } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next"; // Added
 
 import {
   Table,
@@ -53,6 +54,8 @@ export function DataTable<TData, TValue>({
   isLoading,
   tableContainerClassName,
 }: DataTableProps<TData, TValue>) {
+  const { t } = useTranslation(); // Initialize translation
+
   const table = useReactTable({
     data,
     columns,
@@ -113,14 +116,16 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                {isLoading 
+                  ? t("common.dataTable.loading") 
+                  : t("common.dataTable.noResults")
+                }
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
 
-      {/* Pagination Footer */}
       <div className="mt-4 py-3 px-4 rounded-md border border-border bg-secondary/20 flex items-center justify-end shadow-sm">
         <DataTablePagination table={table} />
       </div>

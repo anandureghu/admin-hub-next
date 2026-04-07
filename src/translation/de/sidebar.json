@@ -1,0 +1,7 @@
+{
+  "language": "Sprache",
+  "logout": "Abmelden",
+  "areYouSure": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+  "logoutDescription": "Sie werden sicher aus dem TripTrack Admin Portal abgemeldet. Sie müssen Ihre Anmeldedaten erneut eingeben, um auf das Dashboard zuzugreifen.",
+  "confirmLogout": "Abmelden"
+}
