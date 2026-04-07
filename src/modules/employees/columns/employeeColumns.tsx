@@ -96,7 +96,7 @@ export const columns: ColumnDef<Employee>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => { e.stopPropagation() }}>
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            
+
             <DropdownMenuItem
               onClick={(e) => {
                 e?.preventDefault?.();
@@ -116,7 +116,7 @@ export const columns: ColumnDef<Employee>[] = [
                   e?.stopPropagation?.();
                   actions.onResetDevice(employee.id);
                 }}
-                className="text-amber-500 focus:text-amber-500 focus:bg-amber-500/10 cursor-pointer" // Optional: gives it a distinct warning color
+                className="text-amber-500 focus:text-amber-500 focus:bg-amber-500/10 cursor-pointer"
               >
                 Reset Device
               </DropdownMenuItem>

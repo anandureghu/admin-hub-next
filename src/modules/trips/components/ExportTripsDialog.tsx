@@ -48,7 +48,6 @@ export function ExportTripsDialog({
     usersData,
     usersLoading,
 }: ExportTripsDialogProps) {
-    // Local Modal States
     const [isExporting, setIsExporting] = useState(false);
     const [exportStatus, setExportStatus] = useState<string>("all");
     const [exportUserIds, setExportUserIds] = useState<string[]>([]);
@@ -144,7 +143,7 @@ export function ExportTripsDialog({
             }
 
             downloadCSV(finalDataToExport, `Trips_Export_${format(new Date(), "yyyy-MM-dd")}`);
-            onOpenChange(false); // Close modal on success
+            onOpenChange(false);
         } catch (error) {
             console.error(error);
             toast.error("Failed to export data", { id: "export-toast" });

@@ -1,5 +1,5 @@
 import { Clock } from "lucide-react";
-import { WorkSessionCard } from "./WorkSessionCard"; // Adjust path if needed
+import { WorkSessionCard } from "./WorkSessionCard";
 import { TripDetailResponse } from "../schemas/trip.schema";
 
 interface TripWorkSessionsProps {

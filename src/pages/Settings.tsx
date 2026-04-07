@@ -56,12 +56,12 @@ export default function Settings() {
 
     setSaving(true);
     try {
-      // 1. NEW: Strict Format Validation (German Mobile Number)
+      // Strict Format Validation (German Mobile Number)
       const phoneRegex = /^(\+49|0049|0)\s?1[567]\d{1,2}\s?\d{7,8}$/;
       if (formData.phone && !phoneRegex.test(formData.phone)) {
         toast.error("Please enter a valid German mobile number.");
         setSaving(false);
-        return; // Stop the save
+        return;
       }
 
       // 2. Duplicate Check
@@ -77,11 +77,10 @@ export default function Settings() {
         if (existingUsers && existingUsers.length > 0) {
           toast.error("An account with this phone number already exists.");
           setSaving(false);
-          return; // Stop the save
+          return;
         }
       }
 
-      // 3. Proceed with update
       const { error } = await supabase
         .from("users")
         .update({

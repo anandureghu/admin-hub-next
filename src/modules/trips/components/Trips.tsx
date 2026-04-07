@@ -22,10 +22,9 @@ import { UserMultiSelect } from "@/components/UserMultiSelect";
 import { DateRange } from "react-day-picker";
 import { TripCard } from "./TripCard";
 import { Button } from "@/components/ui/button";
-import { ExportTripsDialog } from "./ExportTripsDialog"; // NEW: Import your dialog
+import { ExportTripsDialog } from "./ExportTripsDialog";
 
 export default function Trips() {
-  // Page States
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
@@ -123,7 +122,7 @@ export default function Trips() {
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
-                onClick={() => setExportModalOpen(true)} // Open directly
+                onClick={() => setExportModalOpen(true)}
                 disabled={isLoading}
                 className="w-full lg:w-auto shrink-0 bg-input border-border hover:bg-accent hover:text-accent-foreground lg:ml-auto"
               >
