@@ -87,10 +87,10 @@ export default function EmployeeDetail() {
             {/* Activity Tabs */}
             <Tabs defaultValue="trips" className="w-full">
                 <TabsList className="grid w-full max-w-[400px] grid-cols-2 mb-6">
-                    <TabsTrigger value="trips">
+                    <TabsTrigger value="trips" className="cursor-pointer">
                         {t("employees.details.tabs.trips")}
                     </TabsTrigger>
-                    <TabsTrigger value="work">
+                    <TabsTrigger value="work" className="cursor-pointer">
                         {t("employees.details.tabs.work")}
                     </TabsTrigger>
                 </TabsList>
