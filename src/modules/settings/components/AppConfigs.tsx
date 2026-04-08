@@ -99,7 +99,7 @@ export function AppConfigs() {
                   
                   <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={() => handleEdit(config)}>
-                      Edit
+                      {t("settings.appConfigs.edit")}
                     </Button>
                     {!isInitialDefault && (
                       <ConfirmationModal

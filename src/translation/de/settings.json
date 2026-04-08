@@ -24,6 +24,7 @@
     "updates": "Updates",
     "maintenance": "Wartung",
     "active": "Aktiv",
+    "edit": "Bearbeiten",
     "deleteTitle": "Konfiguration löschen",
     "deleteDesc": "Sind Sie sicher, dass Sie die Version {{version}} löschen möchten? Dies kann nicht rückgängig gemacht werden.",
     "deleteSuccess": "App-Konfiguration gelöscht",

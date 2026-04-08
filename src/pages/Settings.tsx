@@ -113,11 +113,11 @@ export default function Settings() {
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-6 bg-input">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
+          <TabsTrigger value="profile" className="flex items-center gap-2 cursor-pointer">
             <User className="w-4 h-4" />
             {t("settings.profile")}
           </TabsTrigger>
-          <TabsTrigger value="app-config" className="flex items-center gap-2">
+          <TabsTrigger value="app-config" className="flex items-center gap-2 cursor-pointer">
             <Smartphone className="w-4 h-4" />
             {t("settings.appConfiguration")}
           </TabsTrigger>
