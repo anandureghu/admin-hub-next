@@ -1,5 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
 // English translations
 import enNavigation from './translation/en/navigation.json';
@@ -60,7 +61,7 @@ i18n
     .use(initReactI18next)
     .init({
         resources,
-        fallbackLng: 'de',
+        fallbackLng: 'en-GB',
         interpolation: {
             escapeValue: false,
         },
