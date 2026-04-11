@@ -5,7 +5,7 @@ export const accidentReportSchema = z.object({
   id: z.string().uuid(),
   trip_id: z.string().uuid().nullable(),
   user_id: z.string().uuid().nullable(),
-  description: z.string().min(1, "Description is required"),
+  description: z.string(),
   photo_url: z.string().nullable(),
   location: z.any().nullable(),
   created_at: z.string(),
